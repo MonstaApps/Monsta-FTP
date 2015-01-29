@@ -1,8 +1,10 @@
 <?php 
 
 //##############################################
-// MONSTA FTP v1.4.8 by MONSTA APPS
+// MONSTA FTP by MONSTA APPS
 //##############################################
+//
+   $version = "1.4.9";
 //
 // Monsta FTP is proud to be open source.
 //
@@ -32,21 +34,20 @@
 // Please visit http://www.monstaftp.com/support/
 //
 //##############################################
-// INSTALL NOTES **IMPORTANT**
+// **IMPORTANT**
 //##############################################
 //
 // 1. The server running this script must allow external FTP connections
 //    if you intend to allow connection to external servers.
-// 2. The script can be uploaded anywhere on your website, and you can 
-//    rename index.php to any name you prefer.
-// 3. Please check the configurable variables below before running.
+//
+// 2. The "Upload Limit" seen on screen is set in your server's PHP.INI file.
+//
+// 3. If large files are only partially uploading, your server's PHP.INI file 
+//    can be changed to increase max_input_time and max_execution_time.
 
 ###############################################
 # CONFIGURABLE VARIABLES
 ###############################################
-
-// MonstaFTP version number
-$version = "1.4.9";
 
 // Enter the host address/port/mode if it should always be a fixed host address.
 // Leave this blank if you want the user to input their host address.
@@ -61,7 +62,7 @@ $ftpDir = ""; // Enter an FTP server path for the default login (or leave blank 
 // set any folder, provided it has 777 chmod permissions, so it can be written to from the web.
 // If you're using PHP on Windows, comment out the Linux path and uncomment the Windows path.
 $serverTmp = "/tmp"; // Linux
-//$serverTmp = "C:\\WINDOWS\\Temp\\"; // Windows
+//$serverTmp = "C:\\WINDOWS\\Temp\\"; // Windows (backslashes must be escaped with another backslash)
 
 // Include a list of file types that can be edited in the text editor
 $editableExts = "asp,ashx,asmx,aspx,asx,axd,cfm,cgi,css,html,htm,jhtml,js,php,phtml,pl,txt,xhtml";
@@ -71,12 +72,6 @@ $dateFormatUsa = 0;
 
 // The number of minutes to lockout invalid logins
 $lockOutTime = 5;
-
-###############################################
-# SANITZE VARS (DEPRECATED)
-###############################################
-
-//sanitizeVars();
 
 ###############################################
 # SAVE DETAILS TO COOKIE
@@ -558,16 +553,16 @@ function displayLoginForm($posted) {
 
 <?php if ($ftpHost == "") { ?>
 <?php echo $lang_ftp_host; ?>:
-<br><input type="text" name="ftp_host" value="<?php echo sanitizeStr($ftp_host); ?>" size="30" class="<?php if ($posted= = 1 && $ftp_host=="") echo "bgFormError"; ?>"> 
-<?php echo $lang_port; ?>: <input type="text" name="ftp_port" value="<?php echo sanitizeStr($ftp_port) ?>" size="3" class="<?php if ($posted= = 1 && $ftp_port=="") echo "bgFormError"; ?>" tabindex="-1"> 
+<br><input type="text" name="ftp_host" value="<?php echo sanitizeStr($ftp_host); ?>" size="30" class="<?php if ($posted == 1 && $ftp_host=="") echo "bgFormError"; ?>"> 
+<?php echo $lang_port; ?>: <input type="text" name="ftp_port" value="<?php echo sanitizeStr($ftp_port) ?>" size="3" class="<?php if ($posted == 1 && $ftp_port=="") echo "bgFormError"; ?>" tabindex="-1"> 
 <p>
 <?php } ?>
 
 <?php echo $lang_username; ?>:
-<br><input type="text" name="ftp_user" value="<?php echo sanitizeStr($ftp_user); ?>" class="<?php if ($posted= = 1 && $ftp_user=="") echo "bgFormError"; ?>">
+<br><input type="text" name="ftp_user" value="<?php echo sanitizeStr($ftp_user); ?>" class="<?php if ($posted == 1 && $ftp_user=="") echo "bgFormError"; ?>">
 
 <p><?php echo $lang_password; ?>:
-<br><input type="password" name="ftp_pass" value="<?php echo sanitizeStr($ftp_pass); ?>" class="<?php if ($posted= = 1 && $ftp_pass=="") echo "bgFormError"; ?>" autocomplete="off">
+<br><input type="password" name="ftp_pass" value="<?php echo sanitizeStr($ftp_pass); ?>" class="<?php if ($posted == 1 && $ftp_pass=="") echo "bgFormError"; ?>" autocomplete="off">
 
 <div class="floatLeft">
     <input type="submit" value="<?php echo $lang_btn_login; ?>" id="btnLogin">
@@ -760,7 +755,7 @@ function getFtpRawList($folder_path) {
     if (!@ftp_chdir($conn_id, $folder_path)) {
         if (checkFirstCharTilde($folder_path) == 1) {
             if (!@ftp_chdir($conn_id, replaceTilde($folder_path))) {
-                recordFileError("folder",$folder_path,$lang_folder_cant_access);
+                recordFileError("folder",replaceTilde($folder_path),$lang_folder_cant_access);
                 $isError = 1;
             }
         } else {
@@ -1358,21 +1353,10 @@ function getPathFromLink($file) {
 
 function formatFtpDate($day, $month, $year) {
     
+    // Add leading zero to day
     if (strlen($day) == 1)
         $day = "0".$day;
-    
-    if ($year == "")
-        $year = date("Y");
-        
-    if (strlen($year) == 2) {
-        
-        // To avoid a future Y2K problem, check the first two digits of year on Windows
-        if ($year > 00 && $year < 99)
-            $year = substr(date("Y"),0,2).$year;
-        else
-            $year = (substr(date("Y"),0,2)-1).$year;
-    }
-    
+
     if ($month == "Jan") $month = "01";
     if ($month == "Feb") $month = "02";
     if ($month == "Mar") $month = "03";
@@ -1385,6 +1369,27 @@ function formatFtpDate($day, $month, $year) {
     if ($month == "Oct") $month = "10";
     if ($month == "Nov") $month = "11";
     if ($month == "Dec") $month = "12";
+
+    // Set the year if none
+    if ($year == "") {
+        
+        // First check if the date falls within the last 12 months (as year only appears after 12 months has passed)
+        $current_month = date("m");
+
+        if ($month > $current_month)
+            $year = date("Y") - 1;
+        else
+            $year = date("Y");
+    }
+    
+    if (strlen($year) == 2) {
+        
+        // To avoid a future Y2K problem, check the first two digits of year on Windows
+        if ($year > 00 && $year < 99)
+            $year = substr(date("Y"),0,2).$year;
+        else
+            $year = (substr(date("Y"),0,2)-1).$year;
+    }
     
     $date = $year.$month.$day;
     
@@ -1442,7 +1447,7 @@ function openFolder() {
         if (!@ftp_chdir($conn_id, $dir)) {
             if (checkFirstCharTilde($dir) == 1) {
                 if (!@ftp_chdir($conn_id, replaceTilde($dir))) {
-                    recordFileError("folder",$dir,$lang_folder_doesnt_exist);
+                    recordFileError("folder",replaceTilde($dir),$lang_folder_doesnt_exist);
                     $isError = 1;
                 }
             } else {
@@ -1901,7 +1906,7 @@ function moveFiles() {
                 if (!@ftp_rename($conn_id, $file_to_move, $file_destination)) {
                     if (checkFirstCharTilde($file_to_move) == 1) {
                         if (!@ftp_rename($conn_id, replaceTilde($file_to_move), replaceTilde($file_destination))) {
-                            recordFileError("file",$file_to_move,$lang_file_cant_move);
+                            recordFileError("file",replaceTilde($file_to_move),$lang_file_cant_move);
                         }
                     } else {
                         recordFileError("file",$file_to_move,$lang_file_cant_move);
@@ -2472,7 +2477,7 @@ function chmodFiles() {
                     if (!@ftp_chmod($conn_id, $mode, $file)) {
                         if (checkFirstCharTilde($file) == 1) {
                             if (!@ftp_chmod($conn_id, $mode, replaceTilde($file))) {
-                                recordFileError("file",$file,$lang_file_cant_chmod);
+                                recordFileError("file",replaceTilde($file),$lang_file_cant_chmod);
                             }
                         } else {
                             recordFileError("file",$file,$lang_file_cant_chmod);
@@ -2577,22 +2582,22 @@ function getChmodNumber($str) {
     $strlen = strlen($str);
     for ($i = 0; $i < $strlen; $i++) {
     
-        if ($i> = 1&&$i<=3)
+        if ($i >= 1 && $i <= 3)
             $m = 100;
-        if ($i>=4&&$i<=6)
+        if ($i >=4 && $i <= 6)
             $m = 10;
-        if ($i>=7&&$i<=9)
+        if ($i >= 7 && $i <= 9)
             $m = 1;
         
         $l = substr($str,$i,1);
         
         if ($l != "d" && $l != "-") {
         
-            if ($l=="r")
-                $n=4;
-            if ($l=="w")
-                $n=2;
-            if ($l=="x")
+            if ($l == "r")
+                $n = 4;
+            if ($l == "w")
+                $n = 2;
+            if ($l == "x")
                 $n = 1;
             
             $j = $j+($n*$m);
@@ -2857,32 +2862,6 @@ function quotesReplace($str, $type) {
 }
 
 ###############################################
-# SANITIZE VARS (DEPRECATED)
-###############################################
-/*
-function sanitizeVars() {
-    
-    foreach ($_POST AS $key => $value) {
-        
-        if ($key != "editContent") {
-            $value = str_replace("<","&lt;",$value);
-            $value = str_replace(">","&gt;",$value);
-            $_POST[$key] = $value;
-        }
-    }
-    
-    foreach ($_GET AS $key => $value) {
-        
-        if ($key != "editContent") {
-            $value = str_replace("<","&lt;",$value);
-            $value = str_replace(">","&gt;",$value);
-            $_POST[$key] = $value;
-        }
-    }
-}
-*/
-
-###############################################
 # DELETE FILES & FOLDERS
 ###############################################
 
@@ -3019,7 +2998,7 @@ function deleteFolder($folder, $path) {
                     if (!@ftp_delete($conn_id, "".$file_path.""))  {
                         if (checkFirstCharTilde($file_path) == 1) {
                             if (!@ftp_delete($conn_id, "".replaceTilde($file_path)."")) {
-                                recordFileError("file",$file_path,$lang_cant_delete);
+                                recordFileError("file",replaceTilde($file_path),$lang_cant_delete);
                             }
                         } else {
                             recordFileError("file",$file_path,$lang_cant_delete);
@@ -3044,7 +3023,7 @@ function deleteFolder($folder, $path) {
         if (!@ftp_rmdir($conn_id, "".$folder_path."")) {
             if (checkFirstCharTilde($folder_path) == 1) {
                 if (!@ftp_rmdir($conn_id, "".replaceTilde($folder_path)."")) {
-                    recordFileError("folder",$folder_path,$lang_folder_cant_delete);
+                    recordFileError("folder",replaceTilde($folder_path),$lang_folder_cant_delete);
                     $isError = 1;
                 }
             } else {
