@@ -4,7 +4,7 @@
 // MONSTA FTP by MONSTA APPS
 //##############################################
 //
-   $version = "1.4.9";
+   $version = "1.4.10";
 //
 // Monsta FTP is proud to be open source.
 //
@@ -3919,7 +3919,7 @@ function setLangFile() {
         if (is_dir($dir)) {
             if ($dh = opendir($dir)) {
                 while (($file = readdir($dh)) !== false) {
-                    if ($file != "." && $file != "..") {
+                    if ($file != "." && $file != ".." && $file != "index.html") {
                         
                         include("languages/".$file);
                         
