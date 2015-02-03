@@ -4,7 +4,7 @@
 // MONSTA FTP by MONSTA APPS
 //##############################################
 //
-   $version = "1.4.10";
+   $version = "1.4.11";
 //
 // Monsta FTP is proud to be open source.
 //
@@ -72,6 +72,13 @@ $dateFormatUsa = 0;
 
 // The number of minutes to lockout invalid logins
 $lockOutTime = 5;
+
+###############################################
+# ATTEMPT TO SET SCRIPT'S MAX EXEC TIME
+###############################################
+
+//if (!ini_get('safe_mode'))
+//    set_time_limit(0);
 
 ###############################################
 # SAVE DETAILS TO COOKIE
@@ -2409,8 +2416,8 @@ function renameFiles() {
         $i = 0;
         
         // Set vars
-        $vars = "&ftpAction=rename&processAction = 1";
-        $onKeyPress = "onkeypress=\"if (event.keyCode= = 13){ processForm('".$vars."'); activateActionButtons(0,0); return false; }\"";
+        $vars = "&ftpAction=rename&processAction=1";
+        $onKeyPress = "onkeypress=\"if (event.keyCode == 13){ processForm('".$vars."'); activateActionButtons(0,0); return false; }\"";
         
         // Display folders
         foreach ($folderArray AS $folder) {
@@ -2547,7 +2554,7 @@ function chmodFiles() {
             // Display pop-up
             displayPopupOpen(1,$width,$height,0,$title);
             
-            $vars = "&ftpAction=chmod&processForm = 1";
+            $vars = "&ftpAction=chmod&processForm=1";
             
             displayChmodFieldset($lang_chmod_owner,"owner",$o_wrx,$vars);
             displayChmodFieldset($lang_chmod_group,"group",$g_wrx,$vars);
@@ -2620,7 +2627,7 @@ function displayChmodFieldset($title, $type, $chmod, $vars) {
 <fieldset class="fieldsetChmod">
 <legend><?php echo $title; ?></legend>
 <?php if ($type == "manual") { ?>
-<input type="text" size="4" name="chmodNum" id="chmodNum" value="<?php echo $chmod; ?>" onkeypress="if (event.keyCode= = 13){ processForm('<?php echo $vars; ?>'); activateActionButtons(0,0); return false;}">
+<input type="text" size="4" name="chmodNum" id="chmodNum" value="<?php echo $chmod; ?>" onkeypress="if (event.keyCode == 13){ processForm('<?php echo $vars; ?>'); activateActionButtons(0,0); return false;}">
 <?php }else{ ?>
 <?php 
     if ($type == "owner")
@@ -3072,7 +3079,7 @@ function newFile() {
         // Display pop-up
         displayPopupOpen(0,$width,$height,0,$title);
         
-        echo "<input type=\"text\" name=\"newFile\" id=\"newFile\" placeholder=\"".$lang_new_file_name."\" onkeypress=\"if (event.keyCode= = 13){ processForm('".$vars."'); return false;}\">";
+        echo "<input type=\"text\" name=\"newFile\" id=\"newFile\" placeholder=\"".$lang_new_file_name."\" onkeypress=\"if (event.keyCode == 13){ processForm('".$vars."'); return false;}\">";
         
         if (is_dir($templates_dir)) {
             
@@ -3245,7 +3252,7 @@ function newFolder() {
         // Display pop-up
         displayPopupOpen(0,$width,$height,0,$title);
         
-        echo "<input type=\"text\" name=\"newFolder\" id=\"newFolder\" placeholder=\"".$lang_new_folder_name."\" onkeypress=\"if (event.keyCode= = 13){ processForm('".$vars."'); return false;}\">";
+        echo "<input type=\"text\" name=\"newFolder\" id=\"newFolder\" placeholder=\"".$lang_new_folder_name."\" onkeypress=\"if (event.keyCode == 13){ processForm('".$vars."'); return false;}\">";
         
         displayPopupClose(0,$vars,1);
     
@@ -3465,7 +3472,7 @@ function displayErrors() {
             echo $error."<br>";
         }
         
-        $vars = "&ftpAction=openFolder&resetErrorArray = 1";
+        $vars = "&ftpAction=openFolder&resetErrorArray=1";
         
         displayPopupClose(1,$vars,0);
     }
