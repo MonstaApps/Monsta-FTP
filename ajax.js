@@ -515,7 +515,7 @@ function fileUploader(globalFiles,filePath,rowID,isFolder,isDrop) {
         xmlhttp.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         xmlhttp.setRequestHeader("X-File-Size", file.size);
         xmlhttp.setRequestHeader("X-File-Type", file.type);
-        xmlhttp.setRequestHeader("Content-Type", "multipart/form-data");
+        //xmlhttp.setRequestHeader("Content-Type", "multipart/form-data");
         xmlhttp.send(file);
     }
 }
