@@ -1,114 +1,39 @@
-<?php 
+<?php
 
-//##############################################
-// MONSTA FTP by MONSTA APPS
-//##############################################
-//
-   $version = "1.4.11";
-//
-// Monsta FTP is proud to be open source.
-//
-// Please consider a donation and support this product's ongoing 
-// development: http://www.monstaapps.com/donations/
-//
-//##############################################
-// COPYRIGHT NOTICE
-//##############################################
-//
-// Monsta FTP is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// any later version.
-//
-// Monsta FTP is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// A copy of the GNU General Public License is included with this install.
-//
-//##############################################
-// SUPPORT, BUG REPORTS, FEATURE REQUESTS
-//##############################################
-//
-// Please visit http://www.monstaftp.com/support/
-//
-//##############################################
-// **IMPORTANT**
-//##############################################
-//
-// 1. The server running this script must allow external FTP connections
-//    if you intend to allow connection to external servers.
-//
-// 2. The "Upload Limit" seen on screen is set in your server's PHP.INI file.
-//
-// 3. If large files are only partially uploading, your server's PHP.INI file 
-//    can be changed to increase max_input_time and max_execution_time.
+$version = "1.4.12";
 
-###############################################
-# CONFIGURABLE VARIABLES
-###############################################
+# CONFIGURABLE VARIABLES STARTS
+# Open README file for descriptions and help.
 
-// Enter the host address/port/mode if it should always be a fixed host address.
-// Leave this blank if you want the user to input their host address.
 $ftpHost = "";
-$ftpPort = "21"; // 21 is the default
-$ftpMode = "1"; // 1 for passive, 0 for not passive (passive is default)
-$ftpSSL = "0"; // 1 for SSL, 0 for not SSL - your (server must support ftp_ssl_connect() to use this)
-$ftpDir = ""; // Enter an FTP server path for the default login (or leave blank for home folder)
-
-// This is a folder on the client server for uploading files to.
-// By default it's /tmp (Linux), which is the server's folder for temporary files, however you can 
-// set any folder, provided it has 777 chmod permissions, so it can be written to from the web.
-// If you're using PHP on Windows, comment out the Linux path and uncomment the Windows path.
-$serverTmp = "/tmp"; // Linux
-//$serverTmp = "C:\\WINDOWS\\Temp\\"; // Windows (backslashes must be escaped with another backslash)
-
-// Include a list of file types that can be edited in the text editor
+$ftpPort = "21"; // 21 is default
+$ftpMode = "1"; // 1 passive, 0 not passive
+$ftpSSL  = "0"; // 1 for SSL, 0 for not SSL
+$ftpDir  = "";
+$serverTmp = "/tmp";
 $editableExts = "asp,ashx,asmx,aspx,asx,axd,cfm,cgi,css,html,htm,jhtml,js,php,phtml,pl,txt,xhtml";
+$dateFormatUsa = 0; // 1 for mm/dd/yy, 0 for dd/mm/yy
+$lockOutTime = 5; // minutes to lockout 3 invalid logins
 
-// USA date format - 1 for mm/dd/yy, 0 for dd/mm/yy
-$dateFormatUsa = 0;
+# CONFIGURABLE VARIABLES ENDS
 
-// The number of minutes to lockout invalid logins
-$lockOutTime = 5;
-
-###############################################
-# ATTEMPT TO SET SCRIPT'S MAX EXEC TIME
-###############################################
-
-//if (!ini_get('safe_mode'))
-//    set_time_limit(0);
-
-###############################################
-# SAVE DETAILS TO COOKIE
-###############################################
-
+error_reporting(0);
 saveFtpDetailsCookie();
-
-###############################################
-# START SESSION
-###############################################
-
 startSession();
 
-###############################################
 # INCLUDE LANGUAGE FILE
-###############################################
 
 if ($_SESSION["lang"] == "" || isset($_POST["lang"]))
     setLangFile();
 
 $langFileArray = getFileArray("languages");
 
-if (in_array($_SESSION["lang"],$langFileArray))
-    include("languages/".$_SESSION["lang"].".php");
+if (in_array($_SESSION["lang"], $langFileArray))
+    include("languages/" . $_SESSION["lang"] . ".php");
 else
     include("languages/en_us.php");
 
-###############################################
 # SET VARS
-###############################################
 
 // Check for file download
 if (isset($_GET["dl"]))
@@ -129,16 +54,14 @@ else
     $ajaxRequest = 0;
 
 // Check resetting upload erreor array
-if ($_POST["resetErrorArray"] == 1 || $ajaxRequest == 0 ) {
+if ($_POST["resetErrorArray"] == 1 || $ajaxRequest == 0) {
     $_SESSION["errors"] = array();
 }
 
 // Set file upload limit
 setUploadLimit();
 
-###############################################
 # LOAD CONTENT
-###############################################
 
 // These check vars are set in the "SET VARS" section
 if ($ftpAction == "download" || $ftpAction == "iframe_upload" || $ftpAction == "editProcess") {
@@ -148,10 +71,10 @@ if ($ftpAction == "download" || $ftpAction == "iframe_upload" || $ftpAction == "
     
     // Check referer
     if (checkReferer() == 1) {
-    
+        
         // Display content when logged in
         if ($_SESSION["loggedin"] == 1) {
-        
+            
             if ($ftpAction == "download") {
                 downloadFile();
                 parentOpenFolder();
@@ -182,7 +105,7 @@ if ($ftpAction == "download" || $ftpAction == "iframe_upload" || $ftpAction == "
     
     // Check referer
     if (checkReferer() == 1) {
-    
+        
         // Process any FTP actions
         processActions();
         
@@ -218,7 +141,7 @@ if ($ftpAction == "download" || $ftpAction == "iframe_upload" || $ftpAction == "
             }
         }
         
-        if ($ajaxRequest ==  0) {
+        if ($ajaxRequest == 0) {
             
             // Include the footer
             displayFooter();
@@ -229,11 +152,11 @@ if ($ftpAction == "download" || $ftpAction == "iframe_upload" || $ftpAction == "
 // Close FTP connection
 @ftp_close($conn_id);
 
-###############################################
-# START SESSION
-###############################################
 
-function startSession() {
+# FUNCTIONS
+
+function startSession()
+{
     
     @session_start();
     
@@ -273,51 +196,45 @@ function startSession() {
     }
 }
 
-###############################################
-# SET COOKIE BEFORE HEADER
-###############################################
-
-function saveFtpDetailsCookie() {
+function saveFtpDetailsCookie()
+{
     
     if ($_POST["login"] == 1) {
         
         if ($_POST["login_save"] == 1) {
             
             $s = 31536000; // seconds in a year
-            setcookie("ftp_ssl", $_POST["ftp_ssl"], time()+$s, '/', null, null, true);
-            setcookie("ftp_host", trim($_POST["ftp_host"]), time()+$s, '/', null, null, true);
-            setcookie("ftp_user", trim($_POST["ftp_user"]), time()+$s, '/', null, null, true);
-            setcookie("ftp_pass", trim($_POST["ftp_pass"]), time()+$s, '/', null, null, true);
-            setcookie("ftp_port", trim($_POST["ftp_port"]), time()+$s, '/', null, null, true);
-            setcookie("ftp_pasv", $_POST["ftp_pasv"], time()+$s, '/', null, null, true);
-            setcookie("interface", $_POST["interface"], time()+$s, '/', null, null, true);
-            setcookie("login_save", $_POST["login_save"], time()+$s, '/', null, null, true);
-            setcookie("skin", $_POST["skin"], time()+$s, '/', null, null, true);
-            setcookie("lang", $_POST["lang"], time()+$s, '/', null, null, true);
-            setcookie("ip_check", $_POST["ip_check"], time()+$s, '/', null, null, true);
+            setcookie("ftp_ssl", $_POST["ftp_ssl"], time() + $s, '/', null, null, true);
+            setcookie("ftp_host", trim($_POST["ftp_host"]), time() + $s, '/', null, null, true);
+            setcookie("ftp_user", trim($_POST["ftp_user"]), time() + $s, '/', null, null, true);
+            setcookie("ftp_pass", trim($_POST["ftp_pass"]), time() + $s, '/', null, null, true);
+            setcookie("ftp_port", trim($_POST["ftp_port"]), time() + $s, '/', null, null, true);
+            setcookie("ftp_pasv", $_POST["ftp_pasv"], time() + $s, '/', null, null, true);
+            setcookie("interface", $_POST["interface"], time() + $s, '/', null, null, true);
+            setcookie("login_save", $_POST["login_save"], time() + $s, '/', null, null, true);
+            setcookie("skin", $_POST["skin"], time() + $s, '/', null, null, true);
+            setcookie("lang", $_POST["lang"], time() + $s, '/', null, null, true);
+            setcookie("ip_check", $_POST["ip_check"], time() + $s, '/', null, null, true);
             
         } else {
             
-            setcookie("ftp_ssl", "", time()-3600);
-            setcookie("ftp_host", "", time()-3600);
-            setcookie("ftp_user", "", time()-3600);
-            setcookie("ftp_pass", "", time()-3600);
-            setcookie("ftp_port", "", time()-3600);
-            setcookie("ftp_pasv", "", time()-3600);
-            setcookie("interface", "", time()-3600);
-            setcookie("login_save", "", time()-3600);
-            setcookie("skin", "", time()-3600);
-            setcookie("lang", "", time()-3600);
-            setcookie("ip_check", "", time()-3600);
+            setcookie("ftp_ssl", "", time() - 3600);
+            setcookie("ftp_host", "", time() - 3600);
+            setcookie("ftp_user", "", time() - 3600);
+            setcookie("ftp_pass", "", time() - 3600);
+            setcookie("ftp_port", "", time() - 3600);
+            setcookie("ftp_pasv", "", time() - 3600);
+            setcookie("interface", "", time() - 3600);
+            setcookie("login_save", "", time() - 3600);
+            setcookie("skin", "", time() - 3600);
+            setcookie("lang", "", time() - 3600);
+            setcookie("ip_check", "", time() - 3600);
         }
     }
 }
 
-###############################################
-# CHECK IF LOGGED IN
-###############################################
-
-function attemptLogin() {
+function attemptLogin()
+{
     
     global $conn_id;
     global $ftpHost;
@@ -340,7 +257,7 @@ function attemptLogin() {
                 sessionExpired($lang_ip_conflict);
                 logOut();
             }
-        
+            
         } else {
             $_SESSION["loggedin"] = 1;
         }
@@ -363,25 +280,25 @@ function attemptLogin() {
                     $_SESSION["ftp_host"] = trim($_POST["ftp_host"]);
                     $_SESSION["ftp_port"] = trim($_POST["ftp_port"]);
                     $_SESSION["ftp_pasv"] = $_POST["ftp_pasv"];
-                    $_SESSION["ftp_ssl"] = $_POST["ftp_ssl"];
+                    $_SESSION["ftp_ssl"]  = $_POST["ftp_ssl"];
                     
                 } else {
                     
                     $_SESSION["ftp_host"] = $ftpHost;
                     $_SESSION["ftp_port"] = $ftpPort;
                     $_SESSION["ftp_pasv"] = $ftpMode;
-                    $_SESSION["ftp_ssl"] = $ftpSSL;
+                    $_SESSION["ftp_ssl"]  = $ftpSSL;
                 }
                 
-                $_SESSION["ftp_user"] = trim($_POST["ftp_user"]);
-                $_SESSION["ftp_pass"] = trim($_POST["ftp_pass"]);
+                $_SESSION["ftp_user"]  = trim($_POST["ftp_user"]);
+                $_SESSION["ftp_pass"]  = trim($_POST["ftp_pass"]);
                 $_SESSION["interface"] = $_POST["interface"];
-                $_SESSION["skin"] = $_POST["skin"];
-                $_SESSION["lang"] = $_POST["lang"];
-                $_SESSION["ip_check"] = $_POST["ip_check"];
+                $_SESSION["skin"]      = $_POST["skin"];
+                $_SESSION["lang"]      = $_POST["lang"];
+                $_SESSION["ip_check"]  = $_POST["ip_check"];
                 
                 if (connectFTP(1) == 1) {
-                
+                    
                     $_SESSION["loggedin"] = 1;
                     
                     // Save user's IP address
@@ -395,8 +312,8 @@ function attemptLogin() {
                         if (@ftp_chdir($conn_id, $ftpDir)) {
                             $_SESSION["dir_current"] = $ftpDir;
                         } else {
-                            if (@ftp_chdir($conn_id, "~".$ftpDir))
-                                $_SESSION["dir_current"] = "~".$ftpDir;
+                            if (@ftp_chdir($conn_id, "~" . $ftpDir))
+                                $_SESSION["dir_current"] = "~" . $ftpDir;
                         }
                     }
                     
@@ -411,11 +328,8 @@ function attemptLogin() {
     }
 }
 
-###############################################
-# DISPLAY HEADER
-###############################################
-
-function displayHeader() {
+function displayHeader()
+{
     
     global $version;
     
@@ -429,36 +343,38 @@ function displayHeader() {
     if ($skin == "")
         $skin = "monsta";
     
- ?>
+?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
-    <title>Monsta FTP v<?php echo $version; ?></title>
+    <title>Monsta FTP v<?php
+    echo $version;
+?></title>
     <link href="style.css" rel="stylesheet" type="text/css">
-    <link href="skins/<?php echo sanitizeStr($skin); ?>.css" rel="stylesheet" type="text/css">
+    <link href="skins/<?php
+    echo sanitizeStr($skin);
+?>.css" rel="stylesheet" type="text/css">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta http-equiv="X-Frame-Options" content="sameorigin">
 </head>
-<body <?php if ($_POST["login"] == 1) { ?>onresize="setFileWindowSize('ajaxContentWindow',0,0);"<?php }?>>
-<?php 
+<body <?php
+    if ($_POST["login"] == 1) {
+?>onresize="setFileWindowSize('ajaxContentWindow',0,0);"<?php
+    }
+?>>
+<?php
 }
 
-###############################################
-# DISPLAY FOOTER
-###############################################
-
-function displayFooter() {
- ?>
+function displayFooter()
+{
+?>
 </body>
 </html>
-<?php 
+<?php
 }
 
-###############################################
-# DISPLAY LOGIN FORM
-###############################################
-
-function displayLoginForm($posted) {
+function displayLoginForm($posted)
+{
     
     global $version;
     global $ftpHost;
@@ -482,24 +398,24 @@ function displayLoginForm($posted) {
         
         $n = ceil(($_SESSION["login_lockout"] - $date_now) / 60);
         
-        $_SESSION["login_error"] = str_replace("[n]",$n,$lang_max_logins);
+        $_SESSION["login_error"] = str_replace("[n]", $n, $lang_max_logins);
     }
     
     // Check for posted form
     if ($posted == 1) {
         
         // Set vars
-        $ftp_ssl = $_POST["ftp_ssl"];
-        $ftp_host = trim($_POST["ftp_host"]);
-        $ftp_user = trim($_POST["ftp_user"]);
-        $ftp_pass = trim($_POST["ftp_pass"]);
-        $ftp_port = trim($_POST["ftp_port"]);
-        $ftp_pasv = $_POST["ftp_pasv"];
-        $interface = $_POST["interface"];
-        $lang = $_POST["lang"];
-        $skin = $_POST["skin"];
+        $ftp_ssl    = $_POST["ftp_ssl"];
+        $ftp_host   = trim($_POST["ftp_host"]);
+        $ftp_user   = trim($_POST["ftp_user"]);
+        $ftp_pass   = trim($_POST["ftp_pass"]);
+        $ftp_port   = trim($_POST["ftp_port"]);
+        $ftp_pasv   = $_POST["ftp_pasv"];
+        $interface  = $_POST["interface"];
+        $lang       = $_POST["lang"];
+        $skin       = $_POST["skin"];
         $login_save = $_POST["login_save"];
-        $ip_check = $_POST["ip_check"];
+        $ip_check   = $_POST["ip_check"];
         
         $_SESSION["domain"] = $_SERVER["SERVER_NAME"];
         
@@ -508,17 +424,17 @@ function displayLoginForm($posted) {
         // Set values from cookies
         if ($_COOKIE["login_save"] == 1) {
             
-            $ftp_ssl = $_COOKIE["ftp_ssl"];
-            $ftp_host = $_COOKIE["ftp_host"];
-            $ftp_user = $_COOKIE["ftp_user"];
-            $ftp_pass = $_COOKIE["ftp_pass"];
-            $ftp_port = $_COOKIE["ftp_port"];
-            $ftp_pasv = $_COOKIE["ftp_pasv"];
-            $interface = $_COOKIE["interface"];
-            $lang = $_COOKIE["lang"];
-            $skin = $_COOKIE["skin"];
+            $ftp_ssl    = $_COOKIE["ftp_ssl"];
+            $ftp_host   = $_COOKIE["ftp_host"];
+            $ftp_user   = $_COOKIE["ftp_user"];
+            $ftp_pass   = $_COOKIE["ftp_pass"];
+            $ftp_port   = $_COOKIE["ftp_port"];
+            $ftp_pasv   = $_COOKIE["ftp_pasv"];
+            $interface  = $_COOKIE["interface"];
+            $lang       = $_COOKIE["lang"];
+            $skin       = $_COOKIE["skin"];
             $login_save = $_COOKIE["login_save"];
-            $ip_check = $_COOKIE["ip_check"];
+            $ip_check   = $_COOKIE["ip_check"];
             
         } else {
             
@@ -528,19 +444,19 @@ function displayLoginForm($posted) {
     }
     
     if ($ajaxRequest == 1) {
-    
+        
         sessionExpired($lang_session_expired);
         logOut();
-    
+        
     } else {
-    
+        
         // Check for errors
         if ($_SESSION["login_error"] != "") {
             $height = 522;
         } else {
             $height = 458;
         }
- ?>
+?>
 
 <form method="post" action="?">
 
@@ -549,52 +465,129 @@ function displayLoginForm($posted) {
         <div id="loginFormTitle">Monsta FTP</div>
             <div id="loginFormContent">
 
-<?php if ($_SESSION["login_error"] != "") { ?>
+<?php
+        if ($_SESSION["login_error"] != "") {
+?>
 <div id="loginFormError">
-<?php echo $_SESSION["login_error"]; ?>
+<?php
+            echo $_SESSION["login_error"];
+?>
 </div>
-<?php } ?>
+<?php
+        }
+?>
 
 <input type="hidden" name="login" value="1">
-<input type="hidden" name="openFolder" value="<?php echo $_GET["openFolder"]; ?>">
+<input type="hidden" name="openFolder" value="<?php
+        echo $_GET["openFolder"];
+?>">
 
-<?php if ($ftpHost == "") { ?>
-<?php echo $lang_ftp_host; ?>:
-<br><input type="text" name="ftp_host" value="<?php echo sanitizeStr($ftp_host); ?>" size="30" class="<?php if ($posted == 1 && $ftp_host=="") echo "bgFormError"; ?>"> 
-<?php echo $lang_port; ?>: <input type="text" name="ftp_port" value="<?php echo sanitizeStr($ftp_port) ?>" size="3" class="<?php if ($posted == 1 && $ftp_port=="") echo "bgFormError"; ?>" tabindex="-1"> 
+<?php
+        if ($ftpHost == "") {
+?>
+<?php
+            echo $lang_ftp_host;
+?>:
+<br><input type="text" name="ftp_host" value="<?php
+            echo sanitizeStr($ftp_host);
+?>" size="30" class="<?php
+            if ($posted == 1 && $ftp_host == "")
+                echo "bgFormError";
+?>"> 
+<?php
+            echo $lang_port;
+?>: <input type="text" name="ftp_port" value="<?php
+            echo sanitizeStr($ftp_port);
+?>" size="3" class="<?php
+            if ($posted == 1 && $ftp_port == "")
+                echo "bgFormError";
+?>" tabindex="-1"> 
 <p>
-<?php } ?>
+<?php
+        }
+?>
 
-<?php echo $lang_username; ?>:
-<br><input type="text" name="ftp_user" value="<?php echo sanitizeStr($ftp_user); ?>" class="<?php if ($posted == 1 && $ftp_user=="") echo "bgFormError"; ?>">
+<?php
+        echo $lang_username;
+?>:
+<br><input type="text" name="ftp_user" value="<?php
+        echo sanitizeStr($ftp_user);
+?>" class="<?php
+        if ($posted == 1 && $ftp_user == "")
+            echo "bgFormError";
+?>">
 
-<p><?php echo $lang_password; ?>:
-<br><input type="password" name="ftp_pass" value="<?php echo sanitizeStr($ftp_pass); ?>" class="<?php if ($posted == 1 && $ftp_pass=="") echo "bgFormError"; ?>" autocomplete="off">
+<p><?php
+        echo $lang_password;
+?>:
+<br><input type="password" name="ftp_pass" value="<?php
+        echo sanitizeStr($ftp_pass);
+?>" class="<?php
+        if ($posted == 1 && $ftp_pass == "")
+            echo "bgFormError";
+?>" autocomplete="off">
 
 <div class="floatLeft">
-    <input type="submit" value="<?php echo $lang_btn_login; ?>" id="btnLogin">
+    <input type="submit" value="<?php
+        echo $lang_btn_login;
+?>" id="btnLogin">
 </div>
 <div class="floatRight">
-    <a href="http://www.monstaftp.com">version <?php echo $version; ?></a>
+    <a href="http://www.monstaftp.com">version <?php
+        echo $version;
+?></a>
 </div>
 
 <br><br>
 
 <p><hr noshade>
 
-<?php if ($ftpHost == "") { ?>
-<p><input type="checkbox" name="ftp_pasv" value="1" <?php if ($ftp_pasv == 1) echo "checked"; ?> tabindex="-1"> <?php echo $lang_passive_mode; ?>
-<p><input type="checkbox" name="ftp_ssl" value="1" <?php if ($ftp_ssl == 1) echo "checked"; ?> tabindex="-1"> <?php echo $lang_ftp_ssl; ?>
-<?php }?>
+<?php
+        if ($ftpHost == "") {
+?>
+<p><input type="checkbox" name="ftp_pasv" value="1" <?php
+            if ($ftp_pasv == 1)
+                echo "checked";
+?> tabindex="-1"> <?php
+            echo $lang_passive_mode;
+?>
+<p><input type="checkbox" name="ftp_ssl" value="1" <?php
+            if ($ftp_ssl == 1)
+                echo "checked";
+?> tabindex="-1"> <?php
+            echo $lang_ftp_ssl;
+?>
+<?php
+        }
+?>
 
-<p><input type="checkbox" name="ip_check" value="1" <?php if ($ip_check == 1) echo "checked"; ?> tabindex="-1"> <?php echo $lang_ip_check; ?>
-<p><input type="checkbox" name="interface" value="adv" <?php if ($interface == "adv" || $interface == "") echo "checked"; ?> tabindex="-1"> <?php echo $lang_adv_interface; ?>
-<p><input type="checkbox" name="login_save" value="1" <?php if ($login_save == 1) echo "checked"; ?> tabindex="-1"> <?php echo $lang_save_login; ?>
+<p><input type="checkbox" name="ip_check" value="1" <?php
+        if ($ip_check == 1)
+            echo "checked";
+?> tabindex="-1"> <?php
+        echo $lang_ip_check;
+?>
+<p><input type="checkbox" name="interface" value="adv" <?php
+        if ($interface == "adv" || $interface == "")
+            echo "checked";
+?> tabindex="-1"> <?php
+        echo $lang_adv_interface;
+?>
+<p><input type="checkbox" name="login_save" value="1" <?php
+        if ($login_save == 1)
+            echo "checked";
+?> tabindex="-1"> <?php
+        echo $lang_save_login;
+?>
 
 <p><hr noshade>
 
-<?php echo displayLangSelect($_SESSION["lang"]); ?>
-<?php echo displaySkinSelect($skin); ?>
+<?php
+        echo displayLangSelect($_SESSION["lang"]);
+?>
+<?php
+        echo displaySkinSelect($skin);
+?>
 
         </div>
     </div>
@@ -602,17 +595,14 @@ function displayLoginForm($posted) {
 
 </form>
 
-<?php 
+<?php
         // Reset error
         $_SESSION["login_error"] = "";
     }
 }
 
-###############################################
-# CHECK LOGIN ERRORS
-###############################################
-
-function checkLoginErrors() {
+function checkLoginErrors()
+{
     
     global $ftpHost;
     
@@ -632,11 +622,8 @@ function checkLoginErrors() {
     }
 }
 
-###############################################
-# CONNECT TO FTP
-###############################################
-
-function connectFTP($posted) {
+function connectFTP($posted)
+{
     
     global $conn_id;
     global $lockOutTime;
@@ -644,12 +631,12 @@ function connectFTP($posted) {
     global $lang_cant_authenticate;
     
     if ($_SESSION["ftp_host"] != "" && $_SESSION["ftp_port"] != "" && $_SESSION["ftp_user"] != "" && $_SESSION["ftp_pass"] != "") {
-    
+        
         // Connect
         if ($_SESSION["ftp_ssl"] == 1)
-            $conn_id = @ftp_ssl_connect($_SESSION["ftp_host"],$_SESSION["ftp_port"]) or $connectFail = 1;
+            $conn_id = @ftp_ssl_connect($_SESSION["ftp_host"], $_SESSION["ftp_port"]) or $connectFail = 1;
         else
-            $conn_id = @ftp_connect($_SESSION["ftp_host"],$_SESSION["ftp_port"]) or $connectFail = 1;
+            $conn_id = @ftp_connect($_SESSION["ftp_host"], $_SESSION["ftp_port"]) or $connectFail = 1;
         
         if ($connectFail == 1) {
             $_SESSION["login_error"] = $lang_cant_connect;
@@ -661,12 +648,12 @@ function connectFTP($posted) {
             if ($_SESSION["login_lockout"] == "" || ($_SESSION["login_lockout"] > 0 && $date_now > $_SESSION["login_lockout"])) {
                 
                 // Authenticate
-                if (@ftp_login ($conn_id, $_SESSION["ftp_user"], $_SESSION["ftp_pass"])) {
+                if (@ftp_login($conn_id, $_SESSION["ftp_user"], $_SESSION["ftp_pass"])) {
                     
                     if ($_SESSION["ftp_pasv"] == 1)
                         @ftp_pasv($conn_id, true);
                     
-                    $_SESSION["loggedin"] = 1;
+                    $_SESSION["loggedin"]    = 1;
                     $_SESSION["login_fails"] = 0;
                     
                     return 1;
@@ -677,7 +664,7 @@ function connectFTP($posted) {
                     
                     // Count the failed login attempts (if form posted)
                     if ($posted == 1) {
-                    
+                        
                         $_SESSION["login_fails"]++;
                         
                         // Lock user for 5 minutes if 3 failed attempts
@@ -694,65 +681,47 @@ function connectFTP($posted) {
     }
 }
 
-###############################################
-# WRITE HIDDEN DIVS
-###############################################
-
-function writeHiddenDivs() {
- ?>
+function writeHiddenDivs()
+{
+?>
 <div id="contextMenu" style="visibility: hidden; display: none;"></div>
 <div id="indicatorDiv" style="z-index: 1; visibility: hidden; display: none"><img src="images/indicator.gif" width="32" height="32" border="0"></div>
-<?php 
+<?php
 }
 
-###############################################
-# START FORM
-###############################################
-
-function displayFormStart() {
- ?>
+function displayFormStart()
+{
+?>
 <form method="post" action="?" enctype="multipart/form-data" name="ftpActionForm" id="ftpActionForm">
-<?php 
+<?php
 }
 
-###############################################
-# END FORM
-###############################################
-
-function displayFormEnd() {
- ?>
+function displayFormEnd()
+{
+?>
 </form>
-<?php 
+<?php
 }
 
-###############################################
-# DISPLAY IFRAME
-###############################################
-
-function displayAjaxIframe() {
- ?>
+function displayAjaxIframe()
+{
+?>
 <iframe name="ajaxIframe" id="ajaxIframe" width="0" height="0" frameborder="0" style="visibility: hidden; display: none;"></iframe>
-<?php 
+<?php
 }
 
-###############################################
-# LOAD AJAX
-###############################################
-
-function loadAjax() {
- ?>
+function loadAjax()
+{
+?>
 <script type="text/javascript" src="ajax.js"></script>
-<?php 
+<?php
 }
 
-###############################################
-# GET FTP RAWLIST
-###############################################
+function getFtpRawList($folder_path)
+{
 
-// Because ftp_rawlist() doesn't support folders with spaces in 
-// their names, it is neccessary to first change into the directory.
-
-function getFtpRawList($folder_path) {
+    // Because ftp_rawlist() doesn't support folders with spaces in
+    // their names, it is neccessary to first change into the directory.
     
     global $conn_id;
     global $lang_folder_cant_access;
@@ -762,11 +731,11 @@ function getFtpRawList($folder_path) {
     if (!@ftp_chdir($conn_id, $folder_path)) {
         if (checkFirstCharTilde($folder_path) == 1) {
             if (!@ftp_chdir($conn_id, replaceTilde($folder_path))) {
-                recordFileError("folder",replaceTilde($folder_path),$lang_folder_cant_access);
+                recordFileError("folder", replaceTilde($folder_path), $lang_folder_cant_access);
                 $isError = 1;
             }
         } else {
-            recordFileError("folder",$folder_path,$lang_folder_cant_access);
+            recordFileError("folder", $folder_path, $lang_folder_cant_access);
             $isError = 1;
         }
     }
@@ -775,11 +744,8 @@ function getFtpRawList($folder_path) {
         return ftp_rawlist($conn_id, ".");
 }
 
-###############################################
-# DISPLAY FILES & FOLDERS
-###############################################
-
-function displayFiles() {
+function displayFiles()
+{
     
     global $conn_id;
     global $lang_table_name;
@@ -792,97 +758,86 @@ function displayFiles() {
     
     $ftp_rawlist = getFtpRawList($_SESSION["dir_current"]);
     
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # FOLDER/FILES TABLE HEADER
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # TABLE HEADER
     
     echo "<table width=\"100%\" cellpadding=\"7\" cellspacing=\"0\" id=\"ftpTable\">";
     echo "<tr>";
-        echo "<td width=\"16\" class=\"ftpTableHeadingNf\"><input type=\"checkbox\" id=\"checkboxSelector\" onClick=\"checkboxSelectAll()\"></td>";
-        echo "<td width=\"16\" class=\"ftpTableHeadingNf\"></td>";
-        echo "<td class=\"ftpTableHeading\">".getFtpColumnSpan("n",$lang_table_name)."</td>";
-        echo "<td width=\"10%\" class=\"ftpTableHeading\">".getFtpColumnSpan("s",$lang_table_size)."</td>";
-        echo "<td width=\"10%\" class=\"ftpTableHeading\">".getFtpColumnSpan("d",$lang_table_date)."</td>";
-        echo "<td width=\"10%\" class=\"ftpTableHeading\">".getFtpColumnSpan("t",$lang_table_time)."</td>";
-        
-        // Only display permissions/user/group for Linux advanced
-        if ($_SESSION["interface"] == "adv" && $_SESSION["win_lin"] != "win") {
-            echo "<td width=\"10%\" class=\"ftpTableHeading\">".$lang_table_user."</td>";
-            echo "<td width=\"10%\" class=\"ftpTableHeading\">".$lang_table_group."</td>";
-            echo "<td width=\"10%\" class=\"ftpTableHeading\">".$lang_table_perms."</td>";
-        }
+    echo "<td width=\"16\" class=\"ftpTableHeadingNf\"><input type=\"checkbox\" id=\"checkboxSelector\" onClick=\"checkboxSelectAll()\"></td>";
+    echo "<td width=\"16\" class=\"ftpTableHeadingNf\"></td>";
+    echo "<td class=\"ftpTableHeading\">" . getFtpColumnSpan("n", $lang_table_name) . "</td>";
+    echo "<td width=\"10%\" class=\"ftpTableHeading\">" . getFtpColumnSpan("s", $lang_table_size) . "</td>";
+    echo "<td width=\"10%\" class=\"ftpTableHeading\">" . getFtpColumnSpan("d", $lang_table_date) . "</td>";
+    echo "<td width=\"10%\" class=\"ftpTableHeading\">" . getFtpColumnSpan("t", $lang_table_time) . "</td>";
+    
+    // Only display permissions/user/group for Linux advanced
+    if ($_SESSION["interface"] == "adv" && $_SESSION["win_lin"] != "win") {
+        echo "<td width=\"10%\" class=\"ftpTableHeading\">" . $lang_table_user . "</td>";
+        echo "<td width=\"10%\" class=\"ftpTableHeading\">" . $lang_table_group . "</td>";
+        echo "<td width=\"10%\" class=\"ftpTableHeading\">" . $lang_table_perms . "</td>";
+    }
     
     echo "</tr>";
     
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # FOLDER UP BUTTON
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     if ($_SESSION["dir_current"] != "/" && $_SESSION["dir_current"] != "~") {
-    
+        
         echo "<tr>";
-            echo "<td width=\"16\"></td>";
-            echo "<td width=\"16\"><img src=\"images/icon_16_folder.gif\" width=\"16\" height=\"16\"></td>";
-            
-            if ($_SESSION["interface"] == "adv")
-                echo "<td colspan=\"7\">";
-            else
-                echo "<td colspan=\"4\">";
-            
-            // Get the parent directory
-            $parent = getParentDir();
-            
-            echo "<div class=\"width100pc\" onDragOver=\"dragFile(event); selectFile('folder0',0);\" onDragLeave=\"unselectFolder('folder0')\" onDrop=\"dropFile('".rawurlencode($parent)."')\"><a href=\"#\" id=\"folder0\" draggable=\"false\" onClick=\"openThisFolder('".rawurlencode($parent)."',1)\">...</a></div>";
-            
-            echo "</td>";
+        echo "<td width=\"16\"></td>";
+        echo "<td width=\"16\"><img src=\"images/icon_16_folder.gif\" width=\"16\" height=\"16\"></td>";
+        
+        if ($_SESSION["interface"] == "adv")
+            echo "<td colspan=\"7\">";
+        else
+            echo "<td colspan=\"4\">";
+        
+        // Get the parent directory
+        $parent = getParentDir();
+        
+        echo "<div class=\"width100pc\" onDragOver=\"dragFile(event); selectFile('folder0',0);\" onDragLeave=\"unselectFolder('folder0')\" onDrop=\"dropFile('" . rawurlencode($parent) . "')\"><a href=\"#\" id=\"folder0\" draggable=\"false\" onClick=\"openThisFolder('" . rawurlencode($parent) . "',1)\">...</a></div>";
+        
+        echo "</td>";
         echo "</tr>";
     }
     
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # FOLDERS & FILES
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     if (sizeof($ftp_rawlist) > 0) {
-    
+        
         // Linux
         if ($_SESSION["win_lin"] == "lin") {
-            echo createFileFolderArrayLin($ftp_rawlist,"folders");
-            echo createFileFolderArrayLin($ftp_rawlist,"links");
-            echo createFileFolderArrayLin($ftp_rawlist,"files");
+            echo createFileFolderArrayLin($ftp_rawlist, "folders");
+            echo createFileFolderArrayLin($ftp_rawlist, "links");
+            echo createFileFolderArrayLin($ftp_rawlist, "files");
         }
         
         // Windows
         if ($_SESSION["win_lin"] == "win") {
-            echo createFileFolderArrayWin($ftp_rawlist,"folders");
-            echo createFileFolderArrayWin($ftp_rawlist,"files");
+            echo createFileFolderArrayWin($ftp_rawlist, "folders");
+            echo createFileFolderArrayWin($ftp_rawlist, "files");
         }
     }
     
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # CLOSE TABLE
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     echo "</table>";
 }
 
-###############################################
-# GET PLATFORM
-###############################################
-
-function getPlatform() {
+function getPlatform()
+{
     
     global $conn_id;
     global $platformTestCount;
     
     if ($_SESSION["win_lin"] == "") {
-    
+        
         $ftp_rawlist = ftp_rawlist($conn_id, ".");
         
         // Check for content in array
         if (sizeof($ftp_rawlist) == 0) {
-        
+            
             $platformTestCount++;
-        
+            
             // Create a test folder
             if (@ftp_mkdir($conn_id, "test")) {
                 
@@ -891,14 +846,14 @@ function getPlatform() {
                     @ftp_rmdir($conn_id, "test");
                 }
             }
-        
+            
         } else {
             
             // Get first item in array
             $ff = $ftp_rawlist[0];
-        
+            
             // Split up array into values
-            $ff = preg_split("/[\s]+/",$ff,9);
+            $ff = preg_split("/[\s]+/", $ff, 9);
             
             // First item in Linux rawlist is permissions. In Windows it's date.
             // If length of first item in array line is 8 chars, without a-z, it's a date.
@@ -913,45 +868,42 @@ function getPlatform() {
     }
 }
 
-###############################################
-# CREATE FILE/FOLDER ARRAY FOR LINUX
-###############################################
-
-function createFileFolderArrayLin($ftp_rawlist, $type) {
+function createFileFolderArrayLin($ftp_rawlist, $type)
+{
     
     // Go through array of files/folders
     foreach ($ftp_rawlist AS $ff) {
-    
+        
         // Reset values
-        $time="";
-        $year="";
+        $time = "";
+        $year = "";
         
         // Split up array into values
-        $ff = preg_split("/[\s]+/",$ff,9);
+        $ff = preg_split("/[\s]+/", $ff, 9);
         
         $perms = $ff[0];
-        $user = $ff[2];
+        $user  = $ff[2];
         $group = $ff[3];
-        $size = $ff[4];
+        $size  = $ff[4];
         $month = $ff[5];
-        $day = $ff[6];
-        $file = $ff[8];
+        $day   = $ff[6];
+        $file  = $ff[8];
         
         // Check if file starts with a dot
         $dot_prefix = 0;
-        if (preg_match("/^\.+/",$file) && $_SESSION["interface"] == "bas")
+        if (preg_match("/^\.+/", $file) && $_SESSION["interface"] == "bas")
             $dot_prefix = 1;
         
         if ($file != "." && $file != ".." && $dot_prefix == 0) {
-        
+            
             // Where the last mod date is the previous year, the year will be displayed in place of the time
-            if (preg_match("/:/",$ff[7]))
+            if (preg_match("/:/", $ff[7]))
                 $time = $ff[7];
             else
                 $year = $ff[7];
-                
+            
             // Set date
-            $date = formatFtpDate($day,$month,$year);
+            $date = formatFtpDate($day, $month, $year);
             
             // Reset user and group
             if ($user == "0")
@@ -961,34 +913,34 @@ function createFileFolderArrayLin($ftp_rawlist, $type) {
             
             // Add folder to array
             if (getFileType($perms) == "d") {
-                $foldAllAr[] = $file."|d|".$date."|".$time."|".$user."|".$group."|".$perms;
-                $foldNameAr[] = $file;
-                $foldDateAr[] = $date;
-                $foldTimeAr[] = $time;
-                $foldUserAr[] = $user;
+                $foldAllAr[]   = $file . "|d|" . $date . "|" . $time . "|" . $user . "|" . $group . "|" . $perms;
+                $foldNameAr[]  = $file;
+                $foldDateAr[]  = $date;
+                $foldTimeAr[]  = $time;
+                $foldUserAr[]  = $user;
                 $foldGroupAr[] = $group;
                 $foldPermsAr[] = $perms;
             }
             
             // Add link to array
             if (getFileType($perms) == "l") {
-                $linkAllAr[] = $file."|l|".$date."|".$time."|".$user."|".$group."|".$perms;
-                $linkNameAr[] = $file;
-                $linkDateAr[] = $date;
-                $linkTimeAr[] = $time;
-                $linkUserAr[] = $user;
+                $linkAllAr[]   = $file . "|l|" . $date . "|" . $time . "|" . $user . "|" . $group . "|" . $perms;
+                $linkNameAr[]  = $file;
+                $linkDateAr[]  = $date;
+                $linkTimeAr[]  = $time;
+                $linkUserAr[]  = $user;
                 $linkGroupAr[] = $group;
                 $linkPermsAr[] = $perms;
             }
             
             // Add file to array
             if (getFileType($perms) == "f") {
-                $fileAllAr[] = $file."|".$size."|".$date."|".$time."|".$user."|".$group."|".$perms;
-                $fileNameAr[] = $file;
-                $fileSizeAr[] = $size;
-                $fileDateAr[] = $date;
-                $fileTimeAr[] = $time;
-                $fileUserAr[] = $user;
+                $fileAllAr[]   = $file . "|" . $size . "|" . $date . "|" . $time . "|" . $user . "|" . $group . "|" . $perms;
+                $fileNameAr[]  = $file;
+                $fileSizeAr[]  = $size;
+                $fileDateAr[]  = $date;
+                $fileTimeAr[]  = $time;
+                $fileUserAr[]  = $user;
                 $fileGroupAr[] = $group;
                 $filePermsAr[] = $perms;
             }
@@ -997,7 +949,7 @@ function createFileFolderArrayLin($ftp_rawlist, $type) {
     
     // Check there are files and/or folders to display
     if (is_array($foldAllAr) || is_array($linkAllAr) || is_array($fileAllAr)) {
-    
+        
         // Set sorting order
         if ($_POST["sort"] == "")
             $sort = "n";
@@ -1011,16 +963,22 @@ function createFileFolderArrayLin($ftp_rawlist, $type) {
         
         // Return folders
         if ($type == "folders") {
-        
+            
             if (is_array($foldAllAr)) {
-        
+                
                 // Set the folder arrays to sort
-                if ($sort == "n") $sortAr = $foldNameAr;
-                if ($sort == "d") $sortAr = $foldDateAr;
-                if ($sort == "t") $sortAr = $foldTimeAr;
-                if ($sort == "u") $sortAr = $foldUserAr;
-                if ($sort == "g") $sortAr = $foldGroupAr;
-                if ($sort == "p") $sortAr = $foldPermsAr;
+                if ($sort == "n")
+                    $sortAr = $foldNameAr;
+                if ($sort == "d")
+                    $sortAr = $foldDateAr;
+                if ($sort == "t")
+                    $sortAr = $foldTimeAr;
+                if ($sort == "u")
+                    $sortAr = $foldUserAr;
+                if ($sort == "g")
+                    $sortAr = $foldGroupAr;
+                if ($sort == "p")
+                    $sortAr = $foldPermsAr;
                 
                 // Multisort array
                 if (is_array($sortAr)) {
@@ -1039,16 +997,22 @@ function createFileFolderArrayLin($ftp_rawlist, $type) {
         
         // Return links
         if ($type == "links") {
-        
+            
             if (is_array($linkAllAr)) {
-        
+                
                 // Set the folder arrays to sort
-                if ($sort == "n") $sortAr = $linkNameAr;
-                if ($sort == "d") $sortAr = $linkDateAr;
-                if ($sort == "t") $sortAr = $linkTimeAr;
-                if ($sort == "u") $sortAr = $linkUserAr;
-                if ($sort == "g") $sortAr = $linkGroupAr;
-                if ($sort == "p") $sortAr = $linkPermsAr;
+                if ($sort == "n")
+                    $sortAr = $linkNameAr;
+                if ($sort == "d")
+                    $sortAr = $linkDateAr;
+                if ($sort == "t")
+                    $sortAr = $linkTimeAr;
+                if ($sort == "u")
+                    $sortAr = $linkUserAr;
+                if ($sort == "g")
+                    $sortAr = $linkGroupAr;
+                if ($sort == "p")
+                    $sortAr = $linkPermsAr;
                 
                 // Multisort array
                 if (is_array($sortAr)) {
@@ -1067,17 +1031,24 @@ function createFileFolderArrayLin($ftp_rawlist, $type) {
         
         // Return files
         if ($type == "files") {
-        
-            if (is_array($fileAllAr)) {
             
+            if (is_array($fileAllAr)) {
+                
                 // Set the folder arrays to sort
-                if ($sort == "n") $sortAr = $fileNameAr;
-                if ($sort == "s") $sortAr = $fileSizeAr;
-                if ($sort == "d") $sortAr = $fileDateAr;
-                if ($sort == "t") $sortAr = $fileTimeAr;
-                if ($sort == "u") $sortAr = $fileUserAr;
-                if ($sort == "g") $sortAr = $fileGroupAr;
-                if ($sort == "p") $sortAr = $filePermsAr;
+                if ($sort == "n")
+                    $sortAr = $fileNameAr;
+                if ($sort == "s")
+                    $sortAr = $fileSizeAr;
+                if ($sort == "d")
+                    $sortAr = $fileDateAr;
+                if ($sort == "t")
+                    $sortAr = $fileTimeAr;
+                if ($sort == "u")
+                    $sortAr = $fileUserAr;
+                if ($sort == "g")
+                    $sortAr = $fileGroupAr;
+                if ($sort == "p")
+                    $sortAr = $filePermsAr;
                 
                 // Multisort folders
                 if ($ord == "asc")
@@ -1094,37 +1065,35 @@ function createFileFolderArrayLin($ftp_rawlist, $type) {
     }
 }
 
-###############################################
-# CREATE FILE/FOLDER ARRAY FOR WINDOWS
-###############################################
-
-function createFileFolderArrayWin($ftp_rawlist,$type) {
+function createFileFolderArrayWin($ftp_rawlist, $type)
+{
     
     // Go through array of files/folders
     foreach ($ftp_rawlist AS $ff) {
         
         // Split up array into values
-        $ff = preg_split("/[\s]+/",$ff,4);
-            
+        $ff = preg_split("/[\s]+/", $ff, 4);
+        
         $date = $ff[0];
         $time = $ff[1];
         $size = $ff[2];
         $file = $ff[3];
         
-        if ($size == "<DIR>") $size = "d";
+        if ($size == "<DIR>")
+            $size = "d";
         
         // Format date
-        $day = substr($date,3,2);
-        $month = substr($date,0,2);
-        $year = substr($date,6,2);
-        $date = formatFtpDate($day,$month,$year);
+        $day   = substr($date, 3, 2);
+        $month = substr($date, 0, 2);
+        $year  = substr($date, 6, 2);
+        $date  = formatFtpDate($day, $month, $year);
         
         // Format time
         $time = formatWinFtpTime($time);
         
         // Add folder to array
         if ($size == "d") {
-            $foldAllAr[] = $file."|d|".$date."|".$time."|||";
+            $foldAllAr[]  = $file . "|d|" . $date . "|" . $time . "|||";
             $foldNameAr[] = $file;
             $foldDateAr[] = $date;
             $foldTimeAr[] = $time;
@@ -1132,7 +1101,7 @@ function createFileFolderArrayWin($ftp_rawlist,$type) {
         
         // Add file to array
         if ($size != "d") {
-            $fileAllAr[] = $file."|".$size."|".$date."|".$time."|||";
+            $fileAllAr[]  = $file . "|" . $size . "|" . $date . "|" . $time . "|||";
             $fileNameAr[] = $file;
             $fileSizeAr[] = $size;
             $fileDateAr[] = $date;
@@ -1142,7 +1111,7 @@ function createFileFolderArrayWin($ftp_rawlist,$type) {
     
     // Check there are files and/or folders to display
     if (is_array($foldAllAr) || is_array($fileAllAr)) {
-    
+        
         // Set sorting order
         if ($_POST["sort"] == "")
             $sort = "n";
@@ -1156,13 +1125,16 @@ function createFileFolderArrayWin($ftp_rawlist,$type) {
         
         // Return folders
         if ($type == "folders") {
-        
+            
             if (is_array($foldAllAr)) {
                 
                 // Set the folder arrays to sort
-                if ($sort == "n") $sortAr = $foldNameAr;
-                if ($sort == "d") $sortAr = $foldDateAr;
-                if ($sort == "t") $sortAr = $foldTimeAr;
+                if ($sort == "n")
+                    $sortAr = $foldNameAr;
+                if ($sort == "d")
+                    $sortAr = $foldDateAr;
+                if ($sort == "t")
+                    $sortAr = $foldTimeAr;
                 
                 // Multisort array
                 if (is_array($sortAr)) {
@@ -1181,14 +1153,18 @@ function createFileFolderArrayWin($ftp_rawlist,$type) {
         
         // Return files
         if ($type == "files") {
-        
-            if (is_array($fileAllAr)) {
             
+            if (is_array($fileAllAr)) {
+                
                 // Set the folder arrays to sort
-                if ($sort == "n") $sortAr = $fileNameAr;
-                if ($sort == "s") $sortAr = $fileSizeAr;
-                if ($sort == "d") $sortAr = $fileDateAr;
-                if ($sort == "t") $sortAr = $fileTimeAr;
+                if ($sort == "n")
+                    $sortAr = $fileNameAr;
+                if ($sort == "s")
+                    $sortAr = $fileSizeAr;
+                if ($sort == "d")
+                    $sortAr = $fileDateAr;
+                if ($sort == "t")
+                    $sortAr = $fileTimeAr;
                 
                 // Multisort folders
                 if ($ord == "asc")
@@ -1205,11 +1181,8 @@ function createFileFolderArrayWin($ftp_rawlist,$type) {
     }
 }
 
-###############################################
-# GET FTP COLUMN SPAN
-###############################################
-
-function getFileListHtml($array, $image) {
+function getFileListHtml($array, $image)
+{
     
     global $trCount;
     global $dateFormatUsa;
@@ -1221,14 +1194,14 @@ function getFileListHtml($array, $image) {
     
     $i = 1;
     foreach ($array AS $file) {
-    
-        list($file,$size,$date,$time,$user,$group,$perms) = explode("|",$file);
+        
+        list($file, $size, $date, $time, $user, $group, $perms) = explode("|", $file);
         
         // Folder check (lin/win)
         if ($size == "d")
             $action = "folderAction";
         // Link check (lin/win)
-        if ( $size == "l")
+        if ($size == "l")
             $action = "linkAction";
         // File check (lin/win)
         if ($size != "d" && $size != "l")
@@ -1238,14 +1211,14 @@ function getFileListHtml($array, $image) {
         if ($size == "l") {
             
             $file_path = getPathFromLink($file);
-            $file = preg_replace("/ -> .*/","",$file);
+            $file      = preg_replace("/ -> .*/", "", $file);
             
         } else {
             
             if ($_SESSION["dir_current"] == "/")
-                $file_path = "/".$file;
+                $file_path = "/" . $file;
             else
-                $file_path = $_SESSION["dir_current"]."/".$file;
+                $file_path = $_SESSION["dir_current"] . "/" . $file;
         }
         
         if ($trCount == 0) {
@@ -1256,12 +1229,9 @@ function getFileListHtml($array, $image) {
             $trCount = 0;
         }
         
-        // Check for checkbox check (only if action button clicked"
+        // Check for checkbox check (only if action button clicked)
         if ($_POST["ftpAction"] != "") {
-            if (
-                (sizeof($_SESSION["clipboard_rename"]) > 1 && in_array($file,$_SESSION["clipboard_rename"]))
-             || 
-                 (sizeof($_SESSION["clipboard_chmod"]) > 1 && in_array($file_path,$_SESSION["clipboard_chmod"])))
+            if ((sizeof($_SESSION["clipboard_rename"]) > 1 && in_array($file, $_SESSION["clipboard_rename"])) || (sizeof($_SESSION["clipboard_chmod"]) > 1 && in_array($file_path, $_SESSION["clipboard_chmod"])))
                 $checked = "checked";
             else
                 $checked = "";
@@ -1272,38 +1242,38 @@ function getFileListHtml($array, $image) {
         
         // Set the date
         if ($dateFormatUsa == 1)
-            $date = substr($date,4,2)."/".substr($date,6,2)."/".substr($date,2,2);
+            $date = substr($date, 4, 2) . "/" . substr($date, 6, 2) . "/" . substr($date, 2, 2);
         else
-            $date = substr($date,6,2)."/".substr($date,4,2)."/".substr($date,2,2);
+            $date = substr($date, 6, 2) . "/" . substr($date, 4, 2) . "/" . substr($date, 2, 2);
         
-        $html .= "<tr class=\"".$trClass."\">";
+        $html .= "<tr class=\"" . $trClass . "\">";
         $html .= "<td>";
-        $html .= "<input type=\"checkbox\" name=\"".$action."[]\" value=\"".rawurlencode($file_path)."\" onclick=\"checkFileChecked()\" ".$checked.">";
+        $html .= "<input type=\"checkbox\" name=\"" . $action . "[]\" value=\"" . rawurlencode($file_path) . "\" onclick=\"checkFileChecked()\" " . $checked . ">";
         $html .= "</td>";
-        $html .= "<td><img src=\"images/".$image."\" width=\"16\" height=\"16\"></td>";
+        $html .= "<td><img src=\"images/" . $image . "\" width=\"16\" height=\"16\"></td>";
         $html .= "<td>";
         
         // Display Folders
         if ($action == "folderAction")
-            $html .= "<div class=\"width100pc\" onDragOver=\"dragFile(event); selectFile('folder".$i."',0);\" onDragLeave=\"unselectFolder('folder".$i."')\" onDrop=\"dropFile('".rawurlencode($file_path)."')\"><a href=\"#\" id=\"folder".$i."\" onClick=\"openThisFolder('".rawurlencode($file_path)."',1)\" onContextMenu=\"selectFile(this.id,1); displayContextMenu(event,'','".rawurlencode($file_path)."',".assignWinLinNum().")\" draggable=\"true\" onDragStart=\"selectFile(this.id,1); setDragFile('','".rawurlencode($file_path)."')\">".sanitizeStr($file)."</a></div>";
+            $html .= "<div class=\"width100pc\" onDragOver=\"dragFile(event); selectFile('folder" . $i . "',0);\" onDragLeave=\"unselectFolder('folder" . $i . "')\" onDrop=\"dropFile('" . rawurlencode($file_path) . "')\"><a href=\"#\" id=\"folder" . $i . "\" onClick=\"openThisFolder('" . rawurlencode($file_path) . "',1)\" onContextMenu=\"selectFile(this.id,1); displayContextMenu(event,'','" . rawurlencode($file_path) . "'," . assignWinLinNum() . ")\" draggable=\"true\" onDragStart=\"selectFile(this.id,1); setDragFile('','" . rawurlencode($file_path) . "')\">" . sanitizeStr($file) . "</a></div>";
         
         // Display Links
         if ($action == "linkAction")
-            $html .= "<div class=\"width100pc\"><a href=\"#\" id=\"folder".$i."\" onClick=\"openThisFolder('".rawurlencode($file_path)."',1)\" onContextMenu=\"\" draggable=\"false\">".sanitizeStr($file)."</a></div>";
+            $html .= "<div class=\"width100pc\"><a href=\"#\" id=\"folder" . $i . "\" onClick=\"openThisFolder('" . rawurlencode($file_path) . "',1)\" onContextMenu=\"\" draggable=\"false\">" . sanitizeStr($file) . "</a></div>";
         
         // Display files
         if ($action == "fileAction")
-            $html .= "<a href=\"?dl=".rawurlencode($file_path)."\" id=\"file".$i."\" target=\"ajaxIframe\" onContextMenu=\"selectFile(this.id,1); displayContextMenu(event,'".rawurlencode($file_path)."','',".assignWinLinNum().")\" draggable=\"true\" onDragStart=\"selectFile(this.id,1); setDragFile('".rawurlencode($file_path)."','')\">".sanitizeStr($file)."</a>";
+            $html .= "<a href=\"?dl=" . rawurlencode($file_path) . "\" id=\"file" . $i . "\" target=\"ajaxIframe\" onContextMenu=\"selectFile(this.id,1); displayContextMenu(event,'" . rawurlencode($file_path) . "',''," . assignWinLinNum() . ")\" draggable=\"true\" onDragStart=\"selectFile(this.id,1); setDragFile('" . rawurlencode($file_path) . "','')\">" . sanitizeStr($file) . "</a>";
         
         $html .= "</td>";
-        $html .= "<td>".formatFileSize($size)."</td>";
-        $html .= "<td>".$date."</td>";
-        $html .= "<td>".$time."</td>";
+        $html .= "<td>" . formatFileSize($size) . "</td>";
+        $html .= "<td>" . $date . "</td>";
+        $html .= "<td>" . $time . "</td>";
         
         if ($_SESSION["interface"] == "adv" && $_SESSION["win_lin"] == "lin") {
-            $html .= "<td>".$user."</td>";
-            $html .= "<td>".$group."</td>";
-            $html .= "<td>".$perms."</td>";
+            $html .= "<td>" . $user . "</td>";
+            $html .= "<td>" . $group . "</td>";
+            $html .= "<td>" . $perms . "</td>";
         }
         
         $html .= "</tr>";
@@ -1314,22 +1284,19 @@ function getFileListHtml($array, $image) {
     return $html;
 }
 
-###############################################
-# GET PATH FROM LINK
-###############################################
-
-function getPathFromLink($file) {
+function getPathFromLink($file)
+{
     
-    $file_path = preg_replace("/.* -> /","",$file);
+    $file_path = preg_replace("/.* -> /", "", $file);
     
     // Check if path is not absolute
-    if (substr($file_path,0,1) != "/") {
+    if (substr($file_path, 0, 1) != "/") {
         
         // Count occurances of ../
         $i = 0;
-        while (substr($file_path,0,3) == "../") {
+        while (substr($file_path, 0, 3) == "../") {
             $i++;
-            $file_path = substr($file_path,3,strlen($file_path));
+            $file_path = substr($file_path, 3, strlen($file_path));
         }
         
         $dir_current = $_SESSION["dir_current"];
@@ -1337,15 +1304,15 @@ function getPathFromLink($file) {
         // Get the real parent
         for ($j = 0; $j < $i; $j++) {
             
-            $path_parts = pathinfo($dir_current);
+            $path_parts  = pathinfo($dir_current);
             $dir_current = $path_parts['dirname'];
         }
         
         // Set the path
         if ($dir_current == "/")
-            $file_path = "/".$file_path;
+            $file_path = "/" . $file_path;
         else
-            $file_path = $dir_current."/".$file_path;
+            $file_path = $dir_current . "/" . $file_path;
     }
     
     if ($file_path == "~/")
@@ -1354,35 +1321,44 @@ function getPathFromLink($file) {
     return $file_path;
 }
 
-###############################################
-# FORMAT FTP DATE
-###############################################
-
-function formatFtpDate($day, $month, $year) {
+function formatFtpDate($day, $month, $year)
+{
     
     // Add leading zero to day
     if (strlen($day) == 1)
-        $day = "0".$day;
-
-    if ($month == "Jan") $month = "01";
-    if ($month == "Feb") $month = "02";
-    if ($month == "Mar") $month = "03";
-    if ($month == "Apr") $month = "04";
-    if ($month == "May") $month = "05";
-    if ($month == "Jun") $month = "06";
-    if ($month == "Jul") $month = "07";
-    if ($month == "Aug") $month = "08";
-    if ($month == "Sep") $month = "09";
-    if ($month == "Oct") $month = "10";
-    if ($month == "Nov") $month = "11";
-    if ($month == "Dec") $month = "12";
-
+        $day = "0" . $day;
+    
+    if ($month == "Jan")
+        $month = "01";
+    if ($month == "Feb")
+        $month = "02";
+    if ($month == "Mar")
+        $month = "03";
+    if ($month == "Apr")
+        $month = "04";
+    if ($month == "May")
+        $month = "05";
+    if ($month == "Jun")
+        $month = "06";
+    if ($month == "Jul")
+        $month = "07";
+    if ($month == "Aug")
+        $month = "08";
+    if ($month == "Sep")
+        $month = "09";
+    if ($month == "Oct")
+        $month = "10";
+    if ($month == "Nov")
+        $month = "11";
+    if ($month == "Dec")
+        $month = "12";
+    
     // Set the year if none
     if ($year == "") {
         
         // First check if the date falls within the last 12 months (as year only appears after 12 months has passed)
         $current_month = date("m");
-
+        
         if ($month > $current_month)
             $year = date("Y") - 1;
         else
@@ -1393,39 +1369,33 @@ function formatFtpDate($day, $month, $year) {
         
         // To avoid a future Y2K problem, check the first two digits of year on Windows
         if ($year > 00 && $year < 99)
-            $year = substr(date("Y"),0,2).$year;
+            $year = substr(date("Y"), 0, 2) . $year;
         else
-            $year = (substr(date("Y"),0,2)-1).$year;
+            $year = (substr(date("Y"), 0, 2) - 1) . $year;
     }
     
-    $date = $year.$month.$day;
+    $date = $year . $month . $day;
     
     return $date;
 }
 
-###############################################
-# FORMAT WINDOWS FTP TIME
-###############################################
-
-function formatWinFtpTime($time) {
+function formatWinFtpTime($time)
+{
     
-    $h = substr($time,0,2);
-    $m = substr($time,3,2);
-    $am_pm = substr($time,5,2);
+    $h     = substr($time, 0, 2);
+    $m     = substr($time, 3, 2);
+    $am_pm = substr($time, 5, 2);
     
     if ($am_pm == "PM")
         $h = $h + 12;
     
-    $time = $h.":".$m;
+    $time = $h . ":" . $m;
     
     return $time;
 }
 
-###############################################
-# CHANGE FTP DIRECTORY (OPEN FOLDER)
-###############################################
-
-function openFolder() {
+function openFolder()
+{
     
     global $conn_id;
     global $lang_folder_doesnt_exist;
@@ -1433,7 +1403,7 @@ function openFolder() {
     $isError = 0;
     
     if ($_SESSION["loggedin"] == 1) {
-    
+        
         // Set the folder to open
         if ($_SESSION["dir_current"] != "")
             $dir = $_SESSION["dir_current"];
@@ -1454,24 +1424,24 @@ function openFolder() {
         if (!@ftp_chdir($conn_id, $dir)) {
             if (checkFirstCharTilde($dir) == 1) {
                 if (!@ftp_chdir($conn_id, replaceTilde($dir))) {
-                    recordFileError("folder",replaceTilde($dir),$lang_folder_doesnt_exist);
+                    recordFileError("folder", replaceTilde($dir), $lang_folder_doesnt_exist);
                     $isError = 1;
                 }
             } else {
-                    recordFileError("folder",$dir,$lang_folder_doesnt_exist);
-                    $isError = 1;
+                recordFileError("folder", $dir, $lang_folder_doesnt_exist);
+                $isError = 1;
             }
         }
         
         if ($isError == 0) {
-        
+            
             // Set new directory
             $_SESSION["dir_current"] = $dir;
             
             // Record new directory to history
             if (!is_array($_SESSION["dir_history"])) // array check
                 $_SESSION["dir_history"] = array();
-            if (!in_array($dir,$_SESSION["dir_history"])) {
+            if (!in_array($dir, $_SESSION["dir_history"])) {
                 $_SESSION["dir_history"][] = $dir;
                 asort($_SESSION["dir_history"]); // sort array
             }
@@ -1486,58 +1456,49 @@ function openFolder() {
             // Change to previous directory (if folder to open is currently open)
             if ($_POST["openFolder"] == $_SESSION["dir_current"] || $_POST["openFolder"] == "")
                 $_SESSION["dir_current"] = getParentDir();
-                
+            
             return 0;
         }
     }
 }
 
-###############################################
-# CHECK LOG OUT
-###############################################
-
-function checkLogOut() {
+function checkLogOut()
+{
     
     if ($_GET["logout"] == 1)
         logOut();
 }
 
-###############################################
-# LOG OUT
-###############################################
-
-function logOut() {
+function logOut()
+{
     
-    $_SESSION["user_ip"] = "";
-    $_SESSION["loggedin"] = "";
-    $_SESSION["win_lin"] = "";
-    $_SESSION["login_error"] = "";
-    $_SESSION["login_fails"] = "";
-    $_SESSION["login_lockout"] = "";
-    $_SESSION["ftp_host"] = "";
-    $_SESSION["ftp_user"] = "";
-    $_SESSION["ftp_pass"] = "";
-    $_SESSION["ftp_port"] = "";
-    $_SESSION["ftp_pasv"] = "";
-    $_SESSION["interface"] = "";
-    $_SESSION["dir_current"] = "";
-    $_SESSION["dir_history"] = "";
-    $_SESSION["clipboard_chmod"] = "";
-    $_SESSION["clipboard_files"] = "";
+    $_SESSION["user_ip"]           = "";
+    $_SESSION["loggedin"]          = "";
+    $_SESSION["win_lin"]           = "";
+    $_SESSION["login_error"]       = "";
+    $_SESSION["login_fails"]       = "";
+    $_SESSION["login_lockout"]     = "";
+    $_SESSION["ftp_host"]          = "";
+    $_SESSION["ftp_user"]          = "";
+    $_SESSION["ftp_pass"]          = "";
+    $_SESSION["ftp_port"]          = "";
+    $_SESSION["ftp_pasv"]          = "";
+    $_SESSION["interface"]         = "";
+    $_SESSION["dir_current"]       = "";
+    $_SESSION["dir_history"]       = "";
+    $_SESSION["clipboard_chmod"]   = "";
+    $_SESSION["clipboard_files"]   = "";
     $_SESSION["clipboard_folders"] = "";
-    $_SESSION["clipboard_rename"] = "";
-    $_SESSION["copy"] = "";
-    $_SESSION["errors"] = "";
-    $_SESSION["upload_limit"] = "";
+    $_SESSION["clipboard_rename"]  = "";
+    $_SESSION["copy"]              = "";
+    $_SESSION["errors"]            = "";
+    $_SESSION["upload_limit"]      = "";
     
     session_destroy();
 }
 
-###############################################
-# FORMAT FILE SIZES
-###############################################
-
-function formatFileSize($size) {
+function formatFileSize($size)
+{
     
     global $lang_size_b;
     global $lang_size_kb;
@@ -1545,31 +1506,28 @@ function formatFileSize($size) {
     global $lang_size_gb;
     
     if ($size == "d" || $size == "l") {
-    
-        $size="";
-    
+        
+        $size = "";
+        
     } else {
-    
+        
         if ($size < 1024) {
-            $size = round($size,2);
+            $size = round($size, 2);
             //$size = round($size,2).$lang_size_b;
-        } elseif ($size < (1024*1024)) {
-            $size = round(($size/1024),0).$lang_size_kb;
-        } elseif ($size < (1024*1024*1024)) {
-            $size = round((($size/1024)/1024),0).$lang_size_mb;
-        } elseif ($size < (1024*1024*1024*1024)) {
-            $size = round(((($size/1024)/1024)/1024),0).$lang_size_gb;
+        } elseif ($size < (1024 * 1024)) {
+            $size = round(($size / 1024), 0) . $lang_size_kb;
+        } elseif ($size < (1024 * 1024 * 1024)) {
+            $size = round((($size / 1024) / 1024), 0) . $lang_size_mb;
+        } elseif ($size < (1024 * 1024 * 1024 * 1024)) {
+            $size = round(((($size / 1024) / 1024) / 1024), 0) . $lang_size_gb;
         }
     }
     
     return $size;
 }
 
-###############################################
-# GET FTP COLUMN SPAN
-###############################################
-
-function getFtpColumnSpan($sort, $name) {
+function getFtpColumnSpan($sort, $name)
+{
     
     // Check current column
     if ($_POST["sort"] == $sort && $_POST["ord"] == "desc") {
@@ -1578,15 +1536,12 @@ function getFtpColumnSpan($sort, $name) {
         $ord = "desc";
     }
     
-    return "<span onclick=\"processForm('&ftpAction=openFolder&openFolder=".rawurlencode($_SESSION["dir_current"])."&sort=".$sort."&ord=".$ord."')\" class=\"cursorPointer\">".$name."</span>";
+    return "<span onclick=\"processForm('&ftpAction=openFolder&openFolder=" . rawurlencode($_SESSION["dir_current"]) . "&sort=" . $sort . "&ord=" . $ord . "')\" class=\"cursorPointer\">" . $name . "</span>";
 }
 
-###############################################
-# DISPLAY FTP BUTTONS
-###############################################
-
-function displayFtpActions() {
-
+function displayFtpActions()
+{
+    
     global $lang_btn_refresh;
     global $lang_btn_cut;
     global $lang_btn_copy;
@@ -1595,30 +1550,63 @@ function displayFtpActions() {
     global $lang_btn_delete;
     global $lang_btn_chmod;
     global $lang_btn_logout;
- ?>
+?>
 <div id="ftpActionButtonsDiv">
-    <input type="button" value="<?php echo $lang_btn_refresh; ?>" onClick="refreshListing()" class="<?php echo adjustButtonWidth($lang_btn_refresh); ?>"> 
-    <input type="button" id="actionButtonCut" value="<?php echo $lang_btn_cut; ?>" onClick="actionFunctionCut('','');" disabled class="<?php echo adjustButtonWidth($lang_btn_cut); ?>"> 
-    <input type="button" id="actionButtonCopy" value="<?php echo $lang_btn_copy; ?>" onClick="actionFunctionCopy('','');" disabled class="<?php echo adjustButtonWidth($lang_btn_copy); ?>"> 
-    <input type="button" id="actionButtonPaste" value="<?php echo $lang_btn_paste; ?>" onClick="actionFunctionPaste('');" disabled class="<?php echo adjustButtonWidth($lang_btn_paste); ?>"> 
-    <input type="button" id="actionButtonRename" value="<?php echo $lang_btn_rename; ?>" onClick="actionFunctionRename('','');" disabled class="<?php echo adjustButtonWidth($lang_btn_rename); ?>"> 
-    <input type="button" id="actionButtonDelete" value="<?php echo $lang_btn_delete; ?>" onClick="actionFunctionDelete('','');" disabled class="<?php echo adjustButtonWidth($lang_btn_delete); ?>">
-<?php if ($_SESSION["interface"] == "adv" && $_SESSION["win_lin"] == "lin") { ?>
-    <input type="button" id="actionButtonChmod" value="<?php echo $lang_btn_chmod; ?>" onClick="actionFunctionChmod('','');" disabled class="<?php echo adjustButtonWidth($lang_btn_chmod); ?>">
-<?php } ?>
+    <input type="button" value="<?php
+    echo $lang_btn_refresh;
+?>" onClick="refreshListing()" class="<?php
+    echo adjustButtonWidth($lang_btn_refresh);
+?>"> 
+    <input type="button" id="actionButtonCut" value="<?php
+    echo $lang_btn_cut;
+?>" onClick="actionFunctionCut('','');" disabled class="<?php
+    echo adjustButtonWidth($lang_btn_cut);
+?>"> 
+    <input type="button" id="actionButtonCopy" value="<?php
+    echo $lang_btn_copy;
+?>" onClick="actionFunctionCopy('','');" disabled class="<?php
+    echo adjustButtonWidth($lang_btn_copy);
+?>"> 
+    <input type="button" id="actionButtonPaste" value="<?php
+    echo $lang_btn_paste;
+?>" onClick="actionFunctionPaste('');" disabled class="<?php
+    echo adjustButtonWidth($lang_btn_paste);
+?>"> 
+    <input type="button" id="actionButtonRename" value="<?php
+    echo $lang_btn_rename;
+?>" onClick="actionFunctionRename('','');" disabled class="<?php
+    echo adjustButtonWidth($lang_btn_rename);
+?>"> 
+    <input type="button" id="actionButtonDelete" value="<?php
+    echo $lang_btn_delete;
+?>" onClick="actionFunctionDelete('','');" disabled class="<?php
+    echo adjustButtonWidth($lang_btn_delete);
+?>">
+<?php
+    if ($_SESSION["interface"] == "adv" && $_SESSION["win_lin"] == "lin") {
+?>
+    <input type="button" id="actionButtonChmod" value="<?php
+        echo $lang_btn_chmod;
+?>" onClick="actionFunctionChmod('','');" disabled class="<?php
+        echo adjustButtonWidth($lang_btn_chmod);
+?>">
+<?php
+    }
+?>
 <div class="floatRight">
-    <input type="button" value="<?php echo $lang_btn_logout; ?>" onClick="actionFunctionLogout();" class="<?php echo adjustButtonWidth($lang_btn_logout); ?>">
+    <input type="button" value="<?php
+    echo $lang_btn_logout;
+?>" onClick="actionFunctionLogout();" class="<?php
+    echo adjustButtonWidth($lang_btn_logout);
+?>">
 </div>
 </div>
-<?php 
+<?php
 }
 
-###############################################
-# DISPLAY UPLOAD PROGRESS
-###############################################
-
-function displayUploadProgress() {
-
+function displayUploadProgress()
+{
+    
     global $lang_xfer_file;
     global $lang_xfer_size;
     global $lang_xfer_progress;
@@ -1626,70 +1614,100 @@ function displayUploadProgress() {
     global $lang_xfer_uploaded;
     global $lang_xfer_rate;
     global $lang_xfer_remain;
- ?>
+?>
 <div id="uploadProgressDiv" style="visibility:hidden; display:none">
 <table width="100%" cellpadding="7" cellspacing="0" id="uploadProgressTable">
 <tr>
     <td class="ftpTableHeadingNf" width="1%"></td>
-    <td class="ftpTableHeading" size="35%"><?php echo $lang_xfer_file; ?></td>
-    <td class="ftpTableHeading" width="7%"><?php echo $lang_xfer_size; ?></td>
-    <td class="ftpTableHeading" width="21%"><?php echo $lang_xfer_progress; ?></td>
-    <td class="ftpTableHeading" width="9%"><?php echo $lang_xfer_elapsed; ?></td>
-    <td class="ftpTableHeading" width="7%"><?php echo $lang_xfer_uploaded; ?></td>
-    <td class="ftpTableHeading" width="9%"><?php echo $lang_xfer_rate; ?></td>
-    <td class="ftpTableHeading" width="10%"><?php echo $lang_xfer_remain; ?></td>
+    <td class="ftpTableHeading" size="35%"><?php
+    echo $lang_xfer_file;
+?></td>
+    <td class="ftpTableHeading" width="7%"><?php
+    echo $lang_xfer_size;
+?></td>
+    <td class="ftpTableHeading" width="21%"><?php
+    echo $lang_xfer_progress;
+?></td>
+    <td class="ftpTableHeading" width="9%"><?php
+    echo $lang_xfer_elapsed;
+?></td>
+    <td class="ftpTableHeading" width="7%"><?php
+    echo $lang_xfer_uploaded;
+?></td>
+    <td class="ftpTableHeading" width="9%"><?php
+    echo $lang_xfer_rate;
+?></td>
+    <td class="ftpTableHeading" width="10%"><?php
+    echo $lang_xfer_remain;
+?></td>
     <td class="ftpTableHeading" width="1%"></td>
 </tr>
 </table>
 </div>
-<?php 
+<?php
 }
 
-###############################################
-# WINDOW FOOTER
-###############################################
-
-function displayAjaxFooter() {
-
+function displayAjaxFooter()
+{
+    
     global $lang_btn_new_folder;
     global $lang_btn_new_file;
     global $lang_info_host;
     global $lang_info_user;
     global $lang_info_upload_limit;
     global $lang_info_drag_drop;
-
- ?>
+    
+?>
 <div id="footerDiv">
 
     <div id="hostInfoDiv">
-        <span><?php echo $lang_info_host; ?>:</span> <?php echo $_SESSION["ftp_host"]; ?> 
-        <span><?php echo $lang_info_user; ?>:</span> <?php echo $_SESSION["ftp_user"]; ?>
-        <span><?php echo $lang_info_upload_limit; ?>:</span> <?php echo formatFileSize($_SESSION["upload_limit"]); ?>
-        <!-- <span><?php echo $lang_info_drag_drop; ?>:</span> <div id="dropFilesCheckDiv"></div> --> <!-- Drag & Drop check commented out as considered redundant -->
+        <span><?php
+    echo $lang_info_host;
+?>:</span> <?php
+    echo $_SESSION["ftp_host"];
+?> 
+        <span><?php
+    echo $lang_info_user;
+?>:</span> <?php
+    echo $_SESSION["ftp_user"];
+?>
+        <span><?php
+    echo $lang_info_upload_limit;
+?>:</span> <?php
+    echo formatFileSize($_SESSION["upload_limit"]);
+?>
+        <!-- <span><?php
+    echo $lang_info_drag_drop;
+?>:</span> <div id="dropFilesCheckDiv"></div> --> <!-- Drag & Drop check commented out as considered redundant -->
     </div>
     
     <div class="floatLeft10">
-        <input type="button" value="<?php echo $lang_btn_new_folder; ?>" onClick="processForm('&ftpAction=newFolder')" class="<?php echo adjustButtonWidth($lang_btn_new_folder); ?>">
+        <input type="button" value="<?php
+    echo $lang_btn_new_folder;
+?>" onClick="processForm('&ftpAction=newFolder')" class="<?php
+    echo adjustButtonWidth($lang_btn_new_folder);
+?>">
     </div>
     
     <div class="floatLeft10">
-        <input type="button" value="<?php echo $lang_btn_new_file; ?>" onClick="processForm('&ftpAction=newFile')" class="<?php echo adjustButtonWidth($lang_btn_new_file); ?>">
+        <input type="button" value="<?php
+    echo $lang_btn_new_file;
+?>" onClick="processForm('&ftpAction=newFile')" class="<?php
+    echo adjustButtonWidth($lang_btn_new_file);
+?>">
     </div>
     
     <div id="uploadButtonsDiv"><div>
     
 </div>
-<?php 
+<?php
 }
 
-###############################################
-# DISPLAY FTP HISTORY
-###############################################
-
-function displayFtpHistory() {
- ?>
+function displayFtpHistory()
+{
+?>
 <select onChange="openThisFolder(this.options[this.selectedIndex].value,1)" id="ftpHistorySelect">
-<?php 
+<?php
     if (is_array($_SESSION["dir_history"])) {
         
         foreach ($_SESSION["dir_history"] AS $dir) {
@@ -1698,7 +1716,7 @@ function displayFtpHistory() {
             $dir_display = sanitizeStr($dir_display);
             $dir_display = replaceTilde($dir_display);
             
-            echo "<option value=\"".rawurlencode($dir)."\"";
+            echo "<option value=\"" . rawurlencode($dir) . "\"";
             
             // Check if this is current directory
             if ($_SESSION["dir_current"] == $dir)
@@ -1709,17 +1727,14 @@ function displayFtpHistory() {
             echo "</option>";
         }
     }
- ?>
+?>
 </select>
-<?php 
+<?php
 }
 
-###############################################
-# PROCESS ACTIONS
-###############################################
-
-function processActions() {
-
+function processActions()
+{
+    
     $ftpAction = $_POST["ftpAction"];
     
     if ($ftpAction == "")
@@ -1727,7 +1742,7 @@ function processActions() {
     
     // Open folder (always called)
     if (openFolder() == 1) {
-    
+        
         // New file
         if ($ftpAction == "newFile")
             newFile();
@@ -1763,30 +1778,27 @@ function processActions() {
         // Chmod
         if ($ftpAction == "chmod")
             chmodFiles();
-            
+        
         // Drag & Drop
         if ($ftpAction == "dragDrop")
             dragDropFiles();
-            
+        
         // Edit
         if ($ftpAction == "edit")
             editFile();
     }
 }
 
-###############################################
-# CLIPBOARD FILES
-###############################################
-
-function clipboard_files () {
+function clipboard_files()
+{
     
     // Recreate arrays
     $folderArray = recreateFileFolderArrays("folder");
-    $fileArray = recreateFileFolderArrays("file");
+    $fileArray   = recreateFileFolderArrays("file");
     
     // Reset cut session var
     $_SESSION["clipboard_folders"] = array();
-    $_SESSION["clipboard_files"] = array();
+    $_SESSION["clipboard_files"]   = array();
     
     // Folders
     foreach ($folderArray AS $folder) {
@@ -1799,43 +1811,31 @@ function clipboard_files () {
     }
 }
 
-###############################################
-# CUT FILES & FOLDERS
-###############################################
-
-function cutFilesPre() {
+function cutFilesPre()
+{
     
     $_SESSION["copy"] = 0;
     clipboard_files();
 }
 
-###############################################
-# COPY FILES & FOLDERS
-###############################################
-
-function copyFilesPre() {
+function copyFilesPre()
+{
     
     $_SESSION["copy"] = 1;
     clipboard_files();
 }
 
-###############################################
-# PASTE FILES
-###############################################
-
-function pasteFiles() {
-
+function pasteFiles()
+{
+    
     if ($_SESSION["copy"] == 1)
         copyFiles();
     else
         moveFiles();
 }
 
-###############################################
-# MOVE FILES (CUT)
-###############################################
-
-function moveFiles() {
+function moveFiles()
+{
     
     global $conn_id;
     global $lang_move_conflict;
@@ -1853,9 +1853,9 @@ function moveFiles() {
     // Check if destination folder is a sub-folder
     if (sizeof($_SESSION["clipboard_folders"]) > 0) {
         
-        $sourceFolder = str_replace("/","\/",$_SESSION["clipboard_folders"][0]);
+        $sourceFolder = str_replace("/", "\/", $_SESSION["clipboard_folders"][0]);
         
-        if (preg_match("/".$sourceFolder."/", $folderMoveTo)) {
+        if (preg_match("/" . $sourceFolder . "/", $folderMoveTo)) {
             
             $_SESSION["errors"][] = $lang_move_conflict;
             
@@ -1864,7 +1864,7 @@ function moveFiles() {
     }
     
     if ($moveError != 1) {
-    
+        
         // Folders
         foreach ($_SESSION["clipboard_folders"] as $folder_to_move) {
             
@@ -1872,21 +1872,21 @@ function moveFiles() {
             
             // Create the new filename and path
             $file_destination = getFileFromPath($folder_to_move);
-            $folder = getFileFromPath($folder_to_move);
+            $folder           = getFileFromPath($folder_to_move);
             
             // Check if folder exists
-            if (checkFileExists("d",$folder,$folderMoveTo) == 1) {
-                recordFileError("folder",tidyFolderPath($folderMoveTo,$folder),$lang_folder_exists);
+            if (checkFileExists("d", $folder, $folderMoveTo) == 1) {
+                recordFileError("folder", tidyFolderPath($folderMoveTo, $folder), $lang_folder_exists);
             } else {
                 
                 if (!@ftp_rename($conn_id, $folder_to_move, $file_destination)) {
                     if (checkFirstCharTilde($folder_to_move) == 1) {
                         if (!@ftp_rename($conn_id, replaceTilde($folder_to_move), replaceTilde($file_destination))) {
-                            recordFileError("folder",tidyFolderPath($file_destination,$folder_to_move),$lang_folder_cant_move);
+                            recordFileError("folder", tidyFolderPath($file_destination, $folder_to_move), $lang_folder_cant_move);
                             $isError = 1;
                         }
                     } else {
-                        recordFileError("folder",tidyFolderPath($file_destination,$folder_to_move),$lang_folder_cant_move);
+                        recordFileError("folder", tidyFolderPath($file_destination, $folder_to_move), $lang_folder_cant_move);
                         $isError = 1;
                     }
                 }
@@ -1902,21 +1902,21 @@ function moveFiles() {
             $isError = 0;
             
             // Create the new filename and path
-            $file_destination = $folderMoveTo."/".getFileFromPath($file_to_move);
-            $file = getFileFromPath($file_to_move);
+            $file_destination = $folderMoveTo . "/" . getFileFromPath($file_to_move);
+            $file             = getFileFromPath($file_to_move);
             
             // Check if file exists
-            if (checkFileExists("f",$file,$folderMoveTo) == 1) {
-                recordFileError("file",$file,$lang_file_exists);
+            if (checkFileExists("f", $file, $folderMoveTo) == 1) {
+                recordFileError("file", $file, $lang_file_exists);
             } else {
                 
                 if (!@ftp_rename($conn_id, $file_to_move, $file_destination)) {
                     if (checkFirstCharTilde($file_to_move) == 1) {
                         if (!@ftp_rename($conn_id, replaceTilde($file_to_move), replaceTilde($file_destination))) {
-                            recordFileError("file",replaceTilde($file_to_move),$lang_file_cant_move);
+                            recordFileError("file", replaceTilde($file_to_move), $lang_file_cant_move);
                         }
                     } else {
-                        recordFileError("file",$file_to_move,$lang_file_cant_move);
+                        recordFileError("file", $file_to_move, $lang_file_cant_move);
                     }
                 }
             }
@@ -1924,14 +1924,11 @@ function moveFiles() {
     }
     
     $_SESSION["clipboard_folders"] = array();
-    $_SESSION["clipboard_files"] = array();
+    $_SESSION["clipboard_files"]   = array();
 }
 
-###############################################
-# DRAG & DROP FILES
-###############################################
-
-function dragDropFiles() {
+function dragDropFiles()
+{
     
     global $conn_id;
     global $lang_file_exists;
@@ -1939,19 +1936,19 @@ function dragDropFiles() {
     global $lang_file_cant_move;
     
     $fileExists = 0;
-    $dragFile = quotesUnescape($_POST["dragFile"]);
+    $dragFile   = quotesUnescape($_POST["dragFile"]);
     $dropFolder = quotesUnescape($_POST["dropFolder"]);
-    $file_name = getFileFromPath($dragFile);
+    $file_name  = getFileFromPath($dragFile);
     
     // Check if file exists
-    if (checkFileExists("f",$file_name,$dropFolder) == 1) {
-        recordFileError("file",tidyFolderPath($dropFolder,$file_name),$lang_file_exists);
+    if (checkFileExists("f", $file_name, $dropFolder) == 1) {
+        recordFileError("file", tidyFolderPath($dropFolder, $file_name), $lang_file_exists);
         $fileExists = 1;
     }
     
     // Check if folder exists
-    if (checkFileExists("d",$file_name,$dropFolder) == 1) {
-        recordFileError("folder",tidyFolderPath($dropFolder,$file_name),$lang_folder_exists);
+    if (checkFileExists("d", $file_name, $dropFolder) == 1) {
+        recordFileError("folder", tidyFolderPath($dropFolder, $file_name), $lang_folder_exists);
         $fileExists = 1;
     }
     
@@ -1959,14 +1956,14 @@ function dragDropFiles() {
         
         $isError = 0;
         
-        if (!@ftp_rename($conn_id, $dragFile, $dropFolder."/".$file_name)) {
+        if (!@ftp_rename($conn_id, $dragFile, $dropFolder . "/" . $file_name)) {
             if (checkFirstCharTilde($dragFile) == 1) {
-                if (!@ftp_rename($conn_id, replaceTilde($dragFile), replaceTilde($dropFolder)."/".$file_name)) {
-                    recordFileError("file",getFileFromPath($dragFile),$lang_file_cant_move);
+                if (!@ftp_rename($conn_id, replaceTilde($dragFile), replaceTilde($dropFolder) . "/" . $file_name)) {
+                    recordFileError("file", getFileFromPath($dragFile), $lang_file_cant_move);
                     $isError = 1;
                 }
             } else {
-                recordFileError("file",getFileFromPath($dragFile),$lang_file_cant_move);
+                recordFileError("file", getFileFromPath($dragFile), $lang_file_cant_move);
                 $isError = 1;
             }
         }
@@ -1979,11 +1976,8 @@ function dragDropFiles() {
     }
 }
 
-###############################################
-# COPY FILES
-###############################################
-
-function copyFiles() {
+function copyFiles()
+{
     
     // As there is no PHP function to copy files by FTP on a remote server, the files
     // need to be downloaded to the client server and then uploaded to the copy location.
@@ -2010,10 +2004,10 @@ function copyFiles() {
         $dir_source = $path_parts['dirname'];
         
         // Check if folder exists
-        if (checkFileExists("f",$folder_name,$folderMoveTo) == 1) {
-            recordFileError("folder",tidyFolderPath($folderMoveTo,$folder_name),$lang_folder_exists);
+        if (checkFileExists("f", $folder_name, $folderMoveTo) == 1) {
+            recordFileError("folder", tidyFolderPath($folderMoveTo, $folder_name), $lang_folder_exists);
         } else {
-            copyFolder($folder_name,$folderMoveTo,$dir_source);
+            copyFolder($folder_name, $folderMoveTo, $dir_source);
         }
     }
     
@@ -2023,24 +2017,24 @@ function copyFiles() {
         $isError = 0;
         
         $file_name = getFileFromPath($file);
-        $fp1 = $serverTmp."/".$file_name;
-        $fp2 = $file;
-        $fp3 = $folderMoveTo."/".$file_name;
+        $fp1       = $serverTmp . "/" . $file_name;
+        $fp2       = $file;
+        $fp3       = $folderMoveTo . "/" . $file_name;
         
         // Check if file exists
-        if (checkFileExists("f",$file_name,$folderMoveTo) == 1) {
-            recordFileError("file",tidyFolderPath($folderMoveTo,$file_name),$lang_file_exists);
+        if (checkFileExists("f", $file_name, $folderMoveTo) == 1) {
+            recordFileError("file", tidyFolderPath($folderMoveTo, $file_name), $lang_file_exists);
         } else {
             
             // Download file to client server
             if (!@ftp_get($conn_id, $fp1, $fp2, FTP_BINARY)) {
                 if (checkFirstCharTilde($fp2) == 1) {
                     if (!@ftp_get($conn_id, $fp1, replaceTilde($fp2), FTP_BINARY)) {
-                        recordFileError("file",$file_name,$lang_server_error_down);
+                        recordFileError("file", $file_name, $lang_server_error_down);
                         $isError = 1;
                     }
                 } else {
-                    recordFileError("file",$file_name,$lang_server_error_down);
+                    recordFileError("file", $file_name, $lang_server_error_down);
                     $isError = 1;
                 }
             }
@@ -2051,9 +2045,9 @@ function copyFiles() {
                 if (!@ftp_put($conn_id, $fp3, $fp1, FTP_BINARY)) {
                     if (checkFirstCharTilde($fp3) == 1) {
                         if (!@ftp_put($conn_id, replaceTilde($fp3), $fp1, FTP_BINARY))
-                            recordFileError("file",$file_name,$lang_server_error_up);
+                            recordFileError("file", $file_name, $lang_server_error_up);
                     } else {
-                        recordFileError("file",$file_name,$lang_server_error_up);
+                        recordFileError("file", $file_name, $lang_server_error_up);
                     }
                 }
             }
@@ -2064,25 +2058,22 @@ function copyFiles() {
     }
 }
 
-###############################################
-# GET PERMISSIONS OF FILE/FOLDER
-###############################################
-
-function getPerms($folder, $file_name) {
+function getPerms($folder, $file_name)
+{
     
     global $conn_id;
     
     $ftp_rawlist = getFtpRawList($folder);
     
     if (is_array($ftp_rawlist)) {
-    
-        foreach ($ftp_rawlist AS $ff) {
         
+        foreach ($ftp_rawlist AS $ff) {
+            
             // Split up array into values
-            $ff = preg_split("/[\s]+/",$ff,9);
+            $ff = preg_split("/[\s]+/", $ff, 9);
             
             $perms = $ff[0];
-            $file = $ff[8];
+            $file  = $ff[8];
             
             if ($file == $file_name) {
                 $perms = getChmodNumber($perms);
@@ -2093,12 +2084,9 @@ function getPerms($folder, $file_name) {
     }
 }
 
-###############################################
-# COPY FOLDERS
-###############################################
-
-function copyFolder($folder, $dir_destin, $dir_source) {
-
+function copyFolder($folder, $dir_destin, $dir_source)
+{
+    
     global $conn_id;
     global $serverTmp;
     global $lang_folder_cant_access;
@@ -2117,14 +2105,14 @@ function copyFolder($folder, $dir_destin, $dir_source) {
     }
     
     // Check source folder exists
-    if (!@ftp_chdir($conn_id, $dir_source."/".$folder)) {
+    if (!@ftp_chdir($conn_id, $dir_source . "/" . $folder)) {
         if (checkFirstCharTilde($dir_source) == 1) {
-            if (!@ftp_chdir($conn_id, replaceTilde($dir_source)."/".$folder)) {
-                recordFileError("folder",tidyFolderPath($dir_destin,$folder),$lang_folder_cant_access);
+            if (!@ftp_chdir($conn_id, replaceTilde($dir_source) . "/" . $folder)) {
+                recordFileError("folder", tidyFolderPath($dir_destin, $folder), $lang_folder_cant_access);
                 $isError = 1;
             }
         } else {
-            recordFileError("folder",tidyFolderPath($dir_destin,$folder),$lang_folder_cant_access);
+            recordFileError("folder", tidyFolderPath($dir_destin, $folder), $lang_folder_cant_access);
             $isError = 1;
         }
     }
@@ -2132,19 +2120,19 @@ function copyFolder($folder, $dir_destin, $dir_source) {
     if ($isError == 0) {
         
         // Check if destination folder exists
-        if (checkFileExists("d",$folder,$dir_destin) == 1) {
-            recordFileError("folder",tidyFolderPath($dir_destin,$folder),$lang_folder_exists);
+        if (checkFileExists("d", $folder, $dir_destin) == 1) {
+            recordFileError("folder", tidyFolderPath($dir_destin, $folder), $lang_folder_exists);
         } else {
             
             // Create the new folder
-            if (!@ftp_mkdir($conn_id, $dir_destin."/".$folder)) {
+            if (!@ftp_mkdir($conn_id, $dir_destin . "/" . $folder)) {
                 if (checkFirstCharTilde($dir_destin) == 1) {
-                    if (!@ftp_mkdir($conn_id, replaceTilde($dir_destin)."/".$folder)) {
-                        recordFileError("folder",tidyFolderPath($dir_destin,$folder),$lang_folder_cant_make);
+                    if (!@ftp_mkdir($conn_id, replaceTilde($dir_destin) . "/" . $folder)) {
+                        recordFileError("folder", tidyFolderPath($dir_destin, $folder), $lang_folder_cant_make);
                         $isError = 1;
                     }
                 } else {
-                    recordFileError("folder",tidyFolderPath($dir_destin,$folder),$lang_folder_cant_make);
+                    recordFileError("folder", tidyFolderPath($dir_destin, $folder), $lang_folder_cant_make);
                     $isError = 1;
                 }
             }
@@ -2156,38 +2144,38 @@ function copyFolder($folder, $dir_destin, $dir_source) {
         // Copy permissions (Lin)
         if ($_SESSION["win_lin"] == "lin") {
             
-            $mode = getPerms($dir_source,$folder);
-            $lang_folder_cant_chmod = str_replace("[perms]",$mode,$lang_folder_cant_chmod);
+            $mode                   = getPerms($dir_source, $folder);
+            $lang_folder_cant_chmod = str_replace("[perms]", $mode, $lang_folder_cant_chmod);
             
             if (function_exists('ftp_chmod')) {
-                if (!ftp_chmod($conn_id, $mode, $dir_destin."/".$folder)) {
+                if (!ftp_chmod($conn_id, $mode, $dir_destin . "/" . $folder)) {
                     if (checkFirstCharTilde($dir_destin) == 1) {
-                        if (!@ftp_chmod($conn_id, $mode, replaceTilde($dir_destin)."/".$folder)) {
-                            recordFileError("folder",$folder,$lang_folder_cant_chmod);
+                        if (!@ftp_chmod($conn_id, $mode, replaceTilde($dir_destin) . "/" . $folder)) {
+                            recordFileError("folder", $folder, $lang_folder_cant_chmod);
                         }
                     } else {
-                        recordFileError("folder",$folder,$lang_folder_cant_chmod);
+                        recordFileError("folder", $folder, $lang_folder_cant_chmod);
                     }
                 }
             }
         }
         
         // Go through array of files/folders
-        $ftp_rawlist = getFtpRawList($dir_source."/".$folder);
+        $ftp_rawlist = getFtpRawList($dir_source . "/" . $folder);
         
         if (is_array($ftp_rawlist)) {
             
             foreach ($ftp_rawlist AS $ff) {
                 
-                $isDir = 0;
+                $isDir   = 0;
                 $isError = 0;
                 
                 // Split up array into values (Lin)
                 if ($_SESSION["win_lin"] == "lin") {
                     
-                    $ff = preg_split("/[\s]+/",$ff,9);
+                    $ff    = preg_split("/[\s]+/", $ff, 9);
                     $perms = $ff[0];
-                    $file = $ff[8];
+                    $file  = $ff[8];
                     
                     if (getFileType($perms) == "d")
                         $isDir = 1;
@@ -2196,7 +2184,7 @@ function copyFolder($folder, $dir_destin, $dir_source) {
                 // Split up array into values (Win)
                 if ($_SESSION["win_lin"] == "win") {
                     
-                    $ff = preg_split("/[\s]+/",$ff,4);
+                    $ff   = preg_split("/[\s]+/", $ff, 4);
                     $size = $ff[2];
                     $file = $ff[3];
                     
@@ -2205,25 +2193,25 @@ function copyFolder($folder, $dir_destin, $dir_source) {
                 }
                 
                 if ($file != "." && $file != "..") {
-                
+                    
                     // Check for sub folders and then perform this function
                     if (getFileType($perms) == "d") {
-                        copyFolder($file,$dir_destin."/".$folder,$dir_source."/".$folder);
+                        copyFolder($file, $dir_destin . "/" . $folder, $dir_source . "/" . $folder);
                     } else {
                         
-                        $fp1 = $serverTmp."/".$file;
-                        $fp2 = $dir_source."/".$folder."/".$file;
-                        $fp3 = $dir_destin."/".$folder."/".$file;
+                        $fp1 = $serverTmp . "/" . $file;
+                        $fp2 = $dir_source . "/" . $folder . "/" . $file;
+                        $fp3 = $dir_destin . "/" . $folder . "/" . $file;
                         
                         // Download
                         if (!@ftp_get($conn_id, $fp1, $fp2, FTP_BINARY)) {
                             if (checkFirstCharTilde($fp2) == 1) {
                                 if (!@ftp_get($conn_id, $fp1, replaceTilde($fp2), FTP_BINARY)) {
-                                    recordFileError("file",$file,$lang_server_error_down);
+                                    recordFileError("file", $file, $lang_server_error_down);
                                     $isError = 1;
                                 }
                             } else {
-                                recordFileError("file",$file,$lang_server_error_down);
+                                recordFileError("file", $file, $lang_server_error_down);
                                 $isError = 1;
                             }
                         }
@@ -2234,34 +2222,34 @@ function copyFolder($folder, $dir_destin, $dir_source) {
                             if (!@ftp_put($conn_id, $fp3, $fp1, FTP_BINARY)) {
                                 if (checkFirstCharTilde($fp3) == 1) {
                                     if (!@ftp_put($conn_id, replaceTilde($fp3), $fp1, FTP_BINARY)) {
-                                        recordFileError("file",$file,$lang_server_error_down);
+                                        recordFileError("file", $file, $lang_server_error_down);
                                         $isError = 1;
                                     }
                                 } else {
-                                    recordFileError("file",$file,$lang_server_error_down);
+                                    recordFileError("file", $file, $lang_server_error_down);
                                     $isError = 1;
                                 }
                             }
                         }
                         
                         if ($isError == 0) {
-                        
+                            
                             // Chmod files (Lin)
                             if ($_SESSION["win_lin"] == "lin") {
                                 
                                 $perms = getChmodNumber($perms);
-                                $mode = formatChmodNumber($perms);
+                                $mode  = formatChmodNumber($perms);
                                 
-                                $lang_file_cant_chmod = str_replace("[perms]",$perms,$lang_file_cant_chmod);
+                                $lang_file_cant_chmod = str_replace("[perms]", $perms, $lang_file_cant_chmod);
                                 
                                 if (function_exists('ftp_chmod')) {
                                     if (!@ftp_chmod($conn_id, $mode, $fp3)) {
                                         if (checkFirstCharTilde($fp3) == 1) {
                                             if (!@ftp_chmod($conn_id, $mode, replaceTilde($fp3))) {
-                                                recordFileError("file",$file,$lang_server_error_down);
+                                                recordFileError("file", $file, $lang_server_error_down);
                                             }
                                         } else {
-                                            recordFileError("file",$file,$lang_server_error_down);
+                                            recordFileError("file", $file, $lang_server_error_down);
                                         }
                                     }
                                 }
@@ -2277,26 +2265,23 @@ function copyFolder($folder, $dir_destin, $dir_source) {
     }
 }
 
-###############################################
-# RECREATE FOLDER & FILE ARRAYS
-###############################################
-
-function recreateFileFolderArrays($type) {
-
+function recreateFileFolderArrays($type)
+{
+    
     $arrayNew = array();
     
     if ($_POST["fileSingle"] != "" || $_POST["folderSingle"] != "") {
         
         // Single file/folder
         if ($type == "file" && $_POST["fileSingle"] != "") {
-            $file = quotesUnescape($_POST["fileSingle"]);
+            $file       = quotesUnescape($_POST["fileSingle"]);
             $arrayNew[] = $file;
         }
         if ($type == "folder" && $_POST["folderSingle"] != "")
             $arrayNew[] = quotesUnescape($_POST["folderSingle"]);
-    
+        
     } else {
-    
+        
         // Array file/folder
         if ($type == "file")
             $array = $_POST["fileAction"];
@@ -2304,11 +2289,11 @@ function recreateFileFolderArrays($type) {
             $array = $_POST["folderAction"];
         
         if (is_array($array)) {
-        
+            
             foreach ($array AS $file) {
-            
+                
                 $file = quotesUnescape($file);
-            
+                
                 if ($file != "")
                     $arrayNew[] = $file;
             }
@@ -2318,11 +2303,8 @@ function recreateFileFolderArrays($type) {
     return $arrayNew;
 }
 
-###############################################
-# RENAME FILES
-###############################################
-
-function renameFiles() {
+function renameFiles()
+{
     
     global $conn_id;
     global $lang_file_exists;
@@ -2332,40 +2314,40 @@ function renameFiles() {
     
     // Check for processing of form
     if ($_POST["processAction"] == 1) {
-    
+        
         $i = 0;
-    
+        
         // Go through array of saved names
         foreach ($_SESSION["clipboard_rename"] AS $file) {
             
             $isError = 0;
             
-            $file_name = trim($_POST["file".$i]);
-            $file_name = quotesUnescape($file_name);
-            $file = quotesUnescape($file);
+            $file_name  = trim($_POST["file" . $i]);
+            $file_name  = quotesUnescape($file_name);
+            $file       = quotesUnescape($file);
             $fileExists = 0;
             
             // Check for a different name
             if ($file_name != $file) {
-            
-                if ($_SESSION["dir_current"] == "/")
-                    $file_to_move = "/".$file;
-                if ($_SESSION["dir_current"] == "~")
-                    $file_to_move = "~/".$file;
-                if ($_SESSION["dir_current"] != "/" && $_SESSION["dir_current"] != "~")
-                    $file_to_move = $_SESSION["dir_current"]."/".$file;
                 
-                $file_destination = $_SESSION["dir_current"]."/".$file_name;
+                if ($_SESSION["dir_current"] == "/")
+                    $file_to_move = "/" . $file;
+                if ($_SESSION["dir_current"] == "~")
+                    $file_to_move = "~/" . $file;
+                if ($_SESSION["dir_current"] != "/" && $_SESSION["dir_current"] != "~")
+                    $file_to_move = $_SESSION["dir_current"] . "/" . $file;
+                
+                $file_destination = $_SESSION["dir_current"] . "/" . $file_name;
                 
                 // Check if file exists
-                if (checkFileExists("f",$file_name,$_SESSION["dir_current"]) == 1) {
-                    recordFileError("file",sanitizeStr($file_name),$lang_file_exists);
+                if (checkFileExists("f", $file_name, $_SESSION["dir_current"]) == 1) {
+                    recordFileError("file", sanitizeStr($file_name), $lang_file_exists);
                     $fileExists = 1;
                 }
                 
                 // Check if folder exists
-                if (checkFileExists("d",$file_name,$_SESSION["dir_current"]) == 1) {
-                    recordFileError("folder",sanitizeStr($file_name),$lang_folder_exists);
+                if (checkFileExists("d", $file_name, $_SESSION["dir_current"]) == 1) {
+                    recordFileError("folder", sanitizeStr($file_name), $lang_folder_exists);
                     $fileExists = 1;
                 }
                 
@@ -2374,11 +2356,11 @@ function renameFiles() {
                     if (!@ftp_rename($conn_id, $file_to_move, $file_destination)) {
                         if (checkFirstCharTilde($file_to_move) == 1) {
                             if (!@ftp_rename($conn_id, replaceTilde($file_to_move), replaceTilde($file_destination))) {
-                                recordFileError("file",sanitizeStr($file),$lang_cant_rename);
+                                recordFileError("file", sanitizeStr($file), $lang_cant_rename);
                                 $isError = 1;
                             }
                         } else {
-                            recordFileError("file",sanitizeStr($file),$lang_cant_rename);
+                            recordFileError("file", sanitizeStr($file), $lang_cant_rename);
                             $isError = 1;
                         }
                     }
@@ -2400,56 +2382,52 @@ function renameFiles() {
     } else {
         
         // Recreate arrays
-        $fileArray = recreateFileFolderArrays("file");
-        $folderArray = recreateFileFolderArrays("folder");
+        $fileArray                    = recreateFileFolderArrays("file");
+        $folderArray                  = recreateFileFolderArrays("folder");
         $_SESSION["clipboard_rename"] = array();
         
-        $n = sizeof($fileArray) + sizeof($folderArray);
+        $n      = sizeof($fileArray) + sizeof($folderArray);
         $height = $n * 35;
         
         $width = 565;
         $title = $lang_title_rename;
         
-        // Display pop-up
-        displayPopupOpen(1,$width,$height,0,$title);
+        displayPopupOpen(1, $width, $height, 0, $title);
         
         $i = 0;
         
         // Set vars
-        $vars = "&ftpAction=rename&processAction=1";
-        $onKeyPress = "onkeypress=\"if (event.keyCode == 13){ processForm('".$vars."'); activateActionButtons(0,0); return false; }\"";
+        $vars       = "&ftpAction=rename&processAction=1";
+        $onKeyPress = "onkeypress=\"if (event.keyCode == 13){ processForm('" . $vars . "'); activateActionButtons(0,0); return false; }\"";
         
         // Display folders
         foreach ($folderArray AS $folder) {
             
             $folder = getFileFromPath($folder);
-        
+            
             echo "<img src=\"images/icon_16_folder.gif\" width=\"16\" height=\"16\"> ";
-            echo "<input type=\"text\" name=\"file".$i."\" class=\"inputRename\" value=\"".quotesReplace($folder,"d")."\" ".$onKeyPress."><br>";
+            echo "<input type=\"text\" name=\"file" . $i . "\" class=\"inputRename\" value=\"" . quotesReplace($folder, "d") . "\" " . $onKeyPress . "><br>";
             $_SESSION["clipboard_rename"][] = $folder;
             $i++;
         }
         
         // Display files
         foreach ($fileArray AS $file) {
-        
+            
             $file = getFileFromPath($file);
-        
+            
             echo "<img src=\"images/icon_16_file.gif\" width=\"16\" height=\"16\"> ";
-            echo "<input type=\"text\" name=\"file".$i."\" class=\"inputRename\" value=\"".quotesReplace($file,"d")."\" ".$onKeyPress."><br>";
+            echo "<input type=\"text\" name=\"file" . $i . "\" class=\"inputRename\" value=\"" . quotesReplace($file, "d") . "\" " . $onKeyPress . "><br>";
             $_SESSION["clipboard_rename"][] = $file;
             $i++;
         }
         
-        displayPopupClose(0,$vars,1);
+        displayPopupClose(0, $vars, 1);
     }
 }
 
-###############################################
-# CHMOD FILES
-###############################################
-
-function chmodFiles() {
+function chmodFiles()
+{
     
     global $conn_id;
     global $lang_chmod_max_777;
@@ -2466,7 +2444,7 @@ function chmodFiles() {
         $_SESSION["errors"][] = $lang_chmod_no_support;
         
     } else {
-    
+        
         // Check for a posted form
         if ($_POST["processForm"] == 1) {
             
@@ -2476,18 +2454,18 @@ function chmodFiles() {
                 
             } else {
                 
-                $mode = formatChmodNumber($_POST["chmodNum"]);
-                $lang_file_cant_chmod = str_replace("[perms]",$mode,$lang_file_cant_chmod);
+                $mode                 = formatChmodNumber($_POST["chmodNum"]);
+                $lang_file_cant_chmod = str_replace("[perms]", $mode, $lang_file_cant_chmod);
                 
                 foreach ($_SESSION["clipboard_chmod"] AS $file) {
                     
                     if (!@ftp_chmod($conn_id, $mode, $file)) {
                         if (checkFirstCharTilde($file) == 1) {
                             if (!@ftp_chmod($conn_id, $mode, replaceTilde($file))) {
-                                recordFileError("file",replaceTilde($file),$lang_file_cant_chmod);
+                                recordFileError("file", replaceTilde($file), $lang_file_cant_chmod);
                             }
                         } else {
-                            recordFileError("file",$file,$lang_file_cant_chmod);
+                            recordFileError("file", $file, $lang_file_cant_chmod);
                         }
                     }
                 }
@@ -2499,8 +2477,8 @@ function chmodFiles() {
         } else {
             
             // Recreate arrays
-            $fileArray = recreateFileFolderArrays("file");
-            $folderArray = recreateFileFolderArrays("folder");
+            $fileArray                   = recreateFileFolderArrays("file");
+            $folderArray                 = recreateFileFolderArrays("folder");
             $_SESSION["clipboard_chmod"] = array();
             
             // Count items checked
@@ -2508,7 +2486,7 @@ function chmodFiles() {
             
             // Get attributes if 1 item selected
             if ($n == 1) {
-            
+                
                 if ($theFile == "")
                     $theFile = $fileArray[0];
                 if ($theFile == "")
@@ -2522,17 +2500,17 @@ function chmodFiles() {
                 foreach ($ftp_rawlist AS $ff) {
                     
                     // Split up array into values
-                    $ff = preg_split("/[\s]+/",$ff,9);
+                    $ff = preg_split("/[\s]+/", $ff, 9);
                     
                     $perms = $ff[0];
-                    $file = $ff[8];
+                    $file  = $ff[8];
                     
                     // Check for a match
                     if ($file == $theFile) {
                         $chmod = getChmodNumber($perms);
-                        $o_wrx = substr($perms,1,3);
-                        $g_wrx = substr($perms,4,3);
-                        $p_wrx = substr($perms,7,3);
+                        $o_wrx = substr($perms, 1, 3);
+                        $g_wrx = substr($perms, 4, 3);
+                        $p_wrx = substr($perms, 7, 3);
                     }
                 }
             }
@@ -2541,65 +2519,58 @@ function chmodFiles() {
             foreach ($folderArray AS $folder) {
                 $_SESSION["clipboard_chmod"][] = $folder;
             }
-        
+            
             // Save files
             foreach ($fileArray AS $file) {
                 $_SESSION["clipboard_chmod"][] = $file;
             }
             
             $height = 335;
-            $width = 420;
-            $title = $lang_title_chmod;
+            $width  = 420;
+            $title  = $lang_title_chmod;
             
-            // Display pop-up
-            displayPopupOpen(1,$width,$height,0,$title);
+            displayPopupOpen(1, $width, $height, 0, $title);
             
             $vars = "&ftpAction=chmod&processForm=1";
             
-            displayChmodFieldset($lang_chmod_owner,"owner",$o_wrx,$vars);
-            displayChmodFieldset($lang_chmod_group,"group",$g_wrx,$vars);
-            displayChmodFieldset($lang_chmod_public,"public",$p_wrx,$vars);
-            displayChmodFieldset($lang_chmod_manual,"manual",$chmod,$vars);
+            displayChmodFieldset($lang_chmod_owner, "owner", $o_wrx, $vars);
+            displayChmodFieldset($lang_chmod_group, "group", $g_wrx, $vars);
+            displayChmodFieldset($lang_chmod_public, "public", $p_wrx, $vars);
+            displayChmodFieldset($lang_chmod_manual, "manual", $chmod, $vars);
             
-            displayPopupClose(0,$vars,1);
+            displayPopupClose(0, $vars, 1);
         }
     }
 }
 
-###############################################
-# FORMAT CHMOD NUMBER
-###############################################
-
-function formatChmodNumber($str) {
+function formatChmodNumber($str)
+{
     
     $str = trim($str);
-    $str = octdec ( str_pad ( $str, 4, '0', STR_PAD_LEFT ) );
+    $str = octdec(str_pad($str, 4, '0', STR_PAD_LEFT));
     $str = (int) $str;
     
     return $str;
 }
 
-###############################################
-# GET CHMOD NUMBER
-###############################################
-
-function getChmodNumber($str) {
+function getChmodNumber($str)
+{
     
-    $j = 0;
+    $j      = 0;
     $strlen = strlen($str);
     for ($i = 0; $i < $strlen; $i++) {
-    
+        
         if ($i >= 1 && $i <= 3)
             $m = 100;
-        if ($i >=4 && $i <= 6)
+        if ($i >= 4 && $i <= 6)
             $m = 10;
         if ($i >= 7 && $i <= 9)
             $m = 1;
         
-        $l = substr($str,$i,1);
+        $l = substr($str, $i, 1);
         
         if ($l != "d" && $l != "-") {
-        
+            
             if ($l == "r")
                 $n = 4;
             if ($l == "w")
@@ -2607,53 +2578,86 @@ function getChmodNumber($str) {
             if ($l == "x")
                 $n = 1;
             
-            $j = $j+($n*$m);
+            $j = $j + ($n * $m);
         }
     }
     
     return $j;
 }
 
-###############################################
-# CHMOD FIELDSET
-###############################################
-
-function displayChmodFieldset($title, $type, $chmod, $vars) {
-
+function displayChmodFieldset($title, $type, $chmod, $vars)
+{
+    
     global $lang_chmod_read;
     global $lang_chmod_write;
     global $lang_chmod_exe;
- ?>
+?>
 <fieldset class="fieldsetChmod">
-<legend><?php echo $title; ?></legend>
-<?php if ($type == "manual") { ?>
-<input type="text" size="4" name="chmodNum" id="chmodNum" value="<?php echo $chmod; ?>" onkeypress="if (event.keyCode == 13){ processForm('<?php echo $vars; ?>'); activateActionButtons(0,0); return false;}">
-<?php }else{ ?>
-<?php 
-    if ($type == "owner")
-        $n = 100;
-    if ($type == "group")
-        $n = 10;
-    if ($type == "public")
-        $n = 1;
-    
-    $n_r = $n * 4;
-    $n_w = $n * 2;
-    $n_e = $n * 1;
- ?>
-<div class="checkboxChmod"><input type="checkbox" id="<?php echo $type; ?>_r" value="1" <?php if (substr($chmod,0,1) == "r") echo "checked"; ?> onclick="updateChmodNum(this.id,<?php echo $n_r; ?>)"> <?php echo $lang_chmod_read; ?></div>
-<div class="checkboxChmod"><input type="checkbox" id="<?php echo $type; ?>_w" value="1" <?php if (substr($chmod,1,1) == "w") echo "checked"; ?> onclick="updateChmodNum(this.id,<?php echo $n_w; ?>)"> <?php echo $lang_chmod_write; ?></div>
-<div class="checkboxChmod"><input type="checkbox" id="<?php echo $type; ?>_e" value="1" <?php if (substr($chmod,2,1) == "x") echo "checked"; ?> onclick="updateChmodNum(this.id,<?php echo $n_e; ?>)"> <?php echo $lang_chmod_exe; ?></div>
-<?php } ?>
+<legend><?php
+    echo $title;
+?></legend>
+<?php
+    if ($type == "manual") {
+?>
+<input type="text" size="4" name="chmodNum" id="chmodNum" value="<?php
+        echo $chmod;
+?>" onkeypress="if (event.keyCode == 13){ processForm('<?php
+        echo $vars;
+?>'); activateActionButtons(0,0); return false;}">
+<?php
+    } else {
+?>
+<?php
+        if ($type == "owner")
+            $n = 100;
+        if ($type == "group")
+            $n = 10;
+        if ($type == "public")
+            $n = 1;
+        
+        $n_r = $n * 4;
+        $n_w = $n * 2;
+        $n_e = $n * 1;
+?>
+<div class="checkboxChmod"><input type="checkbox" id="<?php
+        echo $type;
+?>_r" value="1" <?php
+        if (substr($chmod, 0, 1) == "r")
+            echo "checked";
+?> onclick="updateChmodNum(this.id,<?php
+        echo $n_r;
+?>)"> <?php
+        echo $lang_chmod_read;
+?></div>
+<div class="checkboxChmod"><input type="checkbox" id="<?php
+        echo $type;
+?>_w" value="1" <?php
+        if (substr($chmod, 1, 1) == "w")
+            echo "checked";
+?> onclick="updateChmodNum(this.id,<?php
+        echo $n_w;
+?>)"> <?php
+        echo $lang_chmod_write;
+?></div>
+<div class="checkboxChmod"><input type="checkbox" id="<?php
+        echo $type;
+?>_e" value="1" <?php
+        if (substr($chmod, 2, 1) == "x")
+            echo "checked";
+?> onclick="updateChmodNum(this.id,<?php
+        echo $n_e;
+?>)"> <?php
+        echo $lang_chmod_exe;
+?></div>
+<?php
+    }
+?>
 </fieldset>
-<?php 
+<?php
 }
 
-###############################################
-# EDIT FILE
-###############################################
-
-function editFile() {
+function editFile()
+{
     
     global $conn_id;
     global $serverTmp;
@@ -2661,83 +2665,76 @@ function editFile() {
     
     $isError = 0;
     
-    $file = quotesUnescape($_POST["file"]);
+    $file      = quotesUnescape($_POST["file"]);
     $file_name = getFileFromPath($file);
-    $fp1 = $serverTmp."/".$file_name;
-    $fp2 = $file;
+    $fp1       = $serverTmp . "/" . $file_name;
+    $fp2       = $file;
     
     // Download the file
     if (!@ftp_get($conn_id, $fp1, $fp2, FTP_BINARY)) {
         
         if (checkFirstCharTilde($fp2) == 1) {
             if (!@ftp_get($conn_id, $fp1, replaceTilde($fp2), FTP_BINARY)) {
-                recordFileError("file",quotesEscape($file,"s"),$lang_server_error_down);
+                recordFileError("file", quotesEscape($file, "s"), $lang_server_error_down);
                 $isError = 1;
             }
         } else {
-            recordFileError("file",quotesEscape($file,"s"),$lang_server_error_down);
+            recordFileError("file", quotesEscape($file, "s"), $lang_server_error_down);
             $isError = 1;
         }
     }
     
     if ($isError == 0) {
-    
+        
         // Check file has contents
         if (filesize($fp1) > 0) {
             
-            $fd = @fopen($fp1,"r");
+            $fd      = @fopen($fp1, "r");
             $content = @fread($fd, filesize($fp1));
             @fclose($fd);
         }
         
-        displayEditFileForm($file,$content);
+        displayEditFileForm($file, $content);
     }
     
     // Delete tmp file
     unlink($fp1);
 }
 
-###############################################
-# EDIT FILE PROCESS (EDIT FILE)
-###############################################
-
-function displayEditFileForm($file, $content) {
+function displayEditFileForm($file, $content)
+{
     
     global $lang_title_edit_file;
     global $lang_btn_save;
     global $lang_btn_close;
     
-    $width = $_POST["windowWidth"] - 250;
-    $height = $_POST["windowHeight"] - 220;
+    $width        = $_POST["windowWidth"] - 250;
+    $height       = $_POST["windowHeight"] - 220;
     $editorHeight = $height - 85;
     
     $file_display = $file;
     $file_display = sanitizeStr($file_display);
     $file_display = replaceTilde($file_display);
-    $title = $lang_title_edit_file.": ".$file_display;
+    $title        = $lang_title_edit_file . ": " . $file_display;
     
-    // Display pop-up
-    displayPopupOpen(0,$width,$height,0,$title);
+    displayPopupOpen(0, $width, $height, 0, $title);
     
-    echo "<input type=\"hidden\" name=\"file\" value=\"".sanitizeStr($file)."\">";
-    echo "<textarea name=\"editContent\" id=\"editContent\" style=\"height: ".$editorHeight."px;\">".sanitizeStr($content)."</textarea>";
+    echo "<input type=\"hidden\" name=\"file\" value=\"" . sanitizeStr($file) . "\">";
+    echo "<textarea name=\"editContent\" id=\"editContent\" style=\"height: " . $editorHeight . "px;\">" . sanitizeStr($content) . "</textarea>";
     
     // Save button
-    echo "<input type=\"button\" value=\"".$lang_btn_save."\" class=\"popUpBtn\" onClick=\"submitToIframe('&ftpAction=editProcess');\"> ";
+    echo "<input type=\"button\" value=\"" . $lang_btn_save . "\" class=\"popUpBtn\" onClick=\"submitToIframe('&ftpAction=editProcess');\"> ";
     
     // Close button
-    echo "<input type=\"button\" value=\"".$lang_btn_close."\" class=\"popUpBtn\" onClick=\"processForm('&ftpAction=openFolder')\"> ";
+    echo "<input type=\"button\" value=\"" . $lang_btn_close . "\" class=\"popUpBtn\" onClick=\"processForm('&ftpAction=openFolder')\"> ";
     
-    displayPopupClose(0,"",0);
+    displayPopupClose(0, "", 0);
 }
 
-###############################################
-# EDIT FILE PROCESS (SAVE FILE)
-###############################################
-
-// Saving the file to the iframe preserves the cursor position in the edit div.
-
-function editProcess() {
+function editProcess()
+{
+    
+    // Saving the file to the iframe preserves the cursor position in the edit div.
     
     global $conn_id;
     global $serverTmp;
@@ -2746,25 +2743,25 @@ function editProcess() {
     $isError = 0;
     
     // Get file contents
-    $file = quotesUnescape($_POST["file"]);
+    $file      = quotesUnescape($_POST["file"]);
     $file_name = getFileFromPath($file);
-    $fp1 = $serverTmp."/".$file_name;
-    $fp2 = $file;
+    $fp1       = $serverTmp . "/" . $file_name;
+    $fp2       = $file;
     
     $editContent = $_POST["editContent"];
     
     // Write content to a file
-    $tmpFile = @fopen($fp1,"w+");
-    @fputs($tmpFile,$editContent);
+    $tmpFile = @fopen($fp1, "w+");
+    @fputs($tmpFile, $editContent);
     @fclose($tmpFile);
     
     if (!@ftp_put($conn_id, $fp2, $fp1, FTP_BINARY)) {
         if (checkFirstCharTilde($fp2) == 1) {
             if (!@ftp_put($conn_id, replaceTilde($fp2), $fp1, FTP_BINARY)) {
-                recordFileError("file",$file_name,$lang_server_error_up);
+                recordFileError("file", $file_name, $lang_server_error_up);
             }
         } else {
-            recordFileError("file",$file_name,$lang_server_error_up);
+            recordFileError("file", $file_name, $lang_server_error_up);
         }
     }
     
@@ -2772,11 +2769,8 @@ function editProcess() {
     unlink($fp1);
 }
 
-###############################################
-# DOWNLOAD FILE
-###############################################
-
-function downloadFile() {
+function downloadFile()
+{
     
     global $conn_id;
     global $serverTmp;
@@ -2784,20 +2778,20 @@ function downloadFile() {
     
     $isError = 0;
     
-    $file = quotesUnescape($_GET["dl"]);
+    $file      = quotesUnescape($_GET["dl"]);
     $file_name = getFileFromPath($file);
-    $fp1 = $serverTmp."/".$file_name;
-    $fp2 = $file;
+    $fp1       = $serverTmp . "/" . $file_name;
+    $fp2       = $file;
     
     // Download the file
     if (!@ftp_get($conn_id, $fp1, $fp2, FTP_BINARY)) {
         if (checkFirstCharTilde($fp2) == 1) {
             if (!@ftp_get($conn_id, $fp1, replaceTilde($fp2), FTP_BINARY)) {
-                recordFileError("file",quotesEscape($file,"s"),$lang_server_error_down);
+                recordFileError("file", quotesEscape($file, "s"), $lang_server_error_down);
                 $isError = 1;
             }
         } else {
-            recordFileError("file",quotesEscape($file,"s"),$lang_server_error_down);
+            recordFileError("file", quotesEscape($file, "s"), $lang_server_error_down);
             $isError = 1;
         }
     }
@@ -2805,20 +2799,20 @@ function downloadFile() {
     if ($isError == 0) {
         
         header("Content-Type: application/octet-stream");
-        header("Content-Disposition: attachment; filename=\"".quotesEscape($file_name,"d")."\""); // quotes required for spacing in filename
+        header("Content-Disposition: attachment; filename=\"" . quotesEscape($file_name, "d") . "\""); // quotes required for spacing in filename
         header("Content-Type: application/force-download");
         header("Content-Type: application/octet-stream");
         header("Content-Type: application/download");
         header("Content-Description: File Transfer");
-        header("Content-Length: ".filesize($fp1));
+        header("Content-Length: " . filesize($fp1));
         
         flush();
         
-        $fp = @fopen($fp1, "r"); 
-        while (!feof($fp)) { 
-            echo @fread($fp, 65536); 
+        $fp = @fopen($fp1, "r");
+        while (!feof($fp)) {
+            echo @fread($fp, 65536);
             @flush();
-        }  
+        }
         @fclose($fp);
     }
     
@@ -2826,80 +2820,68 @@ function downloadFile() {
     unlink($fp1);
 }
 
-###############################################
-# UNESCAPE QUOTES
-###############################################
-
-function quotesUnescape($str) {
+function quotesUnescape($str)
+{
     
-    $str = str_replace("\'","'",$str);
-    $str = str_replace('\"','"',$str);
+    $str = str_replace("\'", "'", $str);
+    $str = str_replace('\"', '"', $str);
     
     return $str;
 }
 
-###############################################
-# ESCAPE QUOTES
-###############################################
-
-function quotesEscape($str, $type) {
+function quotesEscape($str, $type)
+{
     
     if ($type == "s" || $type == "")
-        $str = str_replace("'","\'",$str);
+        $str = str_replace("'", "\'", $str);
     if ($type == "d" || $type == "")
-        $str = str_replace('"','\"',$str);
-        
+        $str = str_replace('"', '\"', $str);
+    
     return $str;
 }
 
-###############################################
-# REPLACE QUOTES
-###############################################
-
-function quotesReplace($str, $type) {
+function quotesReplace($str, $type)
+{
     
     $str = quotesUnescape($str);
     
     if ($type == "s")
-        $str = str_replace("'","&acute;",$str);
+        $str = str_replace("'", "&acute;", $str);
     if ($type == "d")
-        $str = str_replace('"','&quot;',$str);
-        
+        $str = str_replace('"', '&quot;', $str);
+    
     return $str;
 }
 
-###############################################
-# DELETE FILES & FOLDERS
-###############################################
-
-function deleteFiles () {
+function deleteFiles()
+{
     
     global $conn_id;
     global $lang_file_doesnt_exist;
     global $lang_cant_delete;
     
     $folderArray = recreateFileFolderArrays("folder");
-    $fileArray = recreateFileFolderArrays("file");
+    $fileArray   = recreateFileFolderArrays("file");
     
     // folders
     foreach ($folderArray AS $folder) {
         
         $folder = getFileFromPath($folder);
         
-        deleteFolder($folder,$_SESSION["dir_current"]);
+        deleteFolder($folder, $_SESSION["dir_current"]);
     }
     
     // files
     foreach ($fileArray AS $file) {
         
-        $isError = 0;
+        $isError      = 0;
         $file_decoded = urldecode($file);
         
         if ($file != "") {
-        
+            
             // Check if file exists
-            if (checkFileExists("f",$file,$_SESSION["dir_current"]) == 1) {
-                recordFileError("file",$file,$lang_file_doesnt_exist);
+            if (checkFileExists("f", $file, $_SESSION["dir_current"]) == 1) {
+                recordFileError("file", $file, $lang_file_doesnt_exist);
             } else {
                 
                 if (!@ftp_delete($conn_id, $file_decoded)) {
@@ -2915,13 +2897,13 @@ function deleteFiles () {
                 // If deleting decoded file fails, try original file name
                 if ($isError == 1) {
                     
-                    if (!@ftp_delete($conn_id, "".$file."")) {
+                    if (!@ftp_delete($conn_id, "" . $file . "")) {
                         if (checkFirstCharTilde($file) == 1) {
-                            if (!@ftp_delete($conn_id, "".replaceTilde($file)."")) {
-                                recordFileError("file",getFileFromPath($file),$lang_cant_delete);
+                            if (!@ftp_delete($conn_id, "" . replaceTilde($file) . "")) {
+                                recordFileError("file", getFileFromPath($file), $lang_cant_delete);
                             }
                         } else {
-                            recordFileError("file",getFileFromPath($file),$lang_cant_delete);
+                            recordFileError("file", getFileFromPath($file), $lang_cant_delete);
                         }
                     }
                 }
@@ -2930,11 +2912,8 @@ function deleteFiles () {
     }
 }
 
-###############################################
-# DELETE FOLDER
-###############################################
-
-function deleteFolder($folder, $path) {
+function deleteFolder($folder, $path)
+{
     
     global $conn_id;
     global $lang_cant_delete;
@@ -2946,19 +2925,18 @@ function deleteFolder($folder, $path) {
     // List contents of folder
     if ($path != "/" && $path != "~") {
         
-        $folder_path = $path."/".$folder;
+        $folder_path = $path . "/" . $folder;
         
     } else {
         
         if ($_SESSION["win_lin"] == "lin")
-            
             if ($_SESSION["dir_current"] == "/")
-                $folder_path = "/".$folder;
-            if ($_SESSION["dir_current"] == "~")
-                $folder_path = "~/".$folder;
-            
+                $folder_path = "/" . $folder;
+        if ($_SESSION["dir_current"] == "~")
+            $folder_path = "~/" . $folder;
+        
         if ($_SESSION["win_lin"] == "win")
-            $folder_path = "/".$folder;
+            $folder_path = "/" . $folder;
     }
     
     $ftp_rawlist = getFtpRawList($folder_path);
@@ -2971,9 +2949,9 @@ function deleteFolder($folder, $path) {
             // Split up array into values (Lin)
             if ($_SESSION["win_lin"] == "lin") {
                 
-                $ff = preg_split("/[\s]+/",$ff,9);
+                $ff    = preg_split("/[\s]+/", $ff, 9);
                 $perms = $ff[0];
-                $file = $ff[8];
+                $file  = $ff[8];
                 
                 if (getFileType($perms) == "d")
                     $isFolder = 1;
@@ -2984,7 +2962,7 @@ function deleteFolder($folder, $path) {
             // Split up array into values (Win)
             if ($_SESSION["win_lin"] == "win") {
                 
-                $ff = preg_split("/[\s]+/",$ff,4);
+                $ff   = preg_split("/[\s]+/", $ff, 4);
                 $size = $ff[2];
                 $file = $ff[3];
                 
@@ -2995,20 +2973,20 @@ function deleteFolder($folder, $path) {
             }
             
             if ($file != "." && $file != "..") {
-            
+                
                 // Check for sub folders and then perform this function
                 if ($isFolder == 1) {
-                    deleteFolder($file,$folder_path);
+                    deleteFolder($file, $folder_path);
                 } else {
                     // otherwise delete file
-                    $file_path = $folder_path."/".$file;
-                    if (!@ftp_delete($conn_id, "".$file_path.""))  {
+                    $file_path = $folder_path . "/" . $file;
+                    if (!@ftp_delete($conn_id, "" . $file_path . "")) {
                         if (checkFirstCharTilde($file_path) == 1) {
-                            if (!@ftp_delete($conn_id, "".replaceTilde($file_path)."")) {
-                                recordFileError("file",replaceTilde($file_path),$lang_cant_delete);
+                            if (!@ftp_delete($conn_id, "" . replaceTilde($file_path) . "")) {
+                                recordFileError("file", replaceTilde($file_path), $lang_cant_delete);
                             }
                         } else {
-                            recordFileError("file",$file_path,$lang_cant_delete);
+                            recordFileError("file", $file_path, $lang_cant_delete);
                         }
                     }
                 }
@@ -3017,9 +2995,9 @@ function deleteFolder($folder, $path) {
     }
     
     // Check if file exists
-    if (checkFileExists("d",$folder,$folder_path) == 1) {
+    if (checkFileExists("d", $folder, $folder_path) == 1) {
         
-        $_SESSION["errors"][] = str_replace("[file]","<strong>".tidyFolderPath($folder_path,$folder)."</strong>",$lang_folder_doesnt_exist);
+        $_SESSION["errors"][] = str_replace("[file]", "<strong>" . tidyFolderPath($folder_path, $folder) . "</strong>", $lang_folder_doesnt_exist);
         
     } else {
         
@@ -3027,29 +3005,26 @@ function deleteFolder($folder, $path) {
         ftp_cdup($conn_id);
         
         // Delete the empty folder
-        if (!@ftp_rmdir($conn_id, "".$folder_path."")) {
+        if (!@ftp_rmdir($conn_id, "" . $folder_path . "")) {
             if (checkFirstCharTilde($folder_path) == 1) {
-                if (!@ftp_rmdir($conn_id, "".replaceTilde($folder_path)."")) {
-                    recordFileError("folder",replaceTilde($folder_path),$lang_folder_cant_delete);
+                if (!@ftp_rmdir($conn_id, "" . replaceTilde($folder_path) . "")) {
+                    recordFileError("folder", replaceTilde($folder_path), $lang_folder_cant_delete);
                     $isError = 1;
                 }
             } else {
-                recordFileError("folder",$folder_path,$lang_folder_cant_delete);
+                recordFileError("folder", $folder_path, $lang_folder_cant_delete);
                 $isError = 1;
             }
         }
         
         // Remove directory from history
         if ($isError == 0)
-            deleteFtpHistory($folder_path); 
+            deleteFtpHistory($folder_path);
     }
 }
 
-###############################################
-# NEW FILE
-###############################################
-
-function newFile() {
+function newFile()
+{
     
     global $conn_id;
     global $serverTmp;
@@ -3070,16 +3045,15 @@ function newFile() {
     
     $file_name = trim(quotesUnescape($_POST["newFile"]));
     
-    if ($file_name == "") { 
-    
-        $title = $lang_title_new_file;
-        $width = 400;
+    if ($file_name == "") {
+        
+        $title  = $lang_title_new_file;
+        $width  = 400;
         $height = 95;
         
-        // Display pop-up
-        displayPopupOpen(0,$width,$height,0,$title);
+        displayPopupOpen(0, $width, $height, 0, $title);
         
-        echo "<input type=\"text\" name=\"newFile\" id=\"newFile\" placeholder=\"".$lang_new_file_name."\" onkeypress=\"if (event.keyCode == 13){ processForm('".$vars."'); return false;}\">";
+        echo "<input type=\"text\" name=\"newFile\" id=\"newFile\" placeholder=\"" . $lang_new_file_name . "\" onkeypress=\"if (event.keyCode == 13){ processForm('" . $vars . "'); return false;}\">";
         
         if (is_dir($templates_dir)) {
             
@@ -3094,58 +3068,58 @@ function newFile() {
                         
                         $template_found = 1;
                         
-                        $langs .= "<option value=\"".$file_name."\">".$file_name."</option>";
+                        $langs .= "<option value=\"" . $file_name . "\">" . $file_name . "</option>";
                     }
                 }
                 closedir($dh);
             }
         }
         
-        echo "<p>".$lang_template.": ";
+        echo "<p>" . $lang_template . ": ";
         echo "<select name=\"template\">";
-        echo "<option value=\"\">".$lang_no_template."</option>";
+        echo "<option value=\"\">" . $lang_no_template . "</option>";
         echo $langs;
         echo "</select>";
         
-        displayPopupClose(0,$vars,1);
+        displayPopupClose(0, $vars, 1);
         
     } else {
         
-        $fp1 = $serverTmp."/".$file_name;
+        $fp1 = $serverTmp . "/" . $file_name;
         
         if ($_SESSION["dir_current"] == "/")
-            $fp2 = "/".$file_name;
+            $fp2 = "/" . $file_name;
         else
-            $fp2 = $_SESSION["dir_current"]."/".$file_name;
+            $fp2 = $_SESSION["dir_current"] . "/" . $file_name;
         
         // Check if file already exists
-        if (checkFileExists("f",$file_name,$_SESSION["dir_current"]) == 1) {
-            recordFileError("file",$file_name,$lang_file_exists);
+        if (checkFileExists("f", $file_name, $_SESSION["dir_current"]) == 1) {
+            recordFileError("file", $file_name, $lang_file_exists);
         } else {
-        
+            
             // Get template
             if ($_POST["template"] != $lang_no_template) {
                 
-                $file_name = $templates_dir."/".$_POST["template"];
-                $fd = @fopen($file_name,"r");
-                $content = @fread($fd,filesize($file_name));
+                $file_name = $templates_dir . "/" . $_POST["template"];
+                $fd        = @fopen($file_name, "r");
+                $content   = @fread($fd, filesize($file_name));
                 @fclose($fd);
             }
             
             // Write file to server
-            $tmpFile = @fopen($fp1,"w+");
-            @fputs($tmpFile,$content);
+            $tmpFile = @fopen($fp1, "w+");
+            @fputs($tmpFile, $content);
             @fclose($tmpFile);
             
             // Upload the file
             if (!@ftp_put($conn_id, $fp2, $fp1, FTP_BINARY)) {
                 if (checkFirstCharTilde($fp2) == 1) {
                     if (!@ftp_put($conn_id, replaceTilde($fp2), $fp1, FTP_BINARY)) {
-                        recordFileError("file",$file_name,$lang_file_cant_make);
+                        recordFileError("file", $file_name, $lang_file_cant_make);
                         $isError = 1;
                     }
                 } else {
-                    recordFileError("file",$file_name,$lang_file_cant_make);
+                    recordFileError("file", $file_name, $lang_file_cant_make);
                     $isError = 1;
                 }
             }
@@ -3154,7 +3128,7 @@ function newFile() {
                 
                 // Open editor
                 $file = $fp2;
-                displayEditFileForm($file,$content);
+                displayEditFileForm($file, $content);
             }
         }
         
@@ -3163,32 +3137,29 @@ function newFile() {
     }
 }
 
-###############################################
-# CHECK IF FILE EXISTS
-###############################################
-
-function checkFileExists($type, $file_name, $folder_path) {
+function checkFileExists($type, $file_name, $folder_path)
+{
     
     $ftp_rawlist = getFtpRawList($folder_path);
     
     if (is_array($ftp_rawlist)) {
-    
+        
         $fileNameAr = array();
         
         // Go through array of files/folders
         foreach ($ftp_rawlist AS $ff) {
-        
+            
             // Lin
             if ($_SESSION["win_lin"] == "lin") {
-            
+                
                 // Split up array into values
-                $ff = preg_split("/[\s]+/",$ff,9);
+                $ff = preg_split("/[\s]+/", $ff, 9);
                 
                 $perms = $ff[0];
-                $file = $ff[8];
+                $file  = $ff[8];
                 
                 if ($file != "." && $file != "..") {
-                
+                    
                     if ($type == "f" && getFileType($perms) == "f")
                         $fileNameAr[] = $file;
                     
@@ -3199,9 +3170,9 @@ function checkFileExists($type, $file_name, $folder_path) {
             
             // Win
             if ($_SESSION["win_lin"] == "win") {
-            
+                
                 // Split up array into values
-                $ff = preg_split("/[\s]+/",$ff,4);
+                $ff = preg_split("/[\s]+/", $ff, 4);
                 
                 $size = $ff[2];
                 $file = $ff[3];
@@ -3218,19 +3189,16 @@ function checkFileExists($type, $file_name, $folder_path) {
         }
         
         // Check if file is in array
-        if (in_array($file_name,$fileNameAr))
+        if (in_array($file_name, $fileNameAr))
             return 1;
-    
+        
     } else {
         return 0;
     }
 }
 
-###############################################
-# NEW FOLDER
-###############################################
-
-function newFolder() {
+function newFolder()
+{
     
     global $conn_id;
     global $lang_title_new_folder;
@@ -3243,37 +3211,33 @@ function newFolder() {
     
     $folder = trim(quotesUnescape($_POST["newFolder"]));
     
-    if ($folder == "") { 
-    
-        $title = $lang_title_new_folder;
-        $width = 400;
+    if ($folder == "") {
+        
+        $title  = $lang_title_new_folder;
+        $width  = 400;
         $height = 40;
         
-        // Display pop-up
-        displayPopupOpen(0,$width,$height,0,$title);
+        displayPopupOpen(0, $width, $height, 0, $title);
         
-        echo "<input type=\"text\" name=\"newFolder\" id=\"newFolder\" placeholder=\"".$lang_new_folder_name."\" onkeypress=\"if (event.keyCode == 13){ processForm('".$vars."'); return false;}\">";
+        echo "<input type=\"text\" name=\"newFolder\" id=\"newFolder\" placeholder=\"" . $lang_new_folder_name . "\" onkeypress=\"if (event.keyCode == 13){ processForm('" . $vars . "'); return false;}\">";
         
-        displayPopupClose(0,$vars,1);
-    
+        displayPopupClose(0, $vars, 1);
+        
     } else {
-    
+        
         // Check if folder exists
-        if (checkFileExists("d",$folder,$_SESSION["dir_current"]) == 1 || $folder == "..") {
-            recordFileError("folder",$folder,$lang_folder_exists);
+        if (checkFileExists("d", $folder, $_SESSION["dir_current"]) == 1 || $folder == "..") {
+            recordFileError("folder", $folder, $lang_folder_exists);
         } else {
             
             if (!@ftp_mkdir($conn_id, $folder))
-                recordFileError("folder",$folder,$lang_folder_cant_make);
+                recordFileError("folder", $folder, $lang_folder_cant_make);
         }
     }
 }
 
-###############################################
-# UPLOAD FILE
-###############################################
-
-function uploadFile() {
+function uploadFile()
+{
     
     global $conn_id;
     global $serverTmp;
@@ -3281,41 +3245,41 @@ function uploadFile() {
     global $lang_browser_error_up;
     
     $file_name = $_SERVER['HTTP_X_FILENAME'];
-    $path = $_GET["filePath"];
+    $path      = $_GET["filePath"];
     
     if ($file_name) {
         
-        $fp1 = $serverTmp."/".$file_name;
+        $fp1 = $serverTmp . "/" . $file_name;
         
         // Check if a folder is being uploaded
         if ($path != "") {
-        
+            
             // Check to see folder path exists (and create)
             createFolderHeirarchy($path);
-            $fp2 = $_SESSION["dir_current"]."/".$path.$file_name;
+            $fp2 = $_SESSION["dir_current"] . "/" . $path . $file_name;
             
         } else {
             
             if ($_SESSION["dir_current"] == "/")
-                $fp2 = "/".$file_name;
+                $fp2 = "/" . $file_name;
             else
-                $fp2 = $_SESSION["dir_current"]."/".$file_name;
+                $fp2 = $_SESSION["dir_current"] . "/" . $file_name;
         }
         
         // Check if file reached server
-        if (file_put_contents($fp1,file_get_contents('php://input'))) {
+        if (file_put_contents($fp1, file_get_contents('php://input'))) {
             
             if (!@ftp_put($conn_id, $fp2, $fp1, FTP_BINARY)) {
                 if (checkFirstCharTilde($fp2) == 1) {
                     if (!@ftp_put($conn_id, replaceTilde($fp2), $fp1, FTP_BINARY)) {
-                        recordFileError("file",$file_name,$lang_server_error_up);
+                        recordFileError("file", $file_name, $lang_server_error_up);
                     }
                 } else {
-                    recordFileError("file",$file_name,$lang_server_error_up);
+                    recordFileError("file", $file_name, $lang_server_error_up);
                 }
             }
         } else {
-            recordFileError("file",$file_name,$lang_browser_error_up);
+            recordFileError("file", $file_name, $lang_browser_error_up);
         }
         
         // Delete tmp file
@@ -3323,25 +3287,22 @@ function uploadFile() {
     }
 }
 
-###############################################
-# CREATE FOLDER HEIRARCHY
-###############################################
-
-function createFolderHeirarchy($path) {
+function createFolderHeirarchy($path)
+{
     
     global $conn_id;
     global $lang_folder_cant_make;
     
-    $folderAr = explode("/",$path);
+    $folderAr = explode("/", $path);
     
     $n = sizeof($folderAr);
     for ($i = 0; $i < $n; $i++) {
-    
+        
         if ($folder == "")
             $folder = $folderAr[$i];
         else
-            $folder = $folder."/".$folderAr[$i];
-    
+            $folder = $folder . "/" . $folderAr[$i];
+        
         if (!@ftp_mkdir($conn_id, $folder)) {
             if (checkFirstCharTilde($folder) == 1)
                 @ftp_mkdir($conn_id, replaceTilde($folder));
@@ -3349,152 +3310,129 @@ function createFolderHeirarchy($path) {
     }
 }
 
-###############################################
-# UPLOAD FILE (IFRAME)
-###############################################
-
-function iframeUpload() {
+function iframeUpload()
+{
     
     global $conn_id;
     global $lang_server_error_up;
     global $lang_browser_error_up;
     
     $fp1 = $_FILES["uploadFile"]["tmp_name"];
-    $fp2 = $_SESSION["dir_current"]."/".$_FILES["uploadFile"]["name"];
+    $fp2 = $_SESSION["dir_current"] . "/" . $_FILES["uploadFile"]["name"];
     
     if ($fp1 != "") {
         
         if (!@ftp_put($conn_id, $fp2, $fp1, FTP_BINARY)) {
             if (checkFirstCharTilde($fp2) == 1) {
                 if (!@ftp_put($conn_id, replaceTilde($fp2), $fp1, FTP_BINARY)) {
-                    recordFileError("file",$file_name,$lang_server_error_up);
+                    recordFileError("file", $file_name, $lang_server_error_up);
                 }
             } else {
-                recordFileError("file",$file_name,$lang_server_error_up);
+                recordFileError("file", $file_name, $lang_server_error_up);
             }
         }
         
     } else {
-        recordFileError("file",$file_name,$lang_browser_error_up);
+        recordFileError("file", $file_name, $lang_browser_error_up);
     }
 }
 
-###############################################
-# DELETE FTP HISTORY
-###############################################
-
-function deleteFtpHistory($dirDelete) {
+function deleteFtpHistory($dirDelete)
+{
     
-    $dirDelete = str_replace("/","\/",$dirDelete);
+    $dirDelete = str_replace("/", "\/", $dirDelete);
     
     // Check each item in the history
     if (is_array($_SESSION["dir_history"])) {
         foreach ($_SESSION["dir_history"] AS $dir) {
-        
-            if (!@preg_match("/^".$dirDelete."/", $dir))
+            
+            if (!@preg_match("/^" . $dirDelete . "/", $dir))
                 $dir_history[] = $dir;
         }
-    
+        
         // Set new array
         $_SESSION["dir_history"] = $dir_history;
-    
+        
         // Sort array
         if (is_array($_SESSION["dir_history"]))
             asort($_SESSION["dir_history"]);
     }
 }
 
-###############################################
-# SINGLE QUOTE ESCAPE
-###############################################
-
-function singleQuoteEscape($str) {
-    return str_replace("'","\'",$str);
+function singleQuoteEscape($str)
+{
+    return str_replace("'", "\'", $str);
 }
 
-###############################################
-# GET FILE TYPE
-###############################################
-
-function getFileType($perms) {
-
-    if (substr($perms,0,1) == "d")
+function getFileType($perms)
+{
+    
+    if (substr($perms, 0, 1) == "d")
         return "d"; // directory
-    if (substr($perms,0,1) == "l")
+    if (substr($perms, 0, 1) == "l")
         return "l"; // link
-    if (substr($perms,0,1) == "-")
+    if (substr($perms, 0, 1) == "-")
         return "f"; // file
 }
 
-###############################################
-# DISPLAY AJAX DIV OPEN
-###############################################
-
-function displayAjaxDivOpen() {
- ?>
-<div id="ajaxContentWindow" onContextMenu="displayContextMenu(event,'','',<?php echo assignWinLinNum(); ?>)" onClick="unselectFiles()">
-<?php 
+function displayAjaxDivOpen()
+{
+?>
+<div id="ajaxContentWindow" onContextMenu="displayContextMenu(event,'','',<?php
+    echo assignWinLinNum();
+?>)" onClick="unselectFiles()">
+<?php
 }
 
-###############################################
-# DISPLAY AJAX DIV CLOSE
-###############################################
-
-function displayAjaxDivClose() {
- ?>
+function displayAjaxDivClose()
+{
+?>
 </div>
-<?php 
+<?php
 }
 
-###############################################
-# DISPLAY ERRORS
-###############################################
-
-function displayErrors() {
+function displayErrors()
+{
     
     global $lang_title_errors;
     
     $sizeAr = sizeof($_SESSION["errors"]);
     
     if ($sizeAr > 0) {
-    
-        $width = (getMaxStrLen($_SESSION["errors"]) * 10) + 30;
+        
+        $width  = (getMaxStrLen($_SESSION["errors"]) * 10) + 30;
         $height = sizeof($_SESSION["errors"]) * 25;
         
         $title = $lang_title_errors;
         
-        // Display pop-up
-        displayPopupOpen(1,$width,$height,1,$title);
+        displayPopupOpen(1, $width, $height, 1, $title);
         
         $errors = array_reverse($_SESSION["errors"]);
         
         foreach ($errors AS $error) {
-            echo $error."<br>";
+            echo $error . "<br>";
         }
         
         $vars = "&ftpAction=openFolder&resetErrorArray=1";
         
-        displayPopupClose(1,$vars,0);
+        displayPopupClose(1, $vars, 0);
     }
 }
 
-//##############################################
-// DISPLAY POP-UP FRAME OPEN
-//##############################################
-
-function displayPopupOpen($resize, $width, $height, $isError, $title) {
+function displayPopupOpen($resize, $width, $height, $isError, $title)
+{
     
     // Set default sizes of exceeded
     if ($resize == 1) {
-    
+        
         if ($width < 400)
             $width = 400;
-    
+        
         if ($height > 400)
             $height = 400;
     }
     
-    $windowWidth = $_POST["windowWidth"];
+    $windowWidth  = $_POST["windowWidth"];
     $windowHeight = $_POST["windowHeight"];
     
     // Center window
@@ -3509,14 +3447,14 @@ function displayPopupOpen($resize, $width, $height, $isError, $title) {
         $top = 250;
     
     echo "<div id=\"blackOutDiv\">";
-    echo "<div id=\"popupFrame\" style=\"left: ".$left."px; top: ".$top."px; width: ".$width."px;\">";
+    echo "<div id=\"popupFrame\" style=\"left: " . $left . "px; top: " . $top . "px; width: " . $width . "px;\">";
     
     if ($isError == 1)
         $divId = "popupHeaderError";
     else
         $divId = "popupHeaderAction";
     
-    echo "<div id=\"".$divId."\">";
+    echo "<div id=\"" . $divId . "\">";
     echo $title;
     echo "</div>";
     
@@ -3525,14 +3463,11 @@ function displayPopupOpen($resize, $width, $height, $isError, $title) {
     else
         $divId = "popupBodyAction";
     
-    echo "<div id=\"".$divId."\" style=\"height: ".$height."px;\">";
+    echo "<div id=\"" . $divId . "\" style=\"height: " . $height . "px;\">";
 }
 
-//##############################################
-// DISPLAY POP-UP FRAME CLOSE
-//##############################################
-
-function displayPopupClose($isError, $vars, $btnCancel) {
+function displayPopupClose($isError, $vars, $btnCancel)
+{
     
     global $lang_btn_ok;
     global $lang_btn_cancel;
@@ -3543,16 +3478,16 @@ function displayPopupClose($isError, $vars, $btnCancel) {
         $divId = "popupFooterError";
     else
         $divId = "popupFooterAction";
-        
-    echo "<div id=\"".$divId."\">";
+    
+    echo "<div id=\"" . $divId . "\">";
     
     // OK button
     if ($vars != "")
-        echo "<input type=\"button\" class=\"popUpBtn\" value=\"".$lang_btn_ok."\" onClick=\"processForm('".$vars."'); activateActionButtons(0,0);\"> ";
+        echo "<input type=\"button\" class=\"popUpBtn\" value=\"" . $lang_btn_ok . "\" onClick=\"processForm('" . $vars . "'); activateActionButtons(0,0);\"> ";
     
     // Cancel button
     if ($btnCancel == 1)
-        echo "<input type=\"button\" class=\"popUpBtn\" value=\"".$lang_btn_cancel."\" onClick=\"processForm('&ftpAction=openFolder');\"> ";
+        echo "<input type=\"button\" class=\"popUpBtn\" value=\"" . $lang_btn_cancel . "\" onClick=\"processForm('&ftpAction=openFolder');\"> ";
     
     echo "</div>";
     
@@ -3560,11 +3495,8 @@ function displayPopupClose($isError, $vars, $btnCancel) {
     echo "</div>";
 }
 
-//##############################################
-// GET MAX STR LENGTH FROM ARRAY
-//##############################################
-
-function getMaxStrLen($array) {
+function getMaxStrLen($array)
+{
     
     foreach ($array AS $str) {
         
@@ -3577,24 +3509,18 @@ function getMaxStrLen($array) {
     return $maxLen;
 }
 
-//##############################################
-// GET FILE/FOLDER NAME
-//##############################################
-
-function getFileFromPath($str) {
+function getFileFromPath($str)
+{
     
-    $str = preg_replace("/^(.)+\//","",$str);
-    $str = preg_replace("/^~/","",$str);
+    $str = preg_replace("/^(.)+\//", "", $str);
+    $str = preg_replace("/^~/", "", $str);
     
     return $str;
 }
 
-//##############################################
-// PARENT OPEN FOLDER
-//##############################################
-
-function parentOpenFolder() {
- ?>
+function parentOpenFolder()
+{
+?>
 <html>
 <body>
 <script type="text/javascript">
@@ -3602,50 +3528,41 @@ function parentOpenFolder() {
 </script>
 </body>
 </html>
-<?php 
+<?php
 }
 
-//##############################################
-// LOAD EDITABLE EXTENSIONS
-//##############################################
-
-function loadEditableExts() {
-
+function loadEditableExts()
+{
+    
     global $editableExts;
     
     if ($editableExts != "") {
- ?>
+?>
 <script type="text/javascript">
-<?php 
-        echo "var editableExts = new Array();"."\n";
-        $extAr = explode(",",$editableExts);
-        $n = sizeof($extAr);
+<?php
+        echo "var editableExts = new Array();" . "\n";
+        $extAr = explode(",", $editableExts);
+        $n     = sizeof($extAr);
         for ($i = 0; $i < $n; $i++) {
-            echo "editableExts[".$i."] = '".$extAr[$i]."';\n";
+            echo "editableExts[" . $i . "] = '" . $extAr[$i] . "';\n";
         }
     }
- ?>
+?>
 </script>
-<?php 
+<?php
 }
 
-//##############################################
-// REPLACE TILDE FROM PATH
-//##############################################
-
-function replaceTilde($str) {
+function replaceTilde($str)
+{
     
-    $str = str_replace("~","/",$str);
-    $str = str_replace("//","/",$str);
+    $str = str_replace("~", "/", $str);
+    $str = str_replace("//", "/", $str);
     
     return $str;
 }
 
-//##############################################
-// ASSIGN NUMBER TO WIN/LIN VAR
-//##############################################
-
-function assignWinLinNum() {
+function assignWinLinNum()
+{
     
     if ($_SESSION["win_lin"] == "lin")
         return 1;
@@ -3653,37 +3570,31 @@ function assignWinLinNum() {
         return 0;
 }
 
-//##############################################
-// GET PARENT DIRECTORY
-//##############################################
-
-function getParentDir() {
+function getParentDir()
+{
     
     if ($_SESSION["dir_current"] == "/") {
-    
+        
         $parent = "/";
-    
+        
     } else {
-    
+        
         $path_parts = pathinfo($_SESSION["dir_current"]);
-        $parent = $path_parts['dirname'];
+        $parent     = $path_parts['dirname'];
     }
     
     return $parent;
 }
 
-//##############################################
-// DISPLAY SKIN SELECT
-//##############################################
-
-function displaySkinSelect($skin) {
+function displaySkinSelect($skin)
+{
     
     global $lang_skin;
     global $lang_skins_empty;
     global $lang_skins_locked;
     global $lang_skins_missing;
     
-    $dir = "skins";
+    $dir        = "skins";
     $skin_found = 0;
     
     if ($skin == "")
@@ -3705,16 +3616,16 @@ function displaySkinSelect($skin) {
                     $skin_found = 1;
                     
                     // Strip extension
-                    $file_name = preg_replace("/\..*$/","",$file_name);
+                    $file_name = preg_replace("/\..*$/", "", $file_name);
                     
-                    $skins = "<option value=\"".$file_name."\"";
+                    $skins = "<option value=\"" . $file_name . "\"";
                     
                     if ($file_name == $skin)
                         $skins .= " selected";
                     
                     $skins .= ">";
                     
-                    $skins .= preg_replace("/\..*$/","",$file_name);
+                    $skins .= preg_replace("/\..*$/", "", $file_name);
                     
                     $skins .= "</option>";
                     
@@ -3725,16 +3636,16 @@ function displaySkinSelect($skin) {
             
             if ($skin_found == 0) {
                 
-                echo "<p>".$lang_skin.": ";
-                echo str_replace("[skins]","<strong>skins</strong>", $lang_skins_empty);
-            
-            } else {
-            
-                if ($i > 1) {
+                echo "<p>" . $lang_skin . ": ";
+                echo str_replace("[skins]", "<strong>skins</strong>", $lang_skins_empty);
                 
+            } else {
+                
+                if ($i > 1) {
+                    
                     sort($skinsAr);
                     
-                    echo "<p>".$lang_skin.": ";
+                    echo "<p>" . $lang_skin . ": ";
                     echo "<select name=\"skin\" tabindex=\"-1\">";
                     
                     foreach ($skinsAr AS $skin) {
@@ -3744,31 +3655,28 @@ function displaySkinSelect($skin) {
                     echo "</select>";
                     
                 } else {
-                    echo "<input type=\"hidden\" name=\"skin\" value=\"".$file_name."\">";
+                    echo "<input type=\"hidden\" name=\"skin\" value=\"" . $file_name . "\">";
                 }
             }
             
         } else {
             
-            echo "<p>".$lang_skin.": ";
-            echo str_replace("[skins]","<strong>skins</strong>", $lang_skins_locked);
+            echo "<p>" . $lang_skin . ": ";
+            echo str_replace("[skins]", "<strong>skins</strong>", $lang_skins_locked);
         }
         
     } else {
-        echo "<p>".$lang_skin.": ";
-        echo str_replace("[skins]","<strong>skins</strong>", $lang_skins_missing);
+        echo "<p>" . $lang_skin . ": ";
+        echo str_replace("[skins]", "<strong>skins</strong>", $lang_skins_missing);
     }
 }
 
-//##############################################
-// DISPLAY LANGUAGE SELECT
-//##############################################
-
-function displayLangSelect($lang) {
+function displayLangSelect($lang)
+{
     
     global $lang_language;
     
-    $dir = "languages";
+    $dir        = "languages";
     $lang_found = 0;
     
     if (is_dir($dir)) {
@@ -3785,14 +3693,14 @@ function displayLangSelect($lang) {
                     $file_name = $file;
                     
                     // Open file to get language name
-                    include($dir."/".$file_name);
+                    include($dir . "/" . $file_name);
                     
                     $lang_found = 1;
                     
                     // Strip extension
-                    $file_name = preg_replace("/\..*$/","",$file_name);
+                    $file_name = preg_replace("/\..*$/", "", $file_name);
                     
-                    $langs = "<option value=\"".$file_name."\"";
+                    $langs = "<option value=\"" . $file_name . "\"";
                     
                     if ($file_name == $lang)
                         $langs .= " selected";
@@ -3806,7 +3714,7 @@ function displayLangSelect($lang) {
                     $langsAr[] = $langs;
                     
                     // Restore session language file
-                    include($dir."/".$lang.".php");
+                    include($dir . "/" . $lang . ".php");
                 }
             }
             closedir($dh);
@@ -3818,10 +3726,10 @@ function displayLangSelect($lang) {
             } else {
                 
                 if ($i > 1) {
-                
+                    
                     sort($langsAr);
                     
-                    echo $lang_language.": ";
+                    echo $lang_language . ": ";
                     echo "<select name=\"lang\" tabindex=\"-1\">";
                     
                     foreach ($langsAr AS $lang) {
@@ -3831,7 +3739,7 @@ function displayLangSelect($lang) {
                     echo "</select>";
                     
                 } else {
-                    echo "<input type=\"hidden\" name=\"lang\" value=\"".$file_name."\">";
+                    echo "<input type=\"hidden\" name=\"lang\" value=\"" . $file_name . "\">";
                 }
             }
             
@@ -3845,72 +3753,115 @@ function displayLangSelect($lang) {
     }
 }
 
-//##############################################
-// TIDY FOLDER PATH
-//##############################################
-
-function tidyFolderPath($str1, $str2) {
+function tidyFolderPath($str1, $str2)
+{
     
     $str1 = replaceTilde($str1);
     
     if ($str1 == "/")
-        return "/".$str2;
+        return "/" . $str2;
     else
-        return $str1."/".$str2;
+        return $str1 . "/" . $str2;
 }
 
-//##############################################
-// LOAD JAVASCRIPT LANGUAGE VARS
-//##############################################
-
-function loadJsLangVars() {
+function loadJsLangVars()
+{
     
     // Include language file again to save listing globals
     $langFileArray = getFileArray("languages");
     
-    if (in_array($_SESSION["lang"],$langFileArray))
-        include("languages/".$_SESSION["lang"].".php");
+    if (in_array($_SESSION["lang"], $langFileArray))
+        include("languages/" . $_SESSION["lang"] . ".php");
     else
         include("languages/en_us.php");
- ?>
+?>
 <script type="text/javascript">
-var lang_no_xmlhttp = '<?php echo quotesEscape($lang_no_xmlhttp,"s"); ?>';
-var lang_support_drop = '<?php echo quotesEscape($lang_support_drop,"s"); ?>';
-var lang_no_support_drop = '<?php echo quotesEscape($lang_no_support_drop,"s"); ?>';
-var lang_transfer_pending = '<?php echo quotesEscape($lang_transfer_pending,"s"); ?>';
-var lang_transferring_to_ftp = '<?php echo quotesEscape($lang_transferring_to_ftp,"s"); ?>';
-var lang_no_file_selected = '<?php echo quotesEscape($lang_no_file_selected,"s"); ?>';
-var lang_none_selected = '<?php echo quotesEscape($lang_none_selected,"s"); ?>';
-var lang_context_open = '<?php echo quotesEscape($lang_context_open,"s"); ?>';
-var lang_context_download = '<?php echo quotesEscape($lang_context_download,"s"); ?>';
-var lang_context_edit = '<?php echo quotesEscape($lang_context_edit,"s"); ?>';
-var lang_context_cut = '<?php echo quotesEscape($lang_context_cut,"s"); ?>';
-var lang_context_copy = '<?php echo quotesEscape($lang_context_copy,"s"); ?>';
-var lang_context_paste = '<?php echo quotesEscape($lang_context_paste,"s"); ?>';
-var lang_context_rename = '<?php echo quotesEscape($lang_context_rename,"s"); ?>';
-var lang_context_delete = '<?php echo quotesEscape($lang_context_delete,"s"); ?>';
-var lang_context_chmod = '<?php echo quotesEscape($lang_context_chmod,"s"); ?>';
-var lang_size_b = '<?php echo quotesEscape($lang_size_b,"s"); ?>';
-var lang_size_kb = '<?php echo quotesEscape($lang_size_kb,"s"); ?>';
-var lang_size_mb = '<?php echo quotesEscape($lang_size_mb,"s"); ?>';
-var lang_size_gb = '<?php echo quotesEscape($lang_size_gb,"s"); ?>';
-var lang_btn_upload_file = '<?php echo quotesEscape($lang_btn_upload_file,"s"); ?>';
-var lang_btn_upload_files = '<?php echo quotesEscape($lang_btn_upload_files,"s"); ?>';
-var lang_btn_upload_repeat = '<?php echo quotesEscape($lang_btn_upload_repeat,"s"); ?>';
-var lang_btn_upload_folder = '<?php echo quotesEscape($lang_btn_upload_folder,"s"); ?>';
-var lang_file_size_error = '<?php echo quotesEscape($lang_file_size_error,"s"); ?>';
+var lang_no_xmlhttp = '<?php
+    echo quotesEscape($lang_no_xmlhttp, "s");
+?>';
+var lang_support_drop = '<?php
+    echo quotesEscape($lang_support_drop, "s");
+?>';
+var lang_no_support_drop = '<?php
+    echo quotesEscape($lang_no_support_drop, "s");
+?>';
+var lang_transfer_pending = '<?php
+    echo quotesEscape($lang_transfer_pending, "s");
+?>';
+var lang_transferring_to_ftp = '<?php
+    echo quotesEscape($lang_transferring_to_ftp, "s");
+?>';
+var lang_no_file_selected = '<?php
+    echo quotesEscape($lang_no_file_selected, "s");
+?>';
+var lang_none_selected = '<?php
+    echo quotesEscape($lang_none_selected, "s");
+?>';
+var lang_context_open = '<?php
+    echo quotesEscape($lang_context_open, "s");
+?>';
+var lang_context_download = '<?php
+    echo quotesEscape($lang_context_download, "s");
+?>';
+var lang_context_edit = '<?php
+    echo quotesEscape($lang_context_edit, "s");
+?>';
+var lang_context_cut = '<?php
+    echo quotesEscape($lang_context_cut, "s");
+?>';
+var lang_context_copy = '<?php
+    echo quotesEscape($lang_context_copy, "s");
+?>';
+var lang_context_paste = '<?php
+    echo quotesEscape($lang_context_paste, "s");
+?>';
+var lang_context_rename = '<?php
+    echo quotesEscape($lang_context_rename, "s");
+?>';
+var lang_context_delete = '<?php
+    echo quotesEscape($lang_context_delete, "s");
+?>';
+var lang_context_chmod = '<?php
+    echo quotesEscape($lang_context_chmod, "s");
+?>';
+var lang_size_b = '<?php
+    echo quotesEscape($lang_size_b, "s");
+?>';
+var lang_size_kb = '<?php
+    echo quotesEscape($lang_size_kb, "s");
+?>';
+var lang_size_mb = '<?php
+    echo quotesEscape($lang_size_mb, "s");
+?>';
+var lang_size_gb = '<?php
+    echo quotesEscape($lang_size_gb, "s");
+?>';
+var lang_btn_upload_file = '<?php
+    echo quotesEscape($lang_btn_upload_file, "s");
+?>';
+var lang_btn_upload_files = '<?php
+    echo quotesEscape($lang_btn_upload_files, "s");
+?>';
+var lang_btn_upload_repeat = '<?php
+    echo quotesEscape($lang_btn_upload_repeat, "s");
+?>';
+var lang_btn_upload_folder = '<?php
+    echo quotesEscape($lang_btn_upload_folder, "s");
+?>';
+var lang_file_size_error = '<?php
+    echo quotesEscape($lang_file_size_error, "s");
+?>';
 
-var upload_limit = '<?php echo $_SESSION["upload_limit"]; ?>';
+var upload_limit = '<?php
+    echo $_SESSION["upload_limit"];
+?>';
 </script>
-<?php 
+<?php
 }
 
-//##############################################
-// LOAD JAVASCRIPT LANGUAGE VARS
-//##############################################
-
-function setLangFile() {
-
+function setLangFile()
+{
+    
     // The order of these determines the proper display
     if ($_COOKIE["lang"] != "")
         $lang = $_COOKIE["lang"];
@@ -3928,10 +3879,10 @@ function setLangFile() {
                 while (($file = readdir($dh)) !== false) {
                     if ($file != "." && $file != ".." && $file != "index.html") {
                         
-                        include("languages/".$file);
+                        include("languages/" . $file);
                         
                         if ($file_lang_default == 1)
-                            $lang = str_replace(".php","",$file);
+                            $lang = str_replace(".php", "", $file);
                     }
                 }
                 closedir($dh);
@@ -3942,32 +3893,25 @@ function setLangFile() {
     $_SESSION["lang"] = $lang;
 }
 
-//##############################################
-// SESSION ENDED
-//##############################################
-
-function sessionExpired($message) {
-
+function sessionExpired($message)
+{
+    
     global $lang_title_ended;
     global $lang_btn_login;
     
     $title = $lang_title_ended;
     
-    // Display pop-up
-    displayPopupOpen(1,200,90,1,$title);
+    displayPopupOpen(1, 200, 90, 1, $title);
     
     echo $message;
     
-    echo "<p><input type=\"button\" id=\"btnLogin\" value=\"".$lang_btn_login."\" onClick=\"document.location.href='?openFolder=".$_POST["openFolder"]."'\">";
+    echo "<p><input type=\"button\" id=\"btnLogin\" value=\"" . $lang_btn_login . "\" onClick=\"document.location.href='?openFolder=" . $_POST["openFolder"] . "'\">";
     
-    displayPopupClose(1,"",0);
+    displayPopupClose(1, "", 0);
 }
 
-//##############################################
-// SET UPLOAD LIMIT
-//##############################################
-
-function setUploadLimit() {
+function setUploadLimit()
+{
     
     global $lang_size_kb;
     global $lang_size_mb;
@@ -3980,28 +3924,28 @@ function setUploadLimit() {
         //if (preg_match('/msie [1-8]/i',$_SERVER['HTTP_USER_AGENT']))
         //    $upload_limit = ini_get('upload_max_filesize');
         //else
-            $upload_limit = ini_get('memory_limit');
+        $upload_limit = ini_get('memory_limit');
         
-        $ll = substr($upload_limit,strlen($upload_limit)-1,1);
+        $ll = substr($upload_limit, strlen($upload_limit) - 1, 1);
         
         if ($ll == "B") {
-            $upload_limit = str_replace("B","",$upload_limit);
+            $upload_limit = str_replace("B", "", $upload_limit);
             $upload_limit = $upload_limit * 1;
         }
         if ($ll == "K") {
-            $upload_limit = str_replace("K","",$upload_limit);
+            $upload_limit = str_replace("K", "", $upload_limit);
             $upload_limit = $upload_limit * 1024;
         }
         if ($ll == "M") {
-            $upload_limit = str_replace("M","",$upload_limit);
+            $upload_limit = str_replace("M", "", $upload_limit);
             $upload_limit = $upload_limit * 1024 * 1024;
         }
         if ($ll == "G") {
-            $upload_limit = str_replace("G","",$upload_limit);
+            $upload_limit = str_replace("G", "", $upload_limit);
             $upload_limit = $upload_limit * 1024 * 1024 * 1024;
         }
         if ($ll == "T") {
-            $upload_limit = str_replace("T","",$upload_limit);
+            $upload_limit = str_replace("T", "", $upload_limit);
             $upload_limit = $upload_limit * 1024 * 1024 * 1024 * 1024;
         }
         
@@ -4009,11 +3953,8 @@ function setUploadLimit() {
     }
 }
 
-//##############################################
-// ADJUST BUTTON WIDTH (FOR LANGUAGES)
-//##############################################
-
-function adjustButtonWidth($str) {
+function adjustButtonWidth($str)
+{
     
     if (strlen(utf8_decode($str)) > 12)
         return "inputButtonNf";
@@ -4021,18 +3962,15 @@ function adjustButtonWidth($str) {
         return "inputButton";
 }
 
-//##############################################
-// CHECK REFERER MATCHES DOMAIN
-//##############################################
-
-function checkReferer() {
+function checkReferer()
+{
     
     global $lang_session_expired;
     
     $domain = $_SESSION["domain"];
-    $domain = str_replace(".","\.",$domain);
+    $domain = str_replace(".", "\.", $domain);
     
-    if (preg_match("/".$domain."/",$_SERVER["HTTP_REFERER"])) {
+    if (preg_match("/" . $domain . "/", $_SERVER["HTTP_REFERER"])) {
         return 1;
     } else {
         sessionExpired($lang_session_expired);
@@ -4041,32 +3979,23 @@ function checkReferer() {
     }
 }
 
-//##############################################
-// CHECK FIRST CHAR IS TILDE
-//##############################################
-
-function checkFirstCharTilde($str) {
+function checkFirstCharTilde($str)
+{
     
-    if (substr($str,0,1) == "~")
+    if (substr($str, 0, 1) == "~")
         return 1;
     else
         return 0;
 }
 
-//##############################################
-// RECORD FILE/FOLDER ERROR
-//##############################################
-
-function recordFileError($str, $file_name, $error) {
+function recordFileError($str, $file_name, $error)
+{
     
-    $_SESSION["errors"][] = str_replace("[".$str."]","<strong>".sanitizeStr($file_name)."</strong>",$error);
+    $_SESSION["errors"][] = str_replace("[" . $str . "]", "<strong>" . sanitizeStr($file_name) . "</strong>", $error);
 }
 
-//##############################################
-// RECORD FILE/FOLDER ERROR
-//##############################################
-
-function getFileArray($dir) {
+function getFileArray($dir)
+{
     
     $langFileArray = array();
     
@@ -4078,7 +4007,7 @@ function getFileArray($dir) {
             while (($file = readdir($dh)) !== false) {
                 
                 if ($file != "" && $file != "." && $file != ".." && $file != "index.html") {
-                    $file = str_replace(".php","",$file);
+                    $file            = str_replace(".php", "", $file);
                     $langFileArray[] = $file;
                 }
             }
@@ -4089,17 +4018,14 @@ function getFileArray($dir) {
     return $langFileArray;
 }
 
-###############################################
-# SANITIZE VARS
-###############################################
-
-function sanitizeStr($str) {
+function sanitizeStr($str)
+{
     
     $str = trim($str);
-    $str = str_replace("&","&amp;",$str);
-    $str = str_replace('"','&quot;',$str);
-    $str = str_replace("<","&lt;",$str);
-    $str = str_replace(">","&gt;",$str);
+    $str = str_replace("&", "&amp;", $str);
+    $str = str_replace('"', '&quot;', $str);
+    $str = str_replace("<", "&lt;", $str);
+    $str = str_replace(">", "&gt;", $str);
     
     return $str;
 }
