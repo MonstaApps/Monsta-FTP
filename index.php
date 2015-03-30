@@ -1,6 +1,6 @@
 <?php
 
-$version = "1.4.12";
+$version = "1.5";
 
 # CONFIGURABLE VARIABLES STARTS
 # Open README file for descriptions and help.
@@ -14,6 +14,7 @@ $serverTmp = "/tmp";
 $editableExts = "asp,ashx,asmx,aspx,asx,axd,cfm,cgi,css,html,htm,jhtml,js,php,phtml,pl,txt,xhtml";
 $dateFormatUsa = 0; // 1 for mm/dd/yy, 0 for dd/mm/yy
 $lockOutTime = 5; // minutes to lockout 3 invalid logins
+$versionCheck = 1; // 0 for do not check, 1 for check
 
 # CONFIGURABLE VARIABLES ENDS
 
@@ -391,6 +392,7 @@ function displayLoginForm($posted)
     global $lang_save_login;
     global $lang_ip_check;
     global $lang_session_expired;
+    global $versionCheck;
     
     // Check for lockout
     $date_now = date("YmdHis");
@@ -533,9 +535,21 @@ function displayLoginForm($posted)
 ?>" id="btnLogin">
 </div>
 <div class="floatRight">
-    <a href="http://www.monstaftp.com">version <?php
-        echo $version;
+<?php
+if ($versionCheck == 1) {
+?>
+<iframe src="http://www.monstaftp.com/vc.php?v=<?php
+	echo $version;
+?>" width="200" height="20" scrolling="no" frameborder="0"></iframe>
+<?php
+} else {
+?>
+<a href="http://www.monstaftp.com">version <?php
+	echo $version;
 ?></a>
+<?php
+}
+?>
 </div>
 
 <br><br>
@@ -589,6 +603,17 @@ function displayLoginForm($posted)
         echo displaySkinSelect($skin);
 ?>
 
+<p><hr noshade>
+
+    <div>
+        <div class="floatLeft">v. <?php
+            echo $version;
+?></div>
+        <div class="floatRight">
+        <a href="http://www.monstaftp.com/donations.php">Make a Donation</a>
+        </div>
+    </div>
+    <br>
         </div>
     </div>
 </div>
@@ -1543,6 +1568,7 @@ function displayFtpActions()
 {
     
     global $lang_btn_refresh;
+    global $lang_btn_dl;
     global $lang_btn_cut;
     global $lang_btn_copy;
     global $lang_btn_paste;
@@ -1556,7 +1582,14 @@ function displayFtpActions()
     echo $lang_btn_refresh;
 ?>" onClick="refreshListing()" class="<?php
     echo adjustButtonWidth($lang_btn_refresh);
+?>">
+<!-- 
+    <input type="button" id="actionButtonDl" value="<?php
+    echo $lang_btn_dl;
+?>" onClick="actionFunctionDl('','');" disabled class="<?php
+    echo adjustButtonWidth($lang_btn_dl);
 ?>"> 
+-->
     <input type="button" id="actionButtonCut" value="<?php
     echo $lang_btn_cut;
 ?>" onClick="actionFunctionCut('','');" disabled class="<?php
