@@ -1,6 +1,6 @@
 <?php
 
-$version = "1.5";
+$version = "1.5.1";
 
 # CONFIGURABLE VARIABLES STARTS
 # Open README file for descriptions and help.
