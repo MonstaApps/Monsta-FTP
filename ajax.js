@@ -748,6 +748,7 @@ function activateActionButtons(active, paste) {
     // All other buttons
     if (active == 1) {
 
+        /* document.getElementById('actionButtonDl').disabled = false; // download */
         document.getElementById('actionButtonCut').disabled = false; // cut
         document.getElementById('actionButtonCopy').disabled = false; // copy
         document.getElementById('actionButtonRename').disabled = false; // rename
@@ -758,6 +759,7 @@ function activateActionButtons(active, paste) {
 
     } else {
 
+        document.getElementById('actionButtonDl').disabled = true;
         document.getElementById('actionButtonCut').disabled = true;
         document.getElementById('actionButtonCopy').disabled = true;
         document.getElementById('actionButtonRename').disabled = true;
