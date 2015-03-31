@@ -759,7 +759,7 @@ function activateActionButtons(active, paste) {
 
     } else {
 
-        document.getElementById('actionButtonDl').disabled = true;
+        /* document.getElementById('actionButtonDl').disabled = true; */
         document.getElementById('actionButtonCut').disabled = true;
         document.getElementById('actionButtonCopy').disabled = true;
         document.getElementById('actionButtonRename').disabled = true;
