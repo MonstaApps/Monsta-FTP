@@ -1,22 +1,6 @@
 <?php
 
-$version = "1.5.1";
-
-# CONFIGURABLE VARIABLES STARTS
-# Open README file for descriptions and help.
-
-$ftpHost = "";
-$ftpPort = "21"; // 21 is default
-$ftpMode = "1"; // 1 passive, 0 not passive
-$ftpSSL  = "0"; // 1 for SSL, 0 for not SSL
-$ftpDir  = "";
-$serverTmp = "/tmp";
-$editableExts = "asp,ashx,asmx,aspx,asx,axd,cfm,cgi,css,html,htm,jhtml,js,php,phtml,pl,txt,xhtml";
-$dateFormatUsa = 0; // 1 for mm/dd/yy, 0 for dd/mm/yy
-$lockOutTime = 5; // minutes to lockout 3 invalid logins
-$versionCheck = 1; // 0 for do not check, 1 for check
-
-# CONFIGURABLE VARIABLES ENDS
+include("config.php");
 
 error_reporting(0);
 saveFtpDetailsCookie();
