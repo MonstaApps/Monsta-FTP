@@ -33,7 +33,9 @@ Enter an FTP server path for the default login (or leave blank for home folder)
 
 $serverTmp
 This is a folder on the client server for uploading files to.
-By default it's a result of native sys_get_temp_dir() function.
+By default it's /tmp (Linux), which is the server's folder for temporary files, however you can 
+set any folder, provided it has 777 chmod permissions, so it can be written to from the web.
+Windows temp folder is typically "C:\WINDOWS\Temp\" (backslashes must be escaped with another backslash)
 
 $editableExts
 A list of file types that can be edited in the text editor
