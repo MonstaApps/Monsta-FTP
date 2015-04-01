@@ -1,6 +1,8 @@
 <?php
 
-include("config.php");
+$version = "1.5.2";
+
+require("config.php");
 
 error_reporting(0);
 saveFtpDetailsCookie();
