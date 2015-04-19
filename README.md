@@ -60,4 +60,4 @@ http://www.monstaftp.com/reviews/
 
 ### License
 
-GNU General Public License (GPL) see [LICENSE](LICENSE) for details
+GNU General Public License Version 3 (GPLv3) see [LICENSE](LICENSE) for details
