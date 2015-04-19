@@ -64,21 +64,21 @@ $lang_btn_cancel = "Annuler";
 $lang_btn_ok = "OK";
 $lang_btn_new_folder = "Nouveau Dossier";
 $lang_btn_new_file = "Nouveau Fichier";
-$lang_btn_upload_file = "Télécharger un Fichier";
-$lang_btn_upload_files = "Télécharger des Fichiers";
-$lang_btn_upload_repeat = "Répéter le Téléchargement";
-$lang_btn_upload_folder = "Télécharger le Dossier";
+$lang_btn_upload_file = "Téléversé un Fichier";
+$lang_btn_upload_files = "Téléversé des Fichiers";
+$lang_btn_upload_repeat = "Répéter le téléversement";
+$lang_btn_upload_folder = "Téléverser le Dossier";
 
 $lang_info_host = "Serveur";
 $lang_info_user = "Utilisateur";
-$lang_info_upload_limit = "Limite de Téléchargement";
+$lang_info_upload_limit = "Limite de téléversement";
 $lang_info_drag_drop = "Glisser & Déposer";
 
 $lang_xfer_file = "Fichier";
 $lang_xfer_size = "Taille";
 $lang_xfer_progress = "Progression";
 $lang_xfer_elapsed = "Temps Ecoulé";
-$lang_xfer_uploaded = "Téléchargé";
+$lang_xfer_uploaded = "Téléversé";
 $lang_xfer_rate = "Taux de Transfer";
 $lang_xfer_remain = "Temps Restant";
 
@@ -123,7 +123,7 @@ $lang_title_new_folder = "Nouveau Dossier";
 $lang_new_folder_name = "Entrer le nom du nouveau dossier...";
 $lang_new_file_name = "Entrer le nom du nouveau fichier...";
 $lang_template = "Modèle";
-$lang_no_template = "Aucune Modèle";
+$lang_no_template = "Aucun Modèle";
 
 $lang_no_xmlhttp = "Votre navigateur ne supporte pas XMLHTTP!";
 $lang_support_drop = "Supporté";
