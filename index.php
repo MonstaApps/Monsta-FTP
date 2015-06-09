@@ -2045,6 +2045,8 @@ function copyFiles()
             recordFileError("file", tidyFolderPath($folderMoveTo, $file_name), $lang_file_exists);
         } else {
             
+            ensureFtpConnActive();
+            
             // Download file to client server
             if (!@ftp_get($conn_id, $fp1, $fp2, FTP_BINARY)) {
                 if (checkFirstCharTilde($fp2) == 1) {
@@ -2059,6 +2061,8 @@ function copyFiles()
             }
             
             if ($isError == 0) {
+                
+                ensureFtpConnActive();
                 
                 // Upload file to remote server
                 if (!@ftp_put($conn_id, $fp3, $fp1, FTP_BINARY)) {
@@ -2222,6 +2226,8 @@ function copyFolder($folder, $dir_destin, $dir_source)
                         $fp2 = $dir_source . "/" . $folder . "/" . $file;
                         $fp3 = $dir_destin . "/" . $folder . "/" . $file;
                         
+                        ensureFtpConnActive();
+                        
                         // Download
                         if (!@ftp_get($conn_id, $fp1, $fp2, FTP_BINARY)) {
                             if (checkFirstCharTilde($fp2) == 1) {
@@ -2237,6 +2243,8 @@ function copyFolder($folder, $dir_destin, $dir_source)
                         
                         // Upload
                         if ($isError == 0) {
+                            
+                            ensureFtpConnActive();
                             
                             if (!@ftp_put($conn_id, $fp3, $fp1, FTP_BINARY)) {
                                 if (checkFirstCharTilde($fp3) == 1) {
@@ -2689,6 +2697,8 @@ function editFile()
     $fp1       = $serverTmp . "/" . $file_name;
     $fp2       = $file;
     
+    ensureFtpConnActive();
+    
     // Download the file
     if (!@ftp_get($conn_id, $fp1, $fp2, FTP_BINARY)) {
         
@@ -2774,6 +2784,8 @@ function editProcess()
     @fputs($tmpFile, $editContent);
     @fclose($tmpFile);
     
+    ensureFtpConnActive();
+    
     if (!@ftp_put($conn_id, $fp2, $fp1, FTP_BINARY)) {
         if (checkFirstCharTilde($fp2) == 1) {
             if (!@ftp_put($conn_id, replaceTilde($fp2), $fp1, FTP_BINARY)) {
@@ -2801,6 +2813,8 @@ function downloadFile()
     $file_name = getFileFromPath($file);
     $fp1       = $serverTmp . "/" . $file_name;
     $fp2       = $file;
+    
+    ensureFtpConnActive();
     
     // Download the file
     if (!@ftp_get($conn_id, $fp1, $fp2, FTP_BINARY)) {
@@ -3130,6 +3144,8 @@ function newFile()
             @fputs($tmpFile, $content);
             @fclose($tmpFile);
             
+            ensureFtpConnActive();
+            
             // Upload the file
             if (!@ftp_put($conn_id, $fp2, $fp1, FTP_BINARY)) {
                 if (checkFirstCharTilde($fp2) == 1) {
@@ -3288,6 +3304,8 @@ function uploadFile()
         // Check if file reached server
         if (file_put_contents($fp1, file_get_contents('php://input'))) {
             
+            ensureFtpConnActive();
+        
             if (!@ftp_put($conn_id, $fp2, $fp1, FTP_BINARY)) {
                 if (checkFirstCharTilde($fp2) == 1) {
                     if (!@ftp_put($conn_id, replaceTilde($fp2), $fp1, FTP_BINARY)) {
@@ -3340,6 +3358,8 @@ function iframeUpload()
     $fp2 = $_SESSION["dir_current"] . "/" . $_FILES["uploadFile"]["name"];
     
     if ($fp1 != "") {
+        
+        ensureFtpConnActive();
         
         if (!@ftp_put($conn_id, $fp2, $fp1, FTP_BINARY)) {
             if (checkFirstCharTilde($fp2) == 1) {
@@ -4047,6 +4067,16 @@ function sanitizeStr($str)
     $str = str_replace(">", "&gt;", $str);
     
     return $str;
+}
+
+function ensureFtpConnActive()
+{
+
+    global $conn_id;
+    if (ftp_pwd($conn_id) === false) {
+        @ftp_close($conn_id);
+        connectFTP(0);
+    }
 }
 
 ?>
