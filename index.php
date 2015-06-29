@@ -816,7 +816,7 @@ function displayFiles()
     if (sizeof($ftp_rawlist) > 0) {
         
         // Linux
-        if ($_SESSION["win_lin"] == "lin") {
+        if ($_SESSION["win_lin"] == "lin" || $_SESSION["win_lin"] == "mac") {
             echo createFileFolderArrayLin($ftp_rawlist, "folders");
             echo createFileFolderArrayLin($ftp_rawlist, "links");
             echo createFileFolderArrayLin($ftp_rawlist, "files");
@@ -873,6 +873,14 @@ function getPlatform()
             
             if (strlen($ff[0]) == 10 && !preg_match("/[0-9]/i", $ff[0], $matches))
                 $win_lin = "lin";
+            
+            if ($ff[0] == "total") {
+
+                $ff = $ftp_rawlist[1];
+                $ff = preg_split("/[\s]+/", $ff, 9);
+                if (strlen($ff[0]) == 10 && !preg_match("/[0-9]/i", $ff[0], $matches))
+                    $win_lin = "mac";
+            }
             
             $_SESSION["win_lin"] = $win_lin;
         }
@@ -1281,7 +1289,7 @@ function getFileListHtml($array, $image)
         $html .= "<td>" . $date . "</td>";
         $html .= "<td>" . $time . "</td>";
         
-        if ($_SESSION["interface"] == "adv" && $_SESSION["win_lin"] == "lin") {
+        if ($_SESSION["interface"] == "adv" && ($_SESSION["win_lin"] == "lin" || $_SESSION["win_lin"] == "mac")) {
             $html .= "<td>" . $user . "</td>";
             $html .= "<td>" . $group . "</td>";
             $html .= "<td>" . $perms . "</td>";
@@ -1425,7 +1433,7 @@ function openFolder()
         if ($dir == "") {
             
             // No folder set (must be first login), so set home dir
-            if ($_SESSION["win_lin"] == "lin")
+            if ($_SESSION["win_lin"] == "lin" || $_SESSION["win_lin"] == "mac")
                 $dir = "~";
             if ($_SESSION["win_lin"] == "win")
                 $dir = "/";
@@ -1602,7 +1610,7 @@ function displayFtpActions()
     echo adjustButtonWidth($lang_btn_delete);
 ?>">
 <?php
-    if ($_SESSION["interface"] == "adv" && $_SESSION["win_lin"] == "lin") {
+    if ($_SESSION["interface"] == "adv" && ($_SESSION["win_lin"] == "lin" || $_SESSION["win_lin"] == "mac")) {
 ?>
     <input type="button" id="actionButtonChmod" value="<?php
         echo $lang_btn_chmod;
@@ -2165,7 +2173,7 @@ function copyFolder($folder, $dir_destin, $dir_source)
     if ($isError == 0) {
         
         // Copy permissions (Lin)
-        if ($_SESSION["win_lin"] == "lin") {
+        if ($_SESSION["win_lin"] == "lin" || $_SESSION["win_lin"] == "mac") {
             
             $mode                   = getPerms($dir_source, $folder);
             $lang_folder_cant_chmod = str_replace("[perms]", $mode, $lang_folder_cant_chmod);
@@ -2188,13 +2196,31 @@ function copyFolder($folder, $dir_destin, $dir_source)
         
         if (is_array($ftp_rawlist)) {
             
+            $count = 0;
+            
             foreach ($ftp_rawlist AS $ff) {
-                
+
+                $count++;
                 $isDir   = 0;
                 $isError = 0;
                 
                 // Split up array into values (Lin)
                 if ($_SESSION["win_lin"] == "lin") {
+                    
+                    $ff    = preg_split("/[\s]+/", $ff, 9);
+                    $perms = $ff[0];
+                    $file  = $ff[8];
+                    
+                    if (getFileType($perms) == "d")
+                        $isDir = 1;
+                }
+                
+                // Split up array into values (Mac)
+                // skip first line
+                if ($_SESSION["win_lin"] == "mac") {
+                    
+                    if ($count == 1)
+                        continue;
                     
                     $ff    = preg_split("/[\s]+/", $ff, 9);
                     $perms = $ff[0];
@@ -2262,7 +2288,7 @@ function copyFolder($folder, $dir_destin, $dir_source)
                         if ($isError == 0) {
                             
                             // Chmod files (Lin)
-                            if ($_SESSION["win_lin"] == "lin") {
+                            if ($_SESSION["win_lin"] == "lin" || $_SESSION["win_lin"] == "mac") {
                                 
                                 $perms = getChmodNumber($perms);
                                 $mode  = formatChmodNumber($perms);
@@ -2962,7 +2988,7 @@ function deleteFolder($folder, $path)
         
     } else {
         
-        if ($_SESSION["win_lin"] == "lin")
+        if ($_SESSION["win_lin"] == "lin" || $_SESSION["win_lin"] == "mac")
             if ($_SESSION["dir_current"] == "/")
                 $folder_path = "/" . $folder;
         if ($_SESSION["dir_current"] == "~")
@@ -2977,10 +3003,30 @@ function deleteFolder($folder, $path)
     // Go through array of files/folders
     if (sizeof($ftp_rawlist) > 0) {
         
+        $count = 0;
         foreach ($ftp_rawlist AS $ff) {
+            
+            $count++;
             
             // Split up array into values (Lin)
             if ($_SESSION["win_lin"] == "lin") {
+                
+                $ff    = preg_split("/[\s]+/", $ff, 9);
+                $perms = $ff[0];
+                $file  = $ff[8];
+                
+                if (getFileType($perms) == "d")
+                    $isFolder = 1;
+                else
+                    $isFolder = 0;
+            }
+            
+            // Split up array into values (Mac)
+            // skip first line
+            if ($_SESSION["win_lin"] == "mac") {
+                
+                if ($count == 1)
+                    continue;
                 
                 $ff    = preg_split("/[\s]+/", $ff, 9);
                 $perms = $ff[0];
@@ -3180,12 +3226,37 @@ function checkFileExists($type, $file_name, $folder_path)
     if (is_array($ftp_rawlist)) {
         
         $fileNameAr = array();
+        $count      = 0;
         
         // Go through array of files/folders
         foreach ($ftp_rawlist AS $ff) {
             
+            $count++;
+            
             // Lin
             if ($_SESSION["win_lin"] == "lin") {
+                
+                // Split up array into values
+                $ff = preg_split("/[\s]+/", $ff, 9);
+                
+                $perms = $ff[0];
+                $file  = $ff[8];
+                
+                if ($file != "." && $file != "..") {
+                    
+                    if ($type == "f" && getFileType($perms) == "f")
+                        $fileNameAr[] = $file;
+                    
+                    if ($type == "d" && getFileType($perms) == "d")
+                        $fileNameAr[] = $file;
+                }
+            }
+            
+            // Mac
+            if ($_SESSION["win_lin"] == "mac") {
+                
+                if ($count == 1)
+                    continue;
                 
                 // Split up array into values
                 $ff = preg_split("/[\s]+/", $ff, 9);
@@ -3603,7 +3674,7 @@ function replaceTilde($str)
 function assignWinLinNum()
 {
     
-    if ($_SESSION["win_lin"] == "lin")
+    if ($_SESSION["win_lin"] == "lin" || $_SESSION["win_lin"] == "mac")
         return 1;
     if ($_SESSION["win_lin"] == "win")
         return 0;
