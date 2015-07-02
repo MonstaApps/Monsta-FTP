@@ -4,6 +4,8 @@ $version = "1.5.2";
 
 require("config.php");
 
+header("X-Frame-Options: SAMEORIGIN");
+
 error_reporting(0);
 saveFtpDetailsCookie();
 startSession();
@@ -342,7 +344,6 @@ function displayHeader()
     echo sanitizeStr($skin);
 ?>.css" rel="stylesheet" type="text/css">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta http-equiv="X-Frame-Options" content="sameorigin">
 </head>
 <body <?php
     if ($_POST["login"] == 1) {
@@ -522,10 +523,11 @@ function displayLoginForm($posted)
 </div>
 <div class="floatRight">
 <?php
-if ($versionCheck == 1) {
+// ensure PHP functions required for version check are enabled
+if ($versionCheck == 1 && ((intval(ini_get("allow_url_fopen")) == 1 && (function_exists("file_get_contents") || (function_exists("fopen") && function_exists("stream_get_contents")))) || (function_exists("curl_init") && function_exists("curl_exec")))) {
 ?>
-<iframe src="http://www.monstaftp.com/vc.php?v=<?php
-	echo $version;
+<iframe src="<?php
+    echo dirname($_SERVER["SCRIPT_NAME"]) . "/vc.php?v=" . $version;
 ?>" width="200" height="20" scrolling="no" frameborder="0"></iframe>
 <?php
 } else {
