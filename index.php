@@ -468,7 +468,7 @@ function displayLoginForm($posted)
 
 <input type="hidden" name="login" value="1">
 <input type="hidden" name="openFolder" value="<?php
-        echo $_GET["openFolder"];
+        echo sanitizeStr($_GET["openFolder"]);
 ?>">
 
 <?php
@@ -4017,7 +4017,7 @@ function sessionExpired($message)
     
     echo $message;
     
-    echo "<p><input type=\"button\" id=\"btnLogin\" value=\"" . $lang_btn_login . "\" onClick=\"document.location.href='?openFolder=" . $_POST["openFolder"] . "'\">";
+    echo "<p><input type=\"button\" id=\"btnLogin\" value=\"" . $lang_btn_login . "\" onClick=\"document.location.href='?openFolder=" . rawurlencode($_POST["openFolder"]) . "'\">";
     
     displayPopupClose(1, "", 0);
 }
