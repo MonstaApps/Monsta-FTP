@@ -431,6 +431,8 @@ function displayLoginForm($posted)
 
             $ftp_port = 21;
             $ftp_pasv = 1;
+            $ftp_user = $ftpUser;
+            $ftp_pass = $ftpPass;
         }
     }
 
