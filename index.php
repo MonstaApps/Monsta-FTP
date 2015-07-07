@@ -366,7 +366,6 @@ function displayLoginForm($posted)
 
     global $version;
     global $ftpHost;
-    global $ftpPort;
     global $ftpUser;
     global $ftpPass;
     global $ajaxRequest;
@@ -430,8 +429,7 @@ function displayLoginForm($posted)
 
         } else {
 
-            $ftp_host = $ftp_Host;
-            $ftp_port = $ftp_Port;
+            $ftp_port = 21;
             $ftp_pasv = 1;
             $ftp_user = $ftpUser;
             $ftp_pass = $ftpPass;
