@@ -9,7 +9,7 @@ $ftpPass = getenv('FTP_PASS');
 
 $ftpMode = "1";
 $ftpSSL  = "0";
-$ftpDir  = "";
+$ftpDir  = "~";
 $editableExts = "asp,ashx,asmx,aspx,asx,axd,cfm,cgi,css,html,htm,jhtml,js,php,phtml,pl,txt,xhtml";
 $serverTmp = "/tmp";
 $dateFormatUsa = 0;
