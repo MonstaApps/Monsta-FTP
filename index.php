@@ -476,9 +476,7 @@ function displayLoginForm($posted)
         echo $_GET["openFolder"];
 ?>">
 
-<?php
-        if ($ftpHost == "") {
-?>
+
 <?php
             echo $lang_ftp_host;
 ?>:
@@ -497,9 +495,7 @@ function displayLoginForm($posted)
                 echo "bgFormError";
 ?>" tabindex="-1">
 <p>
-<?php
-        }
-?>
+
 
 <?php
         echo $lang_username;
