@@ -433,6 +433,7 @@ function displayLoginForm($posted)
             $ftp_pasv = 1;
             $ftp_user = $ftpUser;
             $ftp_pass = $ftpPass;
+            $lang = 'de_de';
         }
     }
 
