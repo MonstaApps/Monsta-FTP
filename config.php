@@ -2,8 +2,11 @@
 
 # Open README file for descriptions and help.
 
-$ftpHost = "";
-$ftpPort = "21";
+$ftpHost = getenv('FTP_HOST');
+$ftpPort = getenv('FTP_PORT');
+$ftpUser = getenv('FTP_USER');
+$ftpPass = getenv('FTP_PASS');
+
 $ftpMode = "1";
 $ftpSSL  = "0";
 $ftpDir  = "";
