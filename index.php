@@ -3610,6 +3610,8 @@ function displayPopupClose($isError, $vars, $btnCancel)
 function getMaxStrLen($array)
 {
     
+    $maxLen = 0;
+    
     foreach ($array AS $str) {
         
         $thisLen = strlen($str);
