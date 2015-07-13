@@ -13,6 +13,9 @@ The "Upload Limit" seen on screen is set in your server's PHP.INI file.
 
 ### Configuration
 
+`$charSet`
+An array of encodings for editing files.
+
 `$ftpHost`  
 Enter the host address/port/mode if it should always be a fixed host address.
 Leave this blank if you want the user to input their host address.

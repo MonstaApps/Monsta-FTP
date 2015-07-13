@@ -2,6 +2,7 @@
 
 # Open README file for descriptions and help.
 
+$charSet = array("utf-8","windows-1251");
 $ftpHost = "";
 $ftpPort = "21";
 $ftpMode = "1";

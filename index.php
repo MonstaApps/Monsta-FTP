@@ -10,6 +10,22 @@ error_reporting(0);
 saveFtpDetailsCookie();
 startSession();
 
+# Set Char Set
+$filesCharSet = "utf-8";
+
+if (isset($_SESSION["filesCharSet"]))
+if (in_array($_SESSION["filesCharSet"], $charSet)) $filesCharSet = $_SESSION["filesCharSet"];
+
+if (isset($_POST["filesCharSet"]))
+if (in_array($_POST["filesCharSet"], $charSet)) 
+{
+ $filesCharSet = $_POST["filesCharSet"];
+ $_SESSION["filesCharSet"] = $_POST["filesCharSet"];
+}
+      
+header("Content-type: text/html; charset=".$filesCharSet);
+      
+
 # INCLUDE LANGUAGE FILE
 
 if ($_SESSION["lang"] == "" || isset($_POST["lang"]))
@@ -21,6 +37,7 @@ if (in_array($_SESSION["lang"], $langFileArray))
     include("languages/" . $_SESSION["lang"] . ".php");
 else
     include("languages/en_us.php");
+include("iconv.php");
 
 # SET VARS
 
@@ -175,6 +192,7 @@ function startSession()
     $sessionAr[] = "errors";
     $sessionAr[] = "upload_limit";
     $sessionAr[] = "domain";
+    $sessionAr[] = "filesCharSet";
     
     // Register each variable in the array
     $n = sizeof($sessionAr);
@@ -204,6 +222,7 @@ function saveFtpDetailsCookie()
             setcookie("skin", $_POST["skin"], time() + $s, '/', null, null, true);
             setcookie("lang", $_POST["lang"], time() + $s, '/', null, null, true);
             setcookie("ip_check", $_POST["ip_check"], time() + $s, '/', null, null, true);
+            setcookie("filesCharSet", $_POST["filesCharSet"], time() + $s, '/', null, null, true);
             
         } else {
             
@@ -218,6 +237,7 @@ function saveFtpDetailsCookie()
             setcookie("skin", "", time() - 3600);
             setcookie("lang", "", time() - 3600);
             setcookie("ip_check", "", time() - 3600);
+            setcookie("filesCharSet", "", time() - 3600);
         }
     }
 }
@@ -285,6 +305,7 @@ function attemptLogin()
                 $_SESSION["skin"]      = $_POST["skin"];
                 $_SESSION["lang"]      = $_POST["lang"];
                 $_SESSION["ip_check"]  = $_POST["ip_check"];
+                $_SESSION["filesCharSet"]  = $_POST["filesCharSet"];
                 
                 if (connectFTP(1) == 1) {
                     
@@ -306,6 +327,10 @@ function attemptLogin()
                         }
                     }
                     
+                     header("Location: index.php");
+                     $_SESSION["filesCharSet"]  = $_POST["filesCharSet"];
+                     exit;                    
+                    
                 } else {
                     displayLoginForm(1);
                 }
@@ -321,6 +346,7 @@ function displayHeader()
 {
     
     global $version;
+    global $filesCharSet;
     
     // The order of these determines the proper display
     if ($_COOKIE["skin"] != "")
@@ -343,7 +369,7 @@ function displayHeader()
     <link href="skins/<?php
     echo sanitizeStr($skin);
 ?>.css" rel="stylesheet" type="text/css">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=<?php print $filesCharSet;  ?>">
 </head>
 <body <?php
     if ($_POST["login"] == 1) {
@@ -380,6 +406,7 @@ function displayLoginForm($posted)
     global $lang_ip_check;
     global $lang_session_expired;
     global $versionCheck;
+    global $charSet;
     
     // Check for lockout
     $date_now = date("YmdHis");
@@ -405,6 +432,7 @@ function displayLoginForm($posted)
         $skin       = $_POST["skin"];
         $login_save = $_POST["login_save"];
         $ip_check   = $_POST["ip_check"];
+        $filesCharSet = $_POST["filesCharSet"];
         
         $_SESSION["domain"] = $_SERVER["SERVER_NAME"];
         
@@ -424,6 +452,7 @@ function displayLoginForm($posted)
             $skin       = $_COOKIE["skin"];
             $login_save = $_COOKIE["login_save"];
             $ip_check   = $_COOKIE["ip_check"];
+            $filesCharSet   = $_COOKIE["filesCharSet"];
             
         } else {
             
@@ -515,7 +544,14 @@ function displayLoginForm($posted)
         if ($posted == 1 && $ftp_pass == "")
             echo "bgFormError";
 ?>" autocomplete="off">
-
+<div><select name="filesCharSet">
+<?php
+foreach($charSet as $cs) print "<option value=$cs>$cs</option>";
+?>
+</select>
+</div>
+<div>&nbsp;</div>
+<div>&nbsp;</div>
 <div class="floatLeft">
     <input type="submit" value="<?php
         echo $lang_btn_login;
@@ -1514,6 +1550,7 @@ function logOut()
     $_SESSION["copy"]              = "";
     $_SESSION["errors"]            = "";
     $_SESSION["upload_limit"]      = "";
+    $_SESSION["filesCharSet"]      = "";
     
     session_destroy();
 }
@@ -1572,6 +1609,7 @@ function displayFtpActions()
     global $lang_btn_delete;
     global $lang_btn_chmod;
     global $lang_btn_logout;
+    global $filesCharSet;
 ?>
 <div id="ftpActionButtonsDiv">
     <input type="button" value="<?php
@@ -1623,6 +1661,7 @@ function displayFtpActions()
     }
 ?>
 <div class="floatRight">
+<span><?php echo " ".$_SESSION["filesCharSet"]; ?></span>
     <input type="button" value="<?php
     echo $lang_btn_logout;
 ?>" onClick="actionFunctionLogout();" class="<?php
@@ -2796,6 +2835,7 @@ function editProcess()
     global $conn_id;
     global $serverTmp;
     global $lang_server_error_up;
+    global $filesCharSet;
     
     $isError = 0;
     
@@ -3789,6 +3829,7 @@ function displayLangSelect($lang)
 {
     
     global $lang_language;
+    global $filesCharSet;
     
     $dir        = "languages";
     $lang_found = 0;
@@ -3821,6 +3862,9 @@ function displayLangSelect($lang)
                     
                     $langs .= ">";
                     
+                    if ($filesCharSet != "utf-8")
+                    $file_lang_name = iconv("utf-8",$filesCharSet,$file_lang_name);
+                    
                     $langs .= $file_lang_name;
                     
                     $langs .= "</option>";
@@ -3829,6 +3873,8 @@ function displayLangSelect($lang)
                     
                     // Restore session language file
                     include($dir . "/" . $lang . ".php");
+                    
+                    include("iconv.php");
                 }
             }
             closedir($dh);
@@ -3880,6 +3926,7 @@ function tidyFolderPath($str1, $str2)
 
 function loadJsLangVars()
 {
+global $filesCharSet;
     
     // Include language file again to save listing globals
     $langFileArray = getFileArray("languages");
@@ -3888,6 +3935,8 @@ function loadJsLangVars()
         include("languages/" . $_SESSION["lang"] . ".php");
     else
         include("languages/en_us.php");
+
+include("iconv.php");
 ?>
 <script type="text/javascript">
 var lang_no_xmlhttp = '<?php
