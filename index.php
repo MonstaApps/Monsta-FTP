@@ -3155,6 +3155,8 @@ function newFile()
     global $lang_no_template;
     global $lang_file_exists;
     global $lang_file_cant_make;
+    global $filesCharSet; 
+    
     
     $isError = 0;
     
@@ -3205,6 +3207,10 @@ function newFile()
         displayPopupClose(0, $vars, 1);
         
     } else {
+    
+        if ($filesCharSet != "utf-8")
+        $file_name = iconv("utf-8",$filesCharSet,$file_name);
+
         
         $fp1 = $serverTmp . "/" . $file_name;
         
@@ -3233,6 +3239,7 @@ function newFile()
             @fclose($tmpFile);
             
             ensureFtpConnActive();
+            
             
             // Upload the file
             if (!@ftp_put($conn_id, $fp2, $fp1, FTP_BINARY)) {
@@ -3353,11 +3360,16 @@ function newFolder()
     global $lang_new_folder_name;
     global $lang_folder_exists;
     global $lang_folder_cant_make;
+    global $filesCharSet; 
     
     // Set vars
     $vars = "&ftpAction=newFolder";
     
     $folder = trim(quotesUnescape($_POST["newFolder"]));
+    
+    if ($filesCharSet != "utf-8")  
+    $folder = iconv("utf-8",$filesCharSet,$folder);  
+     
     
     if ($folder == "") {
         
@@ -3391,9 +3403,13 @@ function uploadFile()
     global $serverTmp;
     global $lang_server_error_up;
     global $lang_browser_error_up;
+    global $filesCharSet;
     
     $file_name = $_SERVER['HTTP_X_FILENAME'];
     $path      = $_GET["filePath"];
+
+    if ($filesCharSet != "utf-8")
+    $file_name = iconv("utf-8",$filesCharSet,$file_name);
     
     if ($file_name) {
         
@@ -3418,6 +3434,7 @@ function uploadFile()
         if (file_put_contents($fp1, file_get_contents('php://input'))) {
             
             ensureFtpConnActive();
+            
         
             if (!@ftp_put($conn_id, $fp2, $fp1, FTP_BINARY)) {
                 if (checkFirstCharTilde($fp2) == 1) {
