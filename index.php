@@ -790,7 +790,7 @@ function getFtpRawList($folder_path)
     }
     
     if ($isError == 0)
-        return ftp_rawlist($conn_id, ".");
+        return ftp_rawlist($conn_id, "-a");
 }
 
 function displayFiles()
