@@ -57,6 +57,9 @@ Do not offer to save login login details
 The largest file size to accept on upload. If empty, defaults to PHP's memory limit. Prefix
 multipliers/PHP "shorthand byte" values may be used ('T', 'G', 'M', 'K').
 
+`$defaultSkin`
+Use this skin by default
+
 ### Links
 
 FAQ, support requests, bug reports:  

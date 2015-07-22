@@ -360,9 +360,19 @@ function displayHeader()
         $skin = $_SESSION["skin"];
     if (isset($_POST["skin"]))
         $skin = $_POST["skin"];
-    if ($skin == "")
+
+    if (preg_match('/^[A-Za-z0-9_\-]+$/',$skin) != 1)
         $skin = "monsta";
-    
+
+    // Look for a .php include, an .html include for a header/banner
+    $skin_local_path = dirname($_SERVER['SCRIPT_FILENAME']);
+    $skin_uri_path = dirname($_SERVER['SCRIPT_NAME']);
+    if ($skin_uri_path == '/' or $skin_uri_path == '\\')
+        $skin_uri_path = '';
+
+    $skin_local_path .= "/skins/$skin";
+    $skin_uri_path .= "/skins/$skin";
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
@@ -371,9 +381,11 @@ function displayHeader()
     echo $version;
 ?></title>
     <link href="style.css" rel="stylesheet" type="text/css">
-    <link href="skins/<?php
-    echo sanitizeStr($skin);
-?>.css" rel="stylesheet" type="text/css">
+<?php
+//    if (is_file("$skin_local_path.css")) {
+        echo "    <link href=\"$skin_uri_path.css\" rel=\"stylesheet\" type=\"text/css\">";
+ //   }
+?>
     <meta http-equiv="Content-Type" content="text/html; charset=<?php print $filesCharSet;  ?>">
 </head>
 <body <?php
@@ -382,6 +394,16 @@ function displayHeader()
     }
 ?>>
 <?php
+    if (is_file("$skin_local_path.php")) {
+        echo "<div id='banner'>\n";
+        include("$skin_local_path.php");
+        echo "</div>\n";
+    }
+    elseif (is_file("$skin_local_path.html")) {
+        echo "<div id='banner'>\n";
+        readfile("$skin_local_path.html");
+        echo "</div>\n";
+    }
 }
 
 function displayFooter()
@@ -3822,12 +3844,13 @@ function displaySkinSelect($skin)
     global $lang_skins_empty;
     global $lang_skins_locked;
     global $lang_skins_missing;
-    
+    global $defaultSkin;
+
     $dir        = "skins";
     $skin_found = 0;
     
     if ($skin == "")
-        $skin = "monsta.css";
+        $skin = empty($defaultSkin)?"monsta":$defaultSkin;
     
     if (is_dir($dir)) {
         
@@ -3836,7 +3859,7 @@ function displaySkinSelect($skin)
             $i = 0;
             while (($file = readdir($dh)) !== false) {
                 
-                if ($file != "" && $file != "." && $file != ".." && $file != "index.html") {
+                if (substr($file,-1) != "." && pathinfo($file, PATHINFO_EXTENSION) == "css") {
                     
                     $i++;
                     
@@ -3852,11 +3875,7 @@ function displaySkinSelect($skin)
                     if ($file_name == $skin)
                         $skins .= " selected";
                     
-                    $skins .= ">";
-                    
-                    $skins .= preg_replace("/\..*$/", "", $file_name);
-                    
-                    $skins .= "</option>";
+                    $skins .= ">$file_name</option>";
                     
                     $skinsAr[] = $skins;
                 }

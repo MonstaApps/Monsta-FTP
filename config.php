@@ -16,3 +16,5 @@ $versionCheck = 1;
 $sessionLockIP = 1;
 $restrictSaveCredentials = 1;
 $maxUploadSize = "2G";
+$defaultSkin = "ocean";
+
