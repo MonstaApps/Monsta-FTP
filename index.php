@@ -3407,6 +3407,25 @@ function newFolder()
     }
 }
 
+function streaming_file_copy($dst, $src) {
+    if (($src_f = fopen($src, "rb")) === FALSE) {
+        error_log("Unable to open file '$src' for reading");
+        return FALSE;
+    }
+
+    if (($dst_f = fopen($dst, "wb")) === FALSE) {
+        error_log("Unable to open file '$dst' for writing");
+        return FALSE;
+    }
+
+    $bytes_copied = stream_copy_to_stream($src_f, $dst_f);
+
+    fclose($src_f); // No effect on php://input
+    fclose($dst_f);
+
+    return $bytes_copied;
+}
+
 function uploadFile()
 {
     
@@ -3416,8 +3435,18 @@ function uploadFile()
     global $lang_browser_error_up;
     global $filesCharSet;
     
-    $file_name = $_SERVER['HTTP_X_FILENAME'];
-    $path      = $_GET["filePath"];
+    $file_name = trim($_SERVER['HTTP_X_FILENAME']);
+    $path      = trim($_GET["filePath"]);
+
+    // If the $file_name or $path are garbage, the FTP server should complain
+
+    if (array_key_exists($_SERVER['HTTP_X_FILE_SIZE']))
+        $file_size = $_SERVER['HTTP_X_FILE_SIZE'];
+    elseif (array_key_exists($_SERVER['CONTENT_LENGTH']))
+        $file_size = $_SERVER['CONTENT_LENGTH'];
+
+    if (empty($file_size))
+        $file_size = 0; // Client didn't supply a file size, continue anyhow
 
     if ($filesCharSet != "utf-8")
     $file_name = iconv("utf-8",$filesCharSet,$file_name);
@@ -3441,13 +3470,13 @@ function uploadFile()
             else
                 $fp2 = $_SESSION["dir_current"] . "/" . $file_name;
         }
-        
-        // Check if file reached server
-        if (file_put_contents($fp1, file_get_contents('php://input'))) {
+       
+        // Copy the stream to a temp file
+        $bytes_received = streaming_file_copy($fp1, 'php://input');
+        if ($bytes_received == $file_size || $file_size == 0) {
             
             ensureFtpConnActive();
             
-        
             if (!@ftp_put($conn_id, $fp2, $fp1, FTP_BINARY)) {
                 if (checkFirstCharTilde($fp2) == 1) {
                     if (!@ftp_put($conn_id, replaceTilde($fp2), $fp1, FTP_BINARY)) {
@@ -3458,6 +3487,7 @@ function uploadFile()
                 }
             }
         } else {
+            error_log("Mismatch in file size with client (Received $bytes_received, client specified $file_size). Failing upload of $file_name.");
             recordFileError("file", $file_name, $lang_browser_error_up);
         }
         
@@ -4104,43 +4134,35 @@ function sessionExpired($message)
 
 function setUploadLimit()
 {
-    
-    global $lang_size_kb;
-    global $lang_size_mb;
-    global $lang_size_gb;
-    global $lang_size_tb;
-    
+    global $maxUploadSize;
+
     if ($_SESSION["upload_limit"] == "") {
-        
-        // Get the server's memory limit
-        //if (preg_match('/msie [1-8]/i',$_SERVER['HTTP_USER_AGENT']))
-        //    $upload_limit = ini_get('upload_max_filesize');
-        //else
-        $upload_limit = ini_get('memory_limit');
-        
-        $ll = substr($upload_limit, strlen($upload_limit) - 1, 1);
-        
-        if ($ll == "B") {
-            $upload_limit = str_replace("B", "", $upload_limit);
-            $upload_limit = $upload_limit * 1;
+
+        // accept files up to $maxUploadSize or PHP memory_limit if unset
+        if (!empty($maxUploadSize))
+            $upload_limit = $maxUploadSize;
+        else
+            $upload_limit = ini_get('memory_limit');
+
+        $upload_size_parsed = array();
+        if (preg_match('/^ *(\d+) *([bkmgtBKMGT]?) *$/', $upload_limit, $upload_size_parsed) === FALSE) {
+            error_log("Unparseable upload_limit: '$upload_limit'. Setting to 16M");
+            $upload_size_parsed = array(16, 'M');
         }
-        if ($ll == "K") {
-            $upload_limit = str_replace("K", "", $upload_limit);
-            $upload_limit = $upload_limit * 1024;
+        $upload_limit = $upload_size_parsed[1];
+
+        switch($upload_size_parsed[2]) {
+        case "T":
+            $upload_limit *= 1024;
+        case "G":
+            $upload_limit *= 1024;
+        case "M":
+            $upload_limit *= 1024;
+        case "K":
+            $upload_limit *= 1024;
+            break;
         }
-        if ($ll == "M") {
-            $upload_limit = str_replace("M", "", $upload_limit);
-            $upload_limit = $upload_limit * 1024 * 1024;
-        }
-        if ($ll == "G") {
-            $upload_limit = str_replace("G", "", $upload_limit);
-            $upload_limit = $upload_limit * 1024 * 1024 * 1024;
-        }
-        if ($ll == "T") {
-            $upload_limit = str_replace("T", "", $upload_limit);
-            $upload_limit = $upload_limit * 1024 * 1024 * 1024 * 1024;
-        }
-        
+
         $_SESSION["upload_limit"] = $upload_limit;
     }
 }

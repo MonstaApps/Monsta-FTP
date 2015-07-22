@@ -47,6 +47,10 @@ USA date format - 1 for mm/dd/yy, 0 for dd/mm/yy
 `$lockOutTime`  
 The number of minutes to lockout 3 consecutive invalid logins
 
+`$maxUploadSize`
+The largest file size to accept on upload. If empty, defaults to PHP's memory limit. Prefix
+multipliers/PHP "shorthand byte" values may be used ('T', 'G', 'M', 'K').
+
 ### Links
 
 FAQ, support requests, bug reports:  

@@ -13,3 +13,5 @@ $serverTmp = "/tmp";
 $dateFormatUsa = 0;
 $lockOutTime = 5;
 $versionCheck = 1;
+
+$maxUploadSize = "2G";
