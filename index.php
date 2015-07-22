@@ -205,10 +205,11 @@ function startSession()
 
 function saveFtpDetailsCookie()
 {
-    
+    global $restrictSaveCredentials;
+
     if ($_POST["login"] == 1) {
         
-        if ($_POST["login_save"] == 1) {
+        if (!$restrictSaveCredentials && $_POST["login_save"] == 1) {
             
             $s = 31536000; // seconds in a year
             setcookie("ftp_ssl", $_POST["ftp_ssl"], time() + $s, '/', null, null, true);
@@ -304,7 +305,11 @@ function attemptLogin()
                 $_SESSION["interface"] = $_POST["interface"];
                 $_SESSION["skin"]      = $_POST["skin"];
                 $_SESSION["lang"]      = $_POST["lang"];
-                $_SESSION["ip_check"]  = $_POST["ip_check"];
+                if ($sessionLockIP == "")
+                    $_SESSION["ip_check"]  = $_POST["ip_check"];
+                else
+                    $_SESSION["ip_check"]  = $sessionLockIP;
+
                 $_SESSION["filesCharSet"]  = $_POST["filesCharSet"];
                 
                 if (connectFTP(1) == 1) {
@@ -392,6 +397,8 @@ function displayLoginForm($posted)
     
     global $version;
     global $ftpHost;
+    global $sessionLockIP;
+    global $restrictSaveCredentials;
     global $ajaxRequest;
     global $lang_max_logins;
     global $lang_btn_login;
@@ -439,7 +446,7 @@ function displayLoginForm($posted)
     } else {
         
         // Set values from cookies
-        if ($_COOKIE["login_save"] == 1) {
+        if (!$restrictSaveCredentials && $_COOKIE["login_save"] == 1) {
             
             $ftp_ssl    = $_COOKIE["ftp_ssl"];
             $ftp_host   = $_COOKIE["ftp_host"];
@@ -563,7 +570,11 @@ foreach($charSet as $cs) print "<option value=$cs>$cs</option>";
 if ($versionCheck == 1 && ((intval(ini_get("allow_url_fopen")) == 1 && (function_exists("file_get_contents") || (function_exists("fopen") && function_exists("stream_get_contents")))) || (function_exists("curl_init") && function_exists("curl_exec")))) {
 ?>
 <iframe src="<?php
-    echo dirname($_SERVER["SCRIPT_NAME"]) . "/vc.php?v=" . $version;
+    $path = dirname($_SERVER["SCRIPT_NAME"]);
+    if ($path == '/' || $path == '\\')
+        $path = '';
+
+    echo "$path/vc.php?v=" . $version;
 ?>" width="200" height="20" scrolling="no" frameborder="0"></iframe>
 <?php
 } else {
@@ -597,6 +608,7 @@ if ($versionCheck == 1 && ((intval(ini_get("allow_url_fopen")) == 1 && (function
 ?>
 <?php
         }
+        if ($sessionLockIP == "") {
 ?>
 
 <p><input type="checkbox" name="ip_check" value="1" <?php
@@ -604,18 +616,22 @@ if ($versionCheck == 1 && ((intval(ini_get("allow_url_fopen")) == 1 && (function
             echo "checked";
 ?> tabindex="-1"> <?php
         echo $lang_ip_check;
+        }
 ?>
 <p><input type="checkbox" name="interface" value="adv" <?php
         if ($interface == "adv" || $interface == "")
             echo "checked";
 ?> tabindex="-1"> <?php
         echo $lang_adv_interface;
+
+        if (!$restrictSaveCredentials) {
 ?>
 <p><input type="checkbox" name="login_save" value="1" <?php
-        if ($login_save == 1)
-            echo "checked";
+            if ($login_save == 1)
+                echo "checked";
 ?> tabindex="-1"> <?php
-        echo $lang_save_login;
+            echo $lang_save_login;
+        }
 ?>
 
 <p><hr noshade>
