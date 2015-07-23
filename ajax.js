@@ -474,13 +474,13 @@ function fileUploader(globalFiles, filePath, rowID, isFolder, isDrop) {
         };
 
         // Post form
-        xmlhttp.open("POST", "?ftpAction=upload&filePath=" + filePath, true);
+        xmlhttp.open("PUT", "?ftpAction=upload&filePath=" + filePath, true);
         xmlhttp.setRequestHeader("Cache-Control", "no-cache");
         xmlhttp.setRequestHeader("X-Filename", file.name);
         xmlhttp.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         xmlhttp.setRequestHeader("X-File-Size", file.size);
         xmlhttp.setRequestHeader("X-File-Type", file.type);
-        //xmlhttp.setRequestHeader("Content-Type", "multipart/form-data");
+        xmlhttp.setRequestHeader("Content-Type", "application/octet-stream");
         xmlhttp.send(file);
     }
 }

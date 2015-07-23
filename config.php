@@ -13,3 +13,8 @@ $serverTmp = "/tmp";
 $dateFormatUsa = 0;
 $lockOutTime = 5;
 $versionCheck = 1;
+$sessionLockIP = 1;
+$restrictSaveCredentials = 1;
+$maxUploadSize = "2G";
+$defaultSkin = "ocean";
+
