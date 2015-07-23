@@ -11,6 +11,20 @@ function ajaxStart() {
 }
 
 var globalBrowser;
+var globalLines = 0;
+
+function refreshLines(gLines) {
+    var lines = document.getElementById("divLines");
+    var txtArea = document.getElementById("editContent");
+    var nLines = txtArea.value.split("\n").length;
+    if (gLines <= nLines)
+    {
+        for (i=1+gLines; i<=nLines; i++) {
+            lines.innerHTML = lines.innerHTML + i + "\r\n";
+        }
+    }
+    return nLines;
+}
 
 function detectBrowser() {
 

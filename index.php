@@ -2816,13 +2816,17 @@ function displayEditFileForm($file, $content)
     displayPopupOpen(0, $width, $height, 0, $title);
     
     echo "<input type=\"hidden\" name=\"file\" value=\"" . sanitizeStr($file) . "\">";
-    echo "<textarea name=\"editContent\" id=\"editContent\" style=\"height: " . $editorHeight . "px;\">" . sanitizeStr($content) . "</textarea>";
-    
+    echo "<table border=0><tr><td>";
+    echo "<textarea readonly style=\"height: " . $editorHeight . "px;width:50px;overflow:hidden;border:0px;resize: none;text-align:right;\" id=\"divLines\"></textarea>";
+    echo "</td><td width=\"100%\">";
+    echo "<textarea name=\"editContent\" id=\"editContent\" wrap=\"off\" onfocus=\"globalLines = refreshLines(globalLines);document.getElementById('divLines').scrollTop = this.scrollTop;\" onscroll=\"document.getElementById('divLines').scrollTop = this.scrollTop\" onkeyup=\"globalLines = refreshLines(globalLines);document.getElementById('divLines').scrollTop = this.scrollTop;\"  style=\"height: " . $editorHeight . "px;\">" . sanitizeStr($content) . "</textarea>";
+    echo "</td></tr></table>";
+
     // Save button
     echo "<input type=\"button\" value=\"" . $lang_btn_save . "\" class=\"popUpBtn\" onClick=\"submitToIframe('&ftpAction=editProcess');\"> ";
     
     // Close button
-    echo "<input type=\"button\" value=\"" . $lang_btn_close . "\" class=\"popUpBtn\" onClick=\"processForm('&ftpAction=openFolder')\"> ";
+    echo "<input type=\"button\" value=\"" . $lang_btn_close . "\" class=\"popUpBtn\" onClick=\"globalLines = 0; processForm('&ftpAction=openFolder')\"> ";
     
     displayPopupClose(0, "", 0);
 }
