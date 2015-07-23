@@ -2085,10 +2085,12 @@ function copyFiles()
         $isError = 0;
         
         $file_name = getFileFromPath($file);
-        $fp1       = $serverTmp . "/" . $file_name;
+        $fp1       = tempnam($serverTmp, "monsta-");
         $fp2       = $file;
         $fp3       = $folderMoveTo . "/" . $file_name;
-        
+       
+        register_shutdown_function('shutdown_unlinkTempFile', $fp1);
+
         // Check if file exists
         if (checkFileExists("f", $file_name, $folderMoveTo) == 1) {
             recordFileError("file", tidyFolderPath($folderMoveTo, $file_name), $lang_file_exists);
@@ -2289,10 +2291,12 @@ function copyFolder($folder, $dir_destin, $dir_source)
                         copyFolder($file, $dir_destin . "/" . $folder, $dir_source . "/" . $folder);
                     } else {
                         
-                        $fp1 = $serverTmp . "/" . $file;
+                        $fp1 = tempnam($serverTmp, "monsta-");
                         $fp2 = $dir_source . "/" . $folder . "/" . $file;
                         $fp3 = $dir_destin . "/" . $folder . "/" . $file;
                         
+                        register_shutdown_function('shutdown_unlinkTempFile', $fp1);
+
                         ensureFtpConnActive();
                         
                         // Download
@@ -2761,9 +2765,11 @@ function editFile()
     
     $file      = quotesUnescape($_POST["file"]);
     $file_name = getFileFromPath($file);
-    $fp1       = $serverTmp . "/" . $file_name;
+    $fp1       = tempnam($serverTmp, "monsta-");
     $fp2       = $file;
     
+    register_shutdown_function('shutdown_unlinkTempFile', $fp1);
+
     ensureFtpConnActive();
     
     // Download the file
@@ -2846,9 +2852,11 @@ function editProcess()
     // Get file contents
     $file      = quotesUnescape($_POST["file"]);
     $file_name = getFileFromPath($file);
-    $fp1       = $serverTmp . "/" . $file_name;
+    $fp1       = tempnam($serverTmp, "monsta-");
     $fp2       = $file;
     
+    register_shutdown_function('shutdown_unlinkTempFile', $fp1);
+
     $editContent = $_POST["editContent"];
     
     // Write content to a file
@@ -2883,9 +2891,11 @@ function downloadFile()
     
     $file      = quotesUnescape($_GET["dl"]);
     $file_name = getFileFromPath($file);
-    $fp1       = $serverTmp . "/" . $file_name;
+    $fp1       = tempnam($serverTmp, "monsta-");
     $fp2       = $file;
     
+    register_shutdown_function('shutdown_unlinkTempFile', $fp1);
+
     ensureFtpConnActive();
     
     // Download the file
@@ -3216,8 +3226,9 @@ function newFile()
         $file_name = iconv("utf-8",$filesCharSet,$file_name);
 
         
-        $fp1 = $serverTmp . "/" . $file_name;
-        
+        $fp1 = tempnam($serverTmp, "monsta-");
+        register_shutdown_function('shutdown_unlinkTempFile', $fp1);
+
         if ($_SESSION["dir_current"] == "/")
             $fp2 = "/" . $file_name;
         else
@@ -3417,7 +3428,8 @@ function uploadFile()
     
     if ($file_name) {
         
-        $fp1 = $serverTmp . "/" . $file_name;
+        $fp1 = tempnam($serverTmp, "monsta-");
+        register_shutdown_function('shutdown_unlinkTempFile', $fp1);
         
         // Check if a folder is being uploaded
         if ($path != "") {
@@ -4221,6 +4233,14 @@ function ensureFtpConnActive()
     if (ftp_pwd($conn_id) === false) {
         @ftp_close($conn_id);
         connectFTP(0);
+    }
+}
+
+function shutdown_unlinkTempFile($path)
+{
+    if (is_file($path)) {
+        error_log("Cleaning up temp file on shutdown: $path");
+        unlink($path);
     }
 }
 
