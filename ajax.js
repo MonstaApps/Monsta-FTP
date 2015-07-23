@@ -11,6 +11,20 @@ function ajaxStart() {
 }
 
 var globalBrowser;
+var globalLines = 0;
+
+function refreshLines(gLines) {
+    var lines = document.getElementById("divLines");
+    var txtArea = document.getElementById("editContent");
+    var nLines = txtArea.value.split("\n").length;
+    if (gLines <= nLines)
+    {
+        for (i=1+gLines; i<=nLines; i++) {
+            lines.innerHTML = lines.innerHTML + i + "\r\n";
+        }
+    }
+    return nLines;
+}
 
 function detectBrowser() {
 
@@ -487,15 +501,9 @@ function processForm(vars) {
     // Get form data
     vars = vars + generateVars();
 
-    // Banner height
-    var banner_height = 0;
-    if (document.getElementById("banner")!=null) {
-        banner_height = document.getElementById("banner").offsetHeight;
-    }
-
     // Add window dimensions
     vars = vars + "&windowWidth=" + window.innerWidth;
-    vars = vars + "&windowHeight=" + (window.innerHeight-banner_height);
+    vars = vars + "&windowHeight=" + window.innerHeight;
 
     // Return HTML from AJAX to div (when complete)
     xmlhttp.onreadystatechange = function stateChanged() {
@@ -648,13 +656,10 @@ function setFileWindowSize(divID, height, dedn) {
 
     if (height == 0) {
         var screenHeight = window.innerHeight;
-        var banner_height = 0;
+        var height = screenHeight - dedn;
         if (document.getElementById("banner")!=null) {
-            banner_height = document.getElementById("banner").offsetHeight;
+            height -= document.getElementById("banner").offsetHeight;
         }
-
-        var height = screenHeight - dedn - banner_height;
-
     }
 
     document.getElementById("ajaxContentWindow").style.height = height + 'px';

@@ -336,13 +336,15 @@ function displayHeader()
     global $filesCharSet;
     global $defaultSkin;
 
-    // The order of these determines the proper display
+    // Search a few places to find a preferred skin
     if (isset($_POST["skin"]) && !empty($_POST["skin"]))
         $skin = $_POST["skin"];
     elseif (isset($_SESSION["skin"]) && !empty($_SESSION["skin"]))
         $skin = $_SESSION["skin"];
-    elseif (isset($_COOKIE["skin"]) && !empty($_COOKIE["skin"]))
+    elseif (isset($_COOKIE["skin"]) && !emtpy($_COOKIE["skin"]))
         $skin = $_COOKIE["skin"];
+    else
+        $skin = $defaultSkin;
 
     if (preg_match('/^[A-Za-z0-9_\-]+$/',$skin) != 1)
         $skin = $defaultSkin;
@@ -351,7 +353,7 @@ function displayHeader()
     $skin_local_path = dirname($_SERVER['SCRIPT_FILENAME']);
     $skin_uri_path = dirname($_SERVER['SCRIPT_NAME']);
     if ($skin_uri_path == '/' or $skin_uri_path == '\\')
-        $skin_uri_path = '';
+        $skin_uri_path = ''; // Fixup dirname() oddities
 
     $skin_local_path .= "/skins/$skin";
     $skin_uri_path .= "/skins/$skin";
@@ -365,9 +367,9 @@ function displayHeader()
 ?></title>
     <link href="style.css" rel="stylesheet" type="text/css">
 <?php
-//    if (is_file("$skin_local_path.css")) {
+    if (is_file("$skin_local_path.css")) {
         echo "    <link href=\"$skin_uri_path.css\" rel=\"stylesheet\" type=\"text/css\">";
- //   }
+    }
 ?>
     <meta http-equiv="Content-Type" content="text/html; charset=<?php print $filesCharSet;  ?>">
 </head>
@@ -2855,13 +2857,17 @@ function displayEditFileForm($file, $content)
     displayPopupOpen(0, $width, $height, 0, $title);
     
     echo "<input type=\"hidden\" name=\"file\" value=\"" . sanitizeStr($file) . "\">";
-    echo "<textarea name=\"editContent\" id=\"editContent\" style=\"height: " . $editorHeight . "px;\">" . sanitizeStr($content) . "</textarea>";
-    
+    echo "<table border=0><tr><td>";
+    echo "<textarea readonly style=\"height: " . $editorHeight . "px;width:50px;overflow:hidden;border:0px;resize: none;text-align:right;\" id=\"divLines\"></textarea>";
+    echo "</td><td width=\"100%\">";
+    echo "<textarea name=\"editContent\" id=\"editContent\" wrap=\"off\" onfocus=\"globalLines = refreshLines(globalLines);document.getElementById('divLines').scrollTop = this.scrollTop;\" onscroll=\"document.getElementById('divLines').scrollTop = this.scrollTop\" onkeyup=\"globalLines = refreshLines(globalLines);document.getElementById('divLines').scrollTop = this.scrollTop;\"  style=\"height: " . $editorHeight . "px;\">" . sanitizeStr($content) . "</textarea>";
+    echo "</td></tr></table>";
+
     // Save button
     echo "<input type=\"button\" value=\"" . $lang_btn_save . "\" class=\"popUpBtn\" onClick=\"submitToIframe('&ftpAction=editProcess');\"> ";
     
     // Close button
-    echo "<input type=\"button\" value=\"" . $lang_btn_close . "\" class=\"popUpBtn\" onClick=\"processForm('&ftpAction=openFolder')\"> ";
+    echo "<input type=\"button\" value=\"" . $lang_btn_close . "\" class=\"popUpBtn\" onClick=\"globalLines = 0; processForm('&ftpAction=openFolder')\"> ";
     
     displayPopupClose(0, "", 0);
 }
