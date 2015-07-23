@@ -352,23 +352,26 @@ function displayHeader()
     
     global $version;
     global $filesCharSet;
-    
-    // The order of these determines the proper display
-    if ($_COOKIE["skin"] != "")
-        $skin = $_COOKIE["skin"];
-    if ($_SESSION["skin"] != "")
-        $skin = $_SESSION["skin"];
-    if (isset($_POST["skin"]))
+    global $defaultSkin;
+
+    // Search a few places to find a preferred skin
+    if (isset($_POST["skin"]) && !empty($_POST["skin"]))
         $skin = $_POST["skin"];
+    elseif (isset($_SESSION["skin"]) && !empty($_SESSION["skin"]))
+        $skin = $_SESSION["skin"];
+    elseif (isset($_COOKIE["skin"]) && !emtpy($_COOKIE["skin"]))
+        $skin = $_COOKIE["skin"];
+    else
+        $skin = $defaultSkin;
 
     if (preg_match('/^[A-Za-z0-9_\-]+$/',$skin) != 1)
-        $skin = "monsta";
+        $skin = $defaultSkin;
 
-    // Look for a .php include, an .html include for a header/banner
+    // Look for a .php include or an .html include for a header/banner
     $skin_local_path = dirname($_SERVER['SCRIPT_FILENAME']);
     $skin_uri_path = dirname($_SERVER['SCRIPT_NAME']);
     if ($skin_uri_path == '/' or $skin_uri_path == '\\')
-        $skin_uri_path = '';
+        $skin_uri_path = ''; // Fixup dirname() oddities
 
     $skin_local_path .= "/skins/$skin";
     $skin_uri_path .= "/skins/$skin";
@@ -382,9 +385,9 @@ function displayHeader()
 ?></title>
     <link href="style.css" rel="stylesheet" type="text/css">
 <?php
-//    if (is_file("$skin_local_path.css")) {
+    if (is_file("$skin_local_path.css")) {
         echo "    <link href=\"$skin_uri_path.css\" rel=\"stylesheet\" type=\"text/css\">";
- //   }
+    }
 ?>
     <meta http-equiv="Content-Type" content="text/html; charset=<?php print $filesCharSet;  ?>">
 </head>
