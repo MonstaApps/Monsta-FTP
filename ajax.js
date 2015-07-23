@@ -657,6 +657,9 @@ function setFileWindowSize(divID, height, dedn) {
     if (height == 0) {
         var screenHeight = window.innerHeight;
         var height = screenHeight - dedn;
+        if (document.getElementById("banner")!=null) {
+            height -= document.getElementById("banner").offsetHeight;
+        }
     }
 
     document.getElementById("ajaxContentWindow").style.height = height + 'px';
