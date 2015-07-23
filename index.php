@@ -511,7 +511,7 @@ function displayLoginForm($posted)
 
 <input type="hidden" name="login" value="1">
 <input type="hidden" name="openFolder" value="<?php
-        echo sanitizeStr($_GET["openFolder"]);
+        if (isset($_GET["openFolder"])) echo sanitizeStr($_GET["openFolder"]);
 ?>">
 
 <?php
@@ -521,7 +521,7 @@ function displayLoginForm($posted)
             echo $lang_ftp_host;
 ?>:
 <br><input type="text" name="ftp_host" value="<?php
-            echo sanitizeStr($ftp_host);
+            if (isset($ftp_host)) echo sanitizeStr($ftp_host);
 ?>" size="30" class="<?php
             if ($posted == 1 && $ftp_host == "")
                 echo "bgFormError";
@@ -529,7 +529,7 @@ function displayLoginForm($posted)
 <?php
             echo $lang_port;
 ?>: <input type="text" name="ftp_port" value="<?php
-            echo sanitizeStr($ftp_port);
+            if (isset($ftp_port)) echo sanitizeStr($ftp_port);
 ?>" size="3" class="<?php
             if ($posted == 1 && $ftp_port == "")
                 echo "bgFormError";
@@ -543,7 +543,7 @@ function displayLoginForm($posted)
         echo $lang_username;
 ?>:
 <br><input type="text" name="ftp_user" value="<?php
-        echo sanitizeStr($ftp_user);
+        if (isset($ftp_user)) echo sanitizeStr($ftp_user);
 ?>" class="<?php
         if ($posted == 1 && $ftp_user == "")
             echo "bgFormError";
@@ -553,7 +553,7 @@ function displayLoginForm($posted)
         echo $lang_password;
 ?>:
 <br><input type="password" name="ftp_pass" value="<?php
-        echo sanitizeStr($ftp_pass);
+        if (isset($ftp_pass)) echo sanitizeStr($ftp_pass);
 ?>" class="<?php
         if ($posted == 1 && $ftp_pass == "")
             echo "bgFormError";
@@ -608,7 +608,7 @@ if ($versionCheck == 1 && ((intval(ini_get("allow_url_fopen")) == 1 && (function
             echo $lang_passive_mode;
 ?>
 <p><input type="checkbox" name="ftp_ssl" value="1" <?php
-            if ($ftp_ssl == 1)
+            if (isset($ftp_ssl) && $ftp_ssl == 1)
                 echo "checked";
 ?> tabindex="-1"> <?php
             echo $lang_ftp_ssl;
@@ -626,7 +626,7 @@ if ($versionCheck == 1 && ((intval(ini_get("allow_url_fopen")) == 1 && (function
         }
 ?>
 <p><input type="checkbox" name="interface" value="adv" <?php
-        if ($interface == "adv" || $interface == "")
+        if (isset($interface) && ($interface == "adv" || $interface == ""))
             echo "checked";
 ?> tabindex="-1"> <?php
         echo $lang_adv_interface;
@@ -647,7 +647,7 @@ if ($versionCheck == 1 && ((intval(ini_get("allow_url_fopen")) == 1 && (function
         echo displayLangSelect($_SESSION["lang"]);
 ?>
 <?php
-        echo displaySkinSelect($skin);
+        echo displaySkinSelect(isset($skin)?$skin:"");
 ?>
 
 <p><hr noshade>
@@ -1500,7 +1500,7 @@ function openFolder()
             $dir = quotesUnescape($_POST["openFolder"]);
         
         // Check dir is set
-        if ($dir == "") {
+        if (!isset($dir) || $dir == "") {
             
             // No folder set (must be first login), so set home dir
             if ($_SESSION["win_lin"] == "lin" || $_SESSION["win_lin"] == "mac")
@@ -4119,15 +4119,16 @@ var upload_limit = '<?php
 
 function setLangFile()
 {
-    
+    $lang = "";
+
     // The order of these determines the proper display
-    if ($_COOKIE["lang"] != "")
-        $lang = $_COOKIE["lang"];
-    if ($_SESSION["lang"] != "")
-        $lang = $_SESSION["lang"];
-    if (isset($_POST["lang"]))
+    if (isset($_POST["lang"]) && !empty($_POST["lang"]))
         $lang = $_POST["lang"];
-    
+    elseif (isset($_SESSION["lang"]) && !empty($_SESSION["lang"]))
+        $lang = $_SESSION["lang"];
+    elseif (isset($_COOKIE["lang"]) && $_COOKIE["lang"] != "")
+        $lang = $_COOKIE["lang"];
+
     if ($lang == "") {
         
         $dir = "languages";
@@ -4217,6 +4218,9 @@ function checkReferer()
     
     global $lang_session_expired;
     
+    if (!isset($_SERVER["HTTP_REFERER"]) || empty($_SERVER["HTTP_REFERER"]))
+        return 0;
+
     $domain = $_SESSION["domain"];
     $domain = str_replace(".", "\.", $domain);
     
