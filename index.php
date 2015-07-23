@@ -6,7 +6,7 @@ require("config.php");
 
 header("X-Frame-Options: SAMEORIGIN");
 
-error_reporting(0);
+//error_reporting(0);
 saveFtpDetailsCookie();
 startSession();
 
@@ -40,27 +40,30 @@ else
 include("iconv.php");
 
 # SET VARS
+$ftpAction = '';
 
 // Check for file download
 if (isset($_GET["dl"]))
     $ftpAction = "download";
 
-// Check for iFrame upload
-if ($_GET["ftpAction"] == "iframe_upload")
-    $ftpAction = "iframe_upload";
+if (isset($_GET["ftpAction"])) {
+    // Check for iFrame upload
+    if ($_GET["ftpAction"] == "iframe_upload")
+        $ftpAction = "iframe_upload";
 
-// Check for iFrame edit
-if ($_GET["ftpAction"] == "editProcess")
-    $ftpAction = "editProcess";
+    // Check for iFrame edit
+    if ($_GET["ftpAction"] == "editProcess")
+        $ftpAction = "editProcess";
 
-// Check for AJAX post
-if ($_POST["ftpAction"] != "" || $_GET["ftpAction"] != "")
+    $ajaxRequest = 1;
+}
+elseif (isset($_POST["ftpAction"]))
     $ajaxRequest = 1;
 else
     $ajaxRequest = 0;
 
 // Check resetting upload erreor array
-if ($_POST["resetErrorArray"] == 1 || $ajaxRequest == 0) {
+if ((isset($_POST["resetErrorArray"]) && $_POST["resetErrorArray"] == 1) || $ajaxRequest == 0) {
     $_SESSION["errors"] = array();
 }
 
@@ -165,41 +168,18 @@ function startSession()
 {
     
     @session_start();
+    $session_keys = array("user_ip", "loggedin",
+        "skin", "lang", "win_lin", "ip_check", "login_error", "login_fails",
+        "login_lockout",
+        "ftp_ssl", "ftp_host", "ftp_user", "ftp_pass", "ftp_port", "ftp_pasv",
+        "interface", "dir_current", "dir_history", "clipboard_chmod", "clipboard_files",
+        "clipboard_folders", "clipboard_rename", "copy",
+        "errors", "upload_limit", "domain", "filesCharSet",
+    );
     
-    $sessionAr[] = "user_ip";
-    $sessionAr[] = "loggedin";
-    $sessionAr[] = "skin";
-    $sessionAr[] = "lang";
-    $sessionAr[] = "win_lin";
-    $sessionAr[] = "ip_check";
-    $sessionAr[] = "login_error";
-    $sessionAr[] = "login_fails";
-    $sessionAr[] = "login_lockout";
-    $sessionAr[] = "ftp_ssl";
-    $sessionAr[] = "ftp_host";
-    $sessionAr[] = "ftp_user";
-    $sessionAr[] = "ftp_pass";
-    $sessionAr[] = "ftp_port";
-    $sessionAr[] = "ftp_pasv";
-    $sessionAr[] = "interface";
-    $sessionAr[] = "dir_current";
-    $sessionAr[] = "dir_history";
-    $sessionAr[] = "clipboard_chmod";
-    $sessionAr[] = "clipboard_files";
-    $sessionAr[] = "clipboard_folders";
-    $sessionAr[] = "clipboard_rename";
-    $sessionAr[] = "copy";
-    $sessionAr[] = "errors";
-    $sessionAr[] = "upload_limit";
-    $sessionAr[] = "domain";
-    $sessionAr[] = "filesCharSet";
-    
-    // Register each variable in the array
-    $n = sizeof($sessionAr);
-    for ($i = 0; $i < $n; $i++) {
-        
-        if (!isset($sessionAr[$i]))
-            session_register($sessionAr[$i]);
+    foreach($session_keys as $session_key) {
+        if (!isset($_SESSION[$session_key]))
+            $_SESSION[$session_key] = ''; // avoid a lot of "undefined index"
     }
 }
 
@@ -207,7 +187,7 @@ function saveFtpDetailsCookie()
 {
     global $restrictSaveCredentials;
 
-    if ($_POST["login"] == 1) {
+    if (isset($_POST["login"]) && $_POST["login"] == 1) {
         
         if (!$restrictSaveCredentials && $_POST["login_save"] == 1) {
             
@@ -255,7 +235,9 @@ function attemptLogin()
     global $lang_missing_fields;
     global $lang_ip_conflict;
     
-    if (connectFTP(0) == 1 && $_POST["login"] != 1) {
+    $is_login_form = (isset($_POST["login"]) && $_POST["login"] == 1);
+
+    if (connectFTP(0) == 1 && !$is_login_form) {
         
         // Check for hijacked session
         if ($_SESSION["ip_check"] == 1) {
@@ -274,7 +256,7 @@ function attemptLogin()
         
     } else {
         
-        if ($_POST["login"] == 1) {
+        if ($is_login_form) {
             
             // Check for login errors
             if (checkLoginErrors() == 1) {
@@ -352,19 +334,20 @@ function displayHeader()
     
     global $version;
     global $filesCharSet;
-    
+    global $defaultSkin;
+
     // The order of these determines the proper display
-    if ($_COOKIE["skin"] != "")
-        $skin = $_COOKIE["skin"];
-    if ($_SESSION["skin"] != "")
-        $skin = $_SESSION["skin"];
-    if (isset($_POST["skin"]))
+    if (isset($_POST["skin"]) && !empty($_POST["skin"]))
         $skin = $_POST["skin"];
+    elseif (isset($_SESSION["skin"]) && !empty($_SESSION["skin"]))
+        $skin = $_SESSION["skin"];
+    elseif (isset($_COOKIE["skin"]) && !empty($_COOKIE["skin"]))
+        $skin = $_COOKIE["skin"];
 
     if (preg_match('/^[A-Za-z0-9_\-]+$/',$skin) != 1)
-        $skin = "monsta";
+        $skin = $defaultSkin;
 
-    // Look for a .php include, an .html include for a header/banner
+    // Look for a .php include or an .html include for a header/banner
     $skin_local_path = dirname($_SERVER['SCRIPT_FILENAME']);
     $skin_uri_path = dirname($_SERVER['SCRIPT_NAME']);
     if ($skin_uri_path == '/' or $skin_uri_path == '\\')
@@ -389,7 +372,7 @@ function displayHeader()
     <meta http-equiv="Content-Type" content="text/html; charset=<?php print $filesCharSet;  ?>">
 </head>
 <body <?php
-    if ($_POST["login"] == 1) {
+    if (isset($_POST["login"]) && $_POST["login"] == 1) {
 ?>onresize="setFileWindowSize('ajaxContentWindow',0,0);"<?php
     }
 ?>>
@@ -720,6 +703,8 @@ function connectFTP($posted)
     if ($_SESSION["ftp_host"] != "" && $_SESSION["ftp_port"] != "" && $_SESSION["ftp_user"] != "" && $_SESSION["ftp_pass"] != "") {
         
         // Connect
+        $connectFail = 0;
+
         if ($_SESSION["ftp_ssl"] == 1)
             $conn_id = @ftp_ssl_connect($_SESSION["ftp_host"], $_SESSION["ftp_port"]) or $connectFail = 1;
         else
@@ -967,6 +952,11 @@ function createFileFolderArrayLin($ftp_rawlist, $type)
 {
     
     // Go through array of files/folders
+
+    $foldAllAr = array();
+    $linkAllAr = array();
+    $fileAllAr = array();
+
     foreach ($ftp_rawlist AS $ff) {
         
         // Reset values
@@ -1043,23 +1033,23 @@ function createFileFolderArrayLin($ftp_rawlist, $type)
     }
     
     // Check there are files and/or folders to display
-    if (is_array($foldAllAr) || is_array($linkAllAr) || is_array($fileAllAr)) {
+    if (count($foldAllAr) || count($linkAllAr) || count($fileAllAr)) {
         
         // Set sorting order
-        if ($_POST["sort"] == "")
+        if (!isset($_POST["sort"]) || $_POST["sort"] == "")
             $sort = "n";
         else
             $sort = $_POST["sort"];
         
-        if ($_POST["ord"] == "")
+        if (!isset($_POST["ord"]) || $_POST["ord"] == "")
             $ord = "asc";
         else
             $ord = $_POST["ord"];
         
         // Return folders
         if ($type == "folders") {
-            
-            if (is_array($foldAllAr)) {
+            $folders = '';
+            if (count($foldAllAr)) {
                 
                 // Set the folder arrays to sort
                 if ($sort == "n")
@@ -1092,8 +1082,8 @@ function createFileFolderArrayLin($ftp_rawlist, $type)
         
         // Return links
         if ($type == "links") {
-            
-            if (is_array($linkAllAr)) {
+            $links = '';
+            if (isset($linkAllAr) && count($linkAllAr)) {
                 
                 // Set the folder arrays to sort
                 if ($sort == "n")
@@ -1126,23 +1116,23 @@ function createFileFolderArrayLin($ftp_rawlist, $type)
         
         // Return files
         if ($type == "files") {
-            
-            if (is_array($fileAllAr)) {
+            $files = '';
+            if (count($fileAllAr)) {
                 
                 // Set the folder arrays to sort
                 if ($sort == "n")
                     $sortAr = $fileNameAr;
-                if ($sort == "s")
+                elseif ($sort == "s")
                     $sortAr = $fileSizeAr;
-                if ($sort == "d")
+                elseif ($sort == "d")
                     $sortAr = $fileDateAr;
-                if ($sort == "t")
+                elseif ($sort == "t")
                     $sortAr = $fileTimeAr;
-                if ($sort == "u")
+                elseif ($sort == "u")
                     $sortAr = $fileUserAr;
-                if ($sort == "g")
+                elseif ($sort == "g")
                     $sortAr = $fileGroupAr;
-                if ($sort == "p")
+                elseif ($sort == "p")
                     $sortAr = $filePermsAr;
                 
                 // Multisort folders
@@ -1205,7 +1195,7 @@ function createFileFolderArrayWin($ftp_rawlist, $type)
     }
     
     // Check there are files and/or folders to display
-    if (is_array($foldAllAr) || is_array($fileAllAr)) {
+    if (count($foldAllAr) || count($fileAllAr)) {
         
         // Set sorting order
         if ($_POST["sort"] == "")
@@ -1221,8 +1211,8 @@ function createFileFolderArrayWin($ftp_rawlist, $type)
         // Return folders
         if ($type == "folders") {
             
-            if (is_array($foldAllAr)) {
-                
+            if (count($foldAllAr)) {
+                $sortAr = array();
                 // Set the folder arrays to sort
                 if ($sort == "n")
                     $sortAr = $foldNameAr;
@@ -1232,7 +1222,7 @@ function createFileFolderArrayWin($ftp_rawlist, $type)
                     $sortAr = $foldTimeAr;
                 
                 // Multisort array
-                if (is_array($sortAr)) {
+                if (count($sortAr)) {
                     if ($ord == "asc")
                         array_multisort($sortAr, SORT_ASC, $foldAllAr);
                     else
@@ -1249,7 +1239,7 @@ function createFileFolderArrayWin($ftp_rawlist, $type)
         // Return files
         if ($type == "files") {
             
-            if (is_array($fileAllAr)) {
+            if (count($fileAllAr)) {
                 
                 // Set the folder arrays to sort
                 if ($sort == "n")
@@ -1286,7 +1276,9 @@ function getFileListHtml($array, $image)
         $trCount = 1;
     else
         $trCount = 0;
-    
+
+    $html = '';
+
     $i = 1;
     foreach ($array AS $file) {
         
@@ -1325,7 +1317,7 @@ function getFileListHtml($array, $image)
         }
         
         // Check for checkbox check (only if action button clicked)
-        if ($_POST["ftpAction"] != "") {
+        if (isset($_POST["ftpAction"]) && $_POST["ftpAction"] != "") {
             if ((sizeof($_SESSION["clipboard_rename"]) > 1 && in_array($file, $_SESSION["clipboard_rename"])) || (sizeof($_SESSION["clipboard_chmod"]) > 1 && in_array($file_path, $_SESSION["clipboard_chmod"])))
                 $checked = "checked";
             else
@@ -1502,7 +1494,7 @@ function openFolder()
         // Set the folder to open
         if ($_SESSION["dir_current"] != "")
             $dir = $_SESSION["dir_current"];
-        if ($_POST["openFolder"] != "")
+        if (isset($_POST["openFolder"]) && $_POST["openFolder"] != "")
             $dir = quotesUnescape($_POST["openFolder"]);
         
         // Check dir is set
@@ -1560,7 +1552,7 @@ function openFolder()
 function checkLogOut()
 {
     
-    if ($_GET["logout"] == 1)
+    if (isset($_GET["logout"]) && $_GET["logout"] == 1)
         logOut();
 }
 
@@ -1626,7 +1618,7 @@ function getFtpColumnSpan($sort, $name)
 {
     
     // Check current column
-    if ($_POST["sort"] == $sort && $_POST["ord"] == "desc") {
+    if (isset($_POST["sort"], $_POST["ord"]) && $_POST["sort"] == $sort && $_POST["ord"] == "desc") {
         $ord = "asc";
     } else {
         $ord = "desc";
@@ -1841,11 +1833,14 @@ function displayFtpHistory()
 function processActions()
 {
     
-    $ftpAction = $_POST["ftpAction"];
-    
-    if ($ftpAction == "")
+    $ftpAction = '';
+    if(isset($_POST["ftpAction"]) && !empty($_POST["ftpAction"]))
+        $ftpAction = $_POST["ftpAction"];
+    elseif(isset($_GET["ftpAction"]) && !empty($_GET["ftpAction"]))
         $ftpAction = $_GET["ftpAction"];
-    
+    else
+        $ftpAction = 'error';
+ 
     // Open folder (always called)
     if (openFolder() == 1) {
         

@@ -487,9 +487,15 @@ function processForm(vars) {
     // Get form data
     vars = vars + generateVars();
 
+    // Banner height
+    var banner_height = 0;
+    if (document.getElementById("banner")!=null) {
+        banner_height = document.getElementById("banner").offsetHeight;
+    }
+
     // Add window dimensions
     vars = vars + "&windowWidth=" + window.innerWidth;
-    vars = vars + "&windowHeight=" + window.innerHeight;
+    vars = vars + "&windowHeight=" + (window.innerHeight-banner_height);
 
     // Return HTML from AJAX to div (when complete)
     xmlhttp.onreadystatechange = function stateChanged() {
@@ -642,7 +648,13 @@ function setFileWindowSize(divID, height, dedn) {
 
     if (height == 0) {
         var screenHeight = window.innerHeight;
-        var height = screenHeight - dedn;
+        var banner_height = 0;
+        if (document.getElementById("banner")!=null) {
+            banner_height = document.getElementById("banner").offsetHeight;
+        }
+
+        var height = screenHeight - dedn - banner_height;
+
     }
 
     document.getElementById("ajaxContentWindow").style.height = height + 'px';
