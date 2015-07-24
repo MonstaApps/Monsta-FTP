@@ -651,6 +651,9 @@ var globalEditorDefaultSize = 170;
 
 function setFileWindowSize(divID, height, dedn) {
 
+    if (document.getElementById(divID) == null)
+        return;
+
     if (dedn == 0)
         dedn = globalEditorDefaultSize;
 

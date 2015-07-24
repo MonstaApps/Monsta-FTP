@@ -13,8 +13,8 @@ $serverTmp = "/tmp";
 $dateFormatUsa = 0;
 $lockOutTime = 5;
 $versionCheck = 1;
-$sessionLockIP = 1;
-$restrictSaveCredentials = 1;
-$maxUploadSize = "2G";
+$sessionLockIP = 0;
+$restrictSaveCredentials = 0;
+$maxUploadSize = "";
 $defaultSkin = "monsta";
 
