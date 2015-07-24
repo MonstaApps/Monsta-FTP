@@ -4,6 +4,8 @@ $version = "1.5.2";
 
 require("config.php");
 
+file_put_contents("/tmp/monsta-REQUEST", print_r($_REQUEST, true));
+
 header("X-Frame-Options: SAMEORIGIN");
 
 //error_reporting(0);
@@ -13,14 +15,12 @@ startSession();
 # Set Char Set
 $filesCharSet = "utf-8";
 
-if (isset($_SESSION["filesCharSet"]))
-if (in_array($_SESSION["filesCharSet"], $charSet)) $filesCharSet = $_SESSION["filesCharSet"];
+if (isset($_SESSION["filesCharSet"]) && in_array($_SESSION["filesCharSet"], $charSet))
+    $filesCharSet = $_SESSION["filesCharSet"];
 
-if (isset($_POST["filesCharSet"]))
-if (in_array($_POST["filesCharSet"], $charSet)) 
-{
- $filesCharSet = $_POST["filesCharSet"];
- $_SESSION["filesCharSet"] = $_POST["filesCharSet"];
+if (isset($_POST["filesCharSet"]) && in_array($_POST["filesCharSet"], $charSet)) {
+    $filesCharSet = $_POST["filesCharSet"];
+    $_SESSION["filesCharSet"] = $_POST["filesCharSet"];
 }
       
 header("Content-type: text/html; charset=".$filesCharSet);
@@ -189,7 +189,7 @@ function saveFtpDetailsCookie()
 
     if (isset($_POST["login"]) && $_POST["login"] == 1) {
         
-        if (!$restrictSaveCredentials && $_POST["login_save"] == 1) {
+        if (!$restrictSaveCredentials && !empty($_POST["login_save"]) && $_POST["login_save"] == 1) {
             
             $s = 31536000; // seconds in a year
             setcookie("ftp_ssl", $_POST["ftp_ssl"], time() + $s, '/', null, null, true);
@@ -197,12 +197,12 @@ function saveFtpDetailsCookie()
             setcookie("ftp_user", trim($_POST["ftp_user"]), time() + $s, '/', null, null, true);
             setcookie("ftp_pass", trim($_POST["ftp_pass"]), time() + $s, '/', null, null, true);
             setcookie("ftp_port", trim($_POST["ftp_port"]), time() + $s, '/', null, null, true);
-            setcookie("ftp_pasv", $_POST["ftp_pasv"], time() + $s, '/', null, null, true);
-            setcookie("interface", $_POST["interface"], time() + $s, '/', null, null, true);
-            setcookie("login_save", $_POST["login_save"], time() + $s, '/', null, null, true);
+            setcookie("ftp_pasv", (empty($_POST["ftp_pasv"])?0:1), time() + $s, '/', null, null, true);
+            setcookie("interface", (empty($_POST["interface"])?"":"adv"), time() + $s, '/', null, null, true);
+            setcookie("login_save", (empty($_POST["login_save"])?0:1), time() + $s, '/', null, null, true);
             setcookie("skin", $_POST["skin"], time() + $s, '/', null, null, true);
             setcookie("lang", $_POST["lang"], time() + $s, '/', null, null, true);
-            setcookie("ip_check", $_POST["ip_check"], time() + $s, '/', null, null, true);
+            setcookie("ip_check", (empty($_POST["ip_check"])?0:1), time() + $s, '/', null, null, true);
             setcookie("filesCharSet", $_POST["filesCharSet"], time() + $s, '/', null, null, true);
             
         } else {
@@ -234,7 +234,8 @@ function attemptLogin()
     global $ftpDir;
     global $lang_missing_fields;
     global $lang_ip_conflict;
-    
+    global $sessionLockIP;
+
     $is_login_form = (isset($_POST["login"]) && $_POST["login"] == 1);
 
     if (connectFTP(0) == 1 && !$is_login_form) {
@@ -271,8 +272,8 @@ function attemptLogin()
                     
                     $_SESSION["ftp_host"] = trim($_POST["ftp_host"]);
                     $_SESSION["ftp_port"] = trim($_POST["ftp_port"]);
-                    $_SESSION["ftp_pasv"] = $_POST["ftp_pasv"];
-                    $_SESSION["ftp_ssl"]  = $_POST["ftp_ssl"];
+                    $_SESSION["ftp_pasv"] = empty($_POST["ftp_pasv"])?0:1;
+                    $_SESSION["ftp_ssl"]  = empty($_POST["ftp_ssl"])?0:1;
                     
                 } else {
                     
@@ -284,11 +285,11 @@ function attemptLogin()
                 
                 $_SESSION["ftp_user"]  = trim($_POST["ftp_user"]);
                 $_SESSION["ftp_pass"]  = trim($_POST["ftp_pass"]);
-                $_SESSION["interface"] = $_POST["interface"];
-                $_SESSION["skin"]      = $_POST["skin"];
+                $_SESSION["interface"] = empty($_POST["interface"])?"":"adv";
+                $_SESSION["skin"]      = empty($_POST["skin"])?"":$_POST["skin"];
                 $_SESSION["lang"]      = $_POST["lang"];
                 if ($sessionLockIP == "")
-                    $_SESSION["ip_check"]  = $_POST["ip_check"];
+                    $_SESSION["ip_check"]  = empty($_POST["ip_check"])?0:1;
                 else
                     $_SESSION["ip_check"]  = $sessionLockIP;
 
@@ -373,11 +374,7 @@ function displayHeader()
 ?>
     <meta http-equiv="Content-Type" content="text/html; charset=<?php print $filesCharSet;  ?>">
 </head>
-<body <?php
-    if (isset($_POST["login"]) && $_POST["login"] == 1) {
-?>onresize="setFileWindowSize('ajaxContentWindow',0,0);"<?php
-    }
-?>>
+<body onresize="setFileWindowSize('ajaxContentWindow',0,0);">
 <?php
     if (is_file("$skin_local_path.php")) {
         echo "<div id='banner'>\n";
@@ -435,17 +432,17 @@ function displayLoginForm($posted)
     if ($posted == 1) {
         
         // Set vars
-        $ftp_ssl    = $_POST["ftp_ssl"];
+        $ftp_ssl    = empty($_POST["ftp_ssl"])?0:1;
         $ftp_host   = trim($_POST["ftp_host"]);
         $ftp_user   = trim($_POST["ftp_user"]);
         $ftp_pass   = trim($_POST["ftp_pass"]);
         $ftp_port   = trim($_POST["ftp_port"]);
-        $ftp_pasv   = $_POST["ftp_pasv"];
-        $interface  = $_POST["interface"];
+        $ftp_pasv   = empty($_POST["ftp_pasv"])?0:1;
+        $interface  = empty($_POST["interface"])?"":"adv";
         $lang       = $_POST["lang"];
         $skin       = $_POST["skin"];
-        $login_save = $_POST["login_save"];
-        $ip_check   = $_POST["ip_check"];
+        $login_save = empty($_POST["login_save"])?0:1;
+        $ip_check   = empty($_POST["ip_check"])?0:1;
         $filesCharSet = $_POST["filesCharSet"];
         
         $_SESSION["domain"] = $_SERVER["SERVER_NAME"];
@@ -453,7 +450,7 @@ function displayLoginForm($posted)
     } else {
         
         // Set values from cookies
-        if (!$restrictSaveCredentials && $_COOKIE["login_save"] == 1) {
+        if (!$restrictSaveCredentials && !empty($_COOKIE["login_save"] && $_COOKIE["login_save"] == 1) {
             
             $ftp_ssl    = $_COOKIE["ftp_ssl"];
             $ftp_host   = $_COOKIE["ftp_host"];
@@ -619,14 +616,14 @@ if ($versionCheck == 1 && ((intval(ini_get("allow_url_fopen")) == 1 && (function
 ?>
 
 <p><input type="checkbox" name="ip_check" value="1" <?php
-        if ($ip_check == 1)
+        if (!empty($ip_check) && $ip_check == 1)
             echo "checked";
 ?> tabindex="-1"> <?php
         echo $lang_ip_check;
         }
 ?>
 <p><input type="checkbox" name="interface" value="adv" <?php
-        if (isset($interface) && ($interface == "adv" || $interface == ""))
+        if (!empty($interface) && $interface == "adv")
             echo "checked";
 ?> tabindex="-1"> <?php
         echo $lang_adv_interface;
@@ -634,7 +631,7 @@ if ($versionCheck == 1 && ((intval(ini_get("allow_url_fopen")) == 1 && (function
         if (!$restrictSaveCredentials) {
 ?>
 <p><input type="checkbox" name="login_save" value="1" <?php
-            if ($login_save == 1)
+            if (!empty($login_save) && $login_save == 1)
                 echo "checked";
 ?> tabindex="-1"> <?php
             echo $lang_save_login;
@@ -868,7 +865,7 @@ function displayFiles()
         // Get the parent directory
         $parent = getParentDir();
         
-        echo "<div class=\"width100pc\" onDragOver=\"dragFile(event); selectFile('folder0',0);\" onDragLeave=\"unselectFolder('folder0')\" onDrop=\"dropFile('" . rawurlencode($parent) . "')\"><a href=\"#\" id=\"folder0\" draggable=\"false\" onClick=\"openThisFolder('" . rawurlencode($parent) . "',1)\">...</a></div>";
+        echo "<div class=\"width100pc\" onDragOver=\"dragFile(event); selectFile('folder0',0);\" onDragLeave=\"unselectFolder('folder0')\" onDrop=\"dropFile('" . rawurlencode($parent) . "')\"><a href=\"#\" id=\"folder0\" draggable=\"false\" onClick=\"openThisFolder('" . rawurlencode($parent) . "',1)\">..</a></div>";
         
         echo "</td>";
         echo "</tr>";
@@ -1038,20 +1035,13 @@ function createFileFolderArrayLin($ftp_rawlist, $type)
     if (count($foldAllAr) || count($linkAllAr) || count($fileAllAr)) {
         
         // Set sorting order
-        if (!isset($_POST["sort"]) || $_POST["sort"] == "")
-            $sort = "n";
-        else
-            $sort = $_POST["sort"];
-        
-        if (!isset($_POST["ord"]) || $_POST["ord"] == "")
-            $ord = "asc";
-        else
-            $ord = $_POST["ord"];
+        $sort = empty($_POST["sort"]) ? "n"   : $_POST["sort"];
+        $ord  = empty($_POST["ord"])  ? "asc" : $_POST["ord"];
         
         // Return folders
         if ($type == "folders") {
             $folders = '';
-            if (count($foldAllAr)) {
+            if (!empty($foldAllAr)) {
                 
                 // Set the folder arrays to sort
                 if ($sort == "n")
@@ -1085,7 +1075,7 @@ function createFileFolderArrayLin($ftp_rawlist, $type)
         // Return links
         if ($type == "links") {
             $links = '';
-            if (isset($linkAllAr) && count($linkAllAr)) {
+            if (!empty($linkAllAr)) {
                 
                 // Set the folder arrays to sort
                 if ($sort == "n")
@@ -1119,7 +1109,7 @@ function createFileFolderArrayLin($ftp_rawlist, $type)
         // Return files
         if ($type == "files") {
             $files = '';
-            if (count($fileAllAr)) {
+            if (!empty($fileAllAr)) {
                 
                 // Set the folder arrays to sort
                 if ($sort == "n")
@@ -1952,7 +1942,9 @@ function moveFiles()
         $folderMoveTo = quotesUnescape($_POST["rightClickFolder"]);
     else
         $folderMoveTo = $_SESSION["dir_current"];
-    
+
+    $moveError = 0;
+
     // Check if destination folder is a sub-folder
     if (sizeof($_SESSION["clipboard_folders"]) > 0) {
         
@@ -2403,25 +2395,25 @@ function recreateFileFolderArrays($type)
     
     $arrayNew = array();
     
-    if ($_POST["fileSingle"] != "" || $_POST["folderSingle"] != "") {
+    if (!empty($_POST["fileSingle"]) || !empty($_POST["folderSingle"])) {
         
         // Single file/folder
-        if ($type == "file" && $_POST["fileSingle"] != "") {
+        if ($type == "file" && !empty($_POST["fileSingle"])) {
             $file       = quotesUnescape($_POST["fileSingle"]);
             $arrayNew[] = $file;
         }
-        if ($type == "folder" && $_POST["folderSingle"] != "")
+        if ($type == "folder" && !empty($_POST["folderSingle"]))
             $arrayNew[] = quotesUnescape($_POST["folderSingle"]);
         
     } else {
         
         // Array file/folder
-        if ($type == "file")
+        if ($type == "file" && !empty($_POST["fileAction"]))
             $array = $_POST["fileAction"];
-        if ($type == "folder")
+        if ($type == "folder" && !empty($_POST["folderAction"]))
             $array = $_POST["folderAction"];
         
-        if (is_array($array)) {
+        if (!empty($array) && is_array($array)) {
             
             foreach ($array AS $file) {
                 
@@ -2446,7 +2438,7 @@ function renameFiles()
     global $lang_title_rename;
     
     // Check for processing of form
-    if ($_POST["processAction"] == 1) {
+    if (!empty($_POST["processAction"]) && $_POST["processAction"] == 1) {
         
         $i = 0;
         
@@ -3215,7 +3207,7 @@ function newFile()
     // Display templates
     $templates_dir = "templates";
     
-    $file_name = trim(quotesUnescape($_POST["newFile"]));
+    $file_name = empty($_POST["newFile"])?'':trim(quotesUnescape($_POST["newFile"]));
     
     if ($file_name == "") {
         
@@ -3226,7 +3218,8 @@ function newFile()
         displayPopupOpen(0, $width, $height, 0, $title);
         
         echo "<input type=\"text\" name=\"newFile\" id=\"newFile\" placeholder=\"" . $lang_new_file_name . "\" onkeypress=\"if (event.keyCode == 13){ processForm('" . $vars . "'); return false;}\">";
-        
+
+	$langs = '';
         if (is_dir($templates_dir)) {
             
             if ($dh = opendir($templates_dir)) {
@@ -3415,7 +3408,7 @@ function newFolder()
     // Set vars
     $vars = "&ftpAction=newFolder";
     
-    $folder = trim(quotesUnescape($_POST["newFolder"]));
+    $folder = empty($_POST["newFolder"])?"":trim(quotesUnescape($_POST["newFolder"]));
     
     if ($filesCharSet != "utf-8")  
     $folder = iconv("utf-8",$filesCharSet,$folder);  
@@ -3479,9 +3472,9 @@ function uploadFile()
 
     // If the $file_name or $path are garbage, the FTP server should complain
 
-    if (array_key_exists($_SERVER['HTTP_X_FILE_SIZE']))
+    if (isset($_SERVER['HTTP_X_FILE_SIZE']))
         $file_size = $_SERVER['HTTP_X_FILE_SIZE'];
-    elseif (array_key_exists($_SERVER['CONTENT_LENGTH']))
+    elseif (isset($_SERVER['CONTENT_LENGTH']))
         $file_size = $_SERVER['CONTENT_LENGTH'];
 
     if (empty($file_size))
@@ -3542,7 +3535,9 @@ function createFolderHeirarchy($path)
     global $lang_folder_cant_make;
     
     $folderAr = explode("/", $path);
-    
+
+    $folder = "";
+
     $n = sizeof($folderAr);
     for ($i = 0; $i < $n; $i++) {
         
