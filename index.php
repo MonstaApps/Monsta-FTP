@@ -1,9 +1,5 @@
 <?php
 
-// Remove this before release
-error_reporting(E_ALL);
-file_put_contents("/tmp/monsta-REQUEST", print_r($_REQUEST, true));
-
 $version = "1.5.2";
 
 require("config.php");
@@ -164,7 +160,7 @@ if ($ftpAction == "download" || $ftpAction == "iframe_upload" || $ftpAction == "
 }
 
 // Close FTP connection
-ftp_close($conn_id);
+@ftp_close($conn_id);
 
 
 # FUNCTIONS
@@ -174,8 +170,7 @@ function startSession()
     
     session_start();
     $session_keys = array("user_ip", "loggedin",
-        "skin", "lang", "win_lin", "ip_check", "login_error", "login_fails",
-        "login_lockout",
+        "skin", "lang", "win_lin", "ip_check", "login_error", "login_fails", "login_lockout",
         "ftp_ssl", "ftp_host", "ftp_user", "ftp_pass", "ftp_port", "ftp_pasv",
         "interface", "dir_current", "dir_history", "clipboard_chmod", "clipboard_files",
         "clipboard_folders", "clipboard_rename", "copy",
@@ -243,7 +238,7 @@ function attemptLogin()
 
     $is_login_form = (isset($_POST["login"]) && $_POST["login"] == 1);
 
-    if (connectFTP(0) == 1 && !$is_login_form) {
+    if (!$is_login_form && connectFTP(0) == 1) {
         
         // Check for hijacked session
         if ($_SESSION["ip_check"] == 1) {
@@ -312,10 +307,10 @@ function attemptLogin()
                     
                     // Change dir if one set
                     if ($ftpDir != "") {
-                        if (ftp_chdir($conn_id, $ftpDir)) {
+                        if (@ftp_chdir($conn_id, $ftpDir)) {
                             $_SESSION["dir_current"] = $ftpDir;
                         } else {
-                            if (ftp_chdir($conn_id, "~" . $ftpDir))
+                            if (@ftp_chdir($conn_id, "~" . $ftpDir))
                                 $_SESSION["dir_current"] = "~" . $ftpDir;
                         }
                     }
@@ -707,14 +702,12 @@ function connectFTP($posted)
     if ($_SESSION["ftp_host"] != "" && $_SESSION["ftp_port"] != "" && $_SESSION["ftp_user"] != "" && $_SESSION["ftp_pass"] != "") {
         
         // Connect
-        $connectFail = 0;
-
         if ($_SESSION["ftp_ssl"] == 1)
-            $conn_id = ftp_ssl_connect($_SESSION["ftp_host"], $_SESSION["ftp_port"]) or $connectFail = 1;
+            $conn_id = @ftp_ssl_connect($_SESSION["ftp_host"], $_SESSION["ftp_port"]);
         else
-            $conn_id = ftp_connect($_SESSION["ftp_host"], $_SESSION["ftp_port"]) or $connectFail = 1;
+            $conn_id = @ftp_connect($_SESSION["ftp_host"], $_SESSION["ftp_port"]);
         
-        if ($connectFail == 1) {
+        if ($conn_id === false) {
             $_SESSION["login_error"] = $lang_cant_connect;
             return 0;
         } else {
@@ -724,10 +717,10 @@ function connectFTP($posted)
             if ($_SESSION["login_lockout"] == "" || ($_SESSION["login_lockout"] > 0 && $date_now > $_SESSION["login_lockout"])) {
                 
                 // Authenticate
-                if (ftp_login($conn_id, $_SESSION["ftp_user"], $_SESSION["ftp_pass"])) {
+                if (@ftp_login($conn_id, $_SESSION["ftp_user"], $_SESSION["ftp_pass"])) {
                     
                     if ($_SESSION["ftp_pasv"] == 1)
-                        ftp_pasv($conn_id, true);
+                        @ftp_pasv($conn_id, true);
                     
                     $_SESSION["loggedin"]    = 1;
                     $_SESSION["login_fails"] = 0;
@@ -804,9 +797,9 @@ function getFtpRawList($folder_path)
     
     $isError = 0;
     
-    if (!ftp_chdir($conn_id, $folder_path)) {
+    if (!@ftp_chdir($conn_id, $folder_path)) {
         if (checkFirstCharTilde($folder_path) == 1) {
-            if (!ftp_chdir($conn_id, replaceTilde($folder_path))) {
+            if (!@ftp_chdir($conn_id, replaceTilde($folder_path))) {
                 recordFileError("folder", replaceTilde($folder_path), $lang_folder_cant_access);
                 $isError = 1;
             }
@@ -817,7 +810,7 @@ function getFtpRawList($folder_path)
     }
     
     if ($isError == 0)
-        return ftp_rawlist($conn_id, "-a");
+        return @ftp_rawlist($conn_id, "-a");
 }
 
 function displayFiles()
@@ -915,11 +908,11 @@ function getPlatform()
             $platformTestCount++;
             
             // Create a test folder
-            if (ftp_mkdir($conn_id, "test")) {
+            if (@ftp_mkdir($conn_id, "test")) {
                 
                 if ($platformTestCount < 2) {
                     getPlatform();
-                    ftp_rmdir($conn_id, "test");
+                    @ftp_rmdir($conn_id, "test");
                 }
             }
             
@@ -1037,7 +1030,7 @@ function createFileFolderArrayLin($ftp_rawlist, $type)
     }
     
     // Check there are files and/or folders to display
-    if (count($foldAllAr) || count($linkAllAr) || count($fileAllAr)) {
+    if (!empty($foldAllAr) || !empty($linkAllAr) || !empty($fileAllAr)) {
         
         // Set sorting order
         $sort = empty($_POST["sort"]) ? "n"   : $_POST["sort"];
@@ -1192,7 +1185,7 @@ function createFileFolderArrayWin($ftp_rawlist, $type)
     }
     
     // Check there are files and/or folders to display
-    if (count($foldAllAr) || count($fileAllAr)) {
+    if (!empty($foldAllAr) || !empty($fileAllAr)) {
         
         // Set sorting order
         if ($_POST["sort"] == "")
@@ -1208,7 +1201,7 @@ function createFileFolderArrayWin($ftp_rawlist, $type)
         // Return folders
         if ($type == "folders") {
             
-            if (count($foldAllAr)) {
+            if (!emtpy($foldAllAr)) {
                 $sortAr = array();
                 // Set the folder arrays to sort
                 if ($sort == "n")
@@ -1219,7 +1212,7 @@ function createFileFolderArrayWin($ftp_rawlist, $type)
                     $sortAr = $foldTimeAr;
                 
                 // Multisort array
-                if (count($sortAr)) {
+                if (!empty($sortAr)) {
                     if ($ord == "asc")
                         array_multisort($sortAr, SORT_ASC, $foldAllAr);
                     else
@@ -1236,7 +1229,7 @@ function createFileFolderArrayWin($ftp_rawlist, $type)
         // Return files
         if ($type == "files") {
             
-            if (count($fileAllAr)) {
+            if (!emtpy($fileAllAr)) {
                 
                 // Set the folder arrays to sort
                 if ($sort == "n")
@@ -1495,7 +1488,7 @@ function openFolder()
             $dir = quotesUnescape($_POST["openFolder"]);
         
         // Check dir is set
-        if (!isset($dir) || $dir == "") {
+        if (empty($dir)) {
             
             // No folder set (must be first login), so set home dir
             if ($_SESSION["win_lin"] == "lin" || $_SESSION["win_lin"] == "mac")
@@ -1505,9 +1498,9 @@ function openFolder()
         }
         
         // Attempt to change directory
-        if (!ftp_chdir($conn_id, $dir)) {
+        if (!@ftp_chdir($conn_id, $dir)) {
             if (checkFirstCharTilde($dir) == 1) {
-                if (!ftp_chdir($conn_id, replaceTilde($dir))) {
+                if (!@ftp_chdir($conn_id, replaceTilde($dir))) {
                     recordFileError("folder", replaceTilde($dir), $lang_folder_doesnt_exist);
                     $isError = 1;
                 }
@@ -1979,9 +1972,9 @@ function moveFiles()
                 recordFileError("folder", tidyFolderPath($folderMoveTo, $folder), $lang_folder_exists);
             } else {
                 
-                if (!ftp_rename($conn_id, $folder_to_move, $file_destination)) {
+                if (!@ftp_rename($conn_id, $folder_to_move, $file_destination)) {
                     if (checkFirstCharTilde($folder_to_move) == 1) {
-                        if (!ftp_rename($conn_id, replaceTilde($folder_to_move), replaceTilde($file_destination))) {
+                        if (!@ftp_rename($conn_id, replaceTilde($folder_to_move), replaceTilde($file_destination))) {
                             recordFileError("folder", tidyFolderPath($file_destination, $folder_to_move), $lang_folder_cant_move);
                             $isError = 1;
                         }
@@ -2010,9 +2003,9 @@ function moveFiles()
                 recordFileError("file", $file, $lang_file_exists);
             } else {
                 
-                if (!ftp_rename($conn_id, $file_to_move, $file_destination)) {
+                if (!@ftp_rename($conn_id, $file_to_move, $file_destination)) {
                     if (checkFirstCharTilde($file_to_move) == 1) {
-                        if (!ftp_rename($conn_id, replaceTilde($file_to_move), replaceTilde($file_destination))) {
+                        if (!@ftp_rename($conn_id, replaceTilde($file_to_move), replaceTilde($file_destination))) {
                             recordFileError("file", replaceTilde($file_to_move), $lang_file_cant_move);
                         }
                     } else {
@@ -2056,9 +2049,9 @@ function dragDropFiles()
         
         $isError = 0;
         
-        if (!ftp_rename($conn_id, $dragFile, $dropFolder . "/" . $file_name)) {
+        if (!@ftp_rename($conn_id, $dragFile, $dropFolder . "/" . $file_name)) {
             if (checkFirstCharTilde($dragFile) == 1) {
-                if (!ftp_rename($conn_id, replaceTilde($dragFile), replaceTilde($dropFolder) . "/" . $file_name)) {
+                if (!@ftp_rename($conn_id, replaceTilde($dragFile), replaceTilde($dropFolder) . "/" . $file_name)) {
                     recordFileError("file", getFileFromPath($dragFile), $lang_file_cant_move);
                     $isError = 1;
                 }
@@ -2131,9 +2124,9 @@ function copyFiles()
             ensureFtpConnActive();
             
             // Download file to client server
-            if (!ftp_get($conn_id, $fp1, $fp2, FTP_BINARY)) {
+            if (!@ftp_get($conn_id, $fp1, $fp2, FTP_BINARY)) {
                 if (checkFirstCharTilde($fp2) == 1) {
-                    if (!ftp_get($conn_id, $fp1, replaceTilde($fp2), FTP_BINARY)) {
+                    if (!@ftp_get($conn_id, $fp1, replaceTilde($fp2), FTP_BINARY)) {
                         recordFileError("file", $file_name, $lang_server_error_down);
                         $isError = 1;
                     }
@@ -2148,9 +2141,9 @@ function copyFiles()
                 ensureFtpConnActive();
                 
                 // Upload file to remote server
-                if (!ftp_put($conn_id, $fp3, $fp1, FTP_BINARY)) {
+                if (!@ftp_put($conn_id, $fp3, $fp1, FTP_BINARY)) {
                     if (checkFirstCharTilde($fp3) == 1) {
-                        if (!ftp_put($conn_id, replaceTilde($fp3), $fp1, FTP_BINARY))
+                        if (!@ftp_put($conn_id, replaceTilde($fp3), $fp1, FTP_BINARY))
                             recordFileError("file", $file_name, $lang_server_error_up);
                     } else {
                         recordFileError("file", $file_name, $lang_server_error_up);
@@ -2211,9 +2204,9 @@ function copyFolder($folder, $dir_destin, $dir_source)
     }
     
     // Check source folder exists
-    if (!ftp_chdir($conn_id, $dir_source . "/" . $folder)) {
+    if (!@ftp_chdir($conn_id, $dir_source . "/" . $folder)) {
         if (checkFirstCharTilde($dir_source) == 1) {
-            if (!ftp_chdir($conn_id, replaceTilde($dir_source) . "/" . $folder)) {
+            if (!@ftp_chdir($conn_id, replaceTilde($dir_source) . "/" . $folder)) {
                 recordFileError("folder", tidyFolderPath($dir_destin, $folder), $lang_folder_cant_access);
                 $isError = 1;
             }
@@ -2231,9 +2224,9 @@ function copyFolder($folder, $dir_destin, $dir_source)
         } else {
             
             // Create the new folder
-            if (!ftp_mkdir($conn_id, $dir_destin . "/" . $folder)) {
+            if (!@ftp_mkdir($conn_id, $dir_destin . "/" . $folder)) {
                 if (checkFirstCharTilde($dir_destin) == 1) {
-                    if (!ftp_mkdir($conn_id, replaceTilde($dir_destin) . "/" . $folder)) {
+                    if (!@ftp_mkdir($conn_id, replaceTilde($dir_destin) . "/" . $folder)) {
                         recordFileError("folder", tidyFolderPath($dir_destin, $folder), $lang_folder_cant_make);
                         $isError = 1;
                     }
@@ -2254,9 +2247,9 @@ function copyFolder($folder, $dir_destin, $dir_source)
             $lang_folder_cant_chmod = str_replace("[perms]", $mode, $lang_folder_cant_chmod);
             
             if (function_exists('ftp_chmod')) {
-                if (!ftp_chmod($conn_id, $mode, $dir_destin . "/" . $folder)) {
+                if (!@ftp_chmod($conn_id, $mode, $dir_destin . "/" . $folder)) {
                     if (checkFirstCharTilde($dir_destin) == 1) {
-                        if (!ftp_chmod($conn_id, $mode, replaceTilde($dir_destin) . "/" . $folder)) {
+                        if (!@ftp_chmod($conn_id, $mode, replaceTilde($dir_destin) . "/" . $folder)) {
                             recordFileError("folder", $folder, $lang_folder_cant_chmod);
                         }
                     } else {
@@ -2332,9 +2325,9 @@ function copyFolder($folder, $dir_destin, $dir_source)
                         ensureFtpConnActive();
                         
                         // Download
-                        if (!ftp_get($conn_id, $fp1, $fp2, FTP_BINARY)) {
+                        if (!@ftp_get($conn_id, $fp1, $fp2, FTP_BINARY)) {
                             if (checkFirstCharTilde($fp2) == 1) {
-                                if (!ftp_get($conn_id, $fp1, replaceTilde($fp2), FTP_BINARY)) {
+                                if (!@ftp_get($conn_id, $fp1, replaceTilde($fp2), FTP_BINARY)) {
                                     recordFileError("file", $file, $lang_server_error_down);
                                     $isError = 1;
                                 }
@@ -2349,9 +2342,9 @@ function copyFolder($folder, $dir_destin, $dir_source)
                             
                             ensureFtpConnActive();
                             
-                            if (!ftp_put($conn_id, $fp3, $fp1, FTP_BINARY)) {
+                            if (!@ftp_put($conn_id, $fp3, $fp1, FTP_BINARY)) {
                                 if (checkFirstCharTilde($fp3) == 1) {
-                                    if (!ftp_put($conn_id, replaceTilde($fp3), $fp1, FTP_BINARY)) {
+                                    if (!@ftp_put($conn_id, replaceTilde($fp3), $fp1, FTP_BINARY)) {
                                         recordFileError("file", $file, $lang_server_error_down);
                                         $isError = 1;
                                     }
@@ -2373,9 +2366,9 @@ function copyFolder($folder, $dir_destin, $dir_source)
                                 $lang_file_cant_chmod = str_replace("[perms]", $perms, $lang_file_cant_chmod);
                                 
                                 if (function_exists('ftp_chmod')) {
-                                    if (!ftp_chmod($conn_id, $mode, $fp3)) {
+                                    if (!@ftp_chmod($conn_id, $mode, $fp3)) {
                                         if (checkFirstCharTilde($fp3) == 1) {
-                                            if (!ftp_chmod($conn_id, $mode, replaceTilde($fp3))) {
+                                            if (!@ftp_chmod($conn_id, $mode, replaceTilde($fp3))) {
                                                 recordFileError("file", $file, $lang_server_error_down);
                                             }
                                         } else {
@@ -2483,9 +2476,9 @@ function renameFiles()
                 
                 if ($fileExists == 0) {
                     
-                    if (!ftp_rename($conn_id, $file_to_move, $file_destination)) {
+                    if (!@ftp_rename($conn_id, $file_to_move, $file_destination)) {
                         if (checkFirstCharTilde($file_to_move) == 1) {
-                            if (!ftp_rename($conn_id, replaceTilde($file_to_move), replaceTilde($file_destination))) {
+                            if (!@ftp_rename($conn_id, replaceTilde($file_to_move), replaceTilde($file_destination))) {
                                 recordFileError("file", sanitizeStr($file), $lang_cant_rename);
                                 $isError = 1;
                             }
@@ -2589,9 +2582,9 @@ function chmodFiles()
                 
                 foreach ($_SESSION["clipboard_chmod"] AS $file) {
                     
-                    if (!ftp_chmod($conn_id, $mode, $file)) {
+                    if (!@ftp_chmod($conn_id, $mode, $file)) {
                         if (checkFirstCharTilde($file) == 1) {
-                            if (!ftp_chmod($conn_id, $mode, replaceTilde($file))) {
+                            if (!@ftp_chmod($conn_id, $mode, replaceTilde($file))) {
                                 recordFileError("file", replaceTilde($file), $lang_file_cant_chmod);
                             }
                         } else {
@@ -2805,10 +2798,10 @@ function editFile()
     ensureFtpConnActive();
     
     // Download the file
-    if (!ftp_get($conn_id, $fp1, $fp2, FTP_BINARY)) {
+    if (!@ftp_get($conn_id, $fp1, $fp2, FTP_BINARY)) {
         
         if (checkFirstCharTilde($fp2) == 1) {
-            if (!ftp_get($conn_id, $fp1, replaceTilde($fp2), FTP_BINARY)) {
+            if (!@ftp_get($conn_id, $fp1, replaceTilde($fp2), FTP_BINARY)) {
                 recordFileError("file", quotesEscape($file, "s"), $lang_server_error_down);
                 $isError = 1;
             }
@@ -2898,9 +2891,9 @@ function editProcess()
     
     ensureFtpConnActive();
     
-    if (!ftp_put($conn_id, $fp2, $fp1, FTP_BINARY)) {
+    if (!@ftp_put($conn_id, $fp2, $fp1, FTP_BINARY)) {
         if (checkFirstCharTilde($fp2) == 1) {
-            if (!ftp_put($conn_id, replaceTilde($fp2), $fp1, FTP_BINARY)) {
+            if (!@ftp_put($conn_id, replaceTilde($fp2), $fp1, FTP_BINARY)) {
                 recordFileError("file", $file_name, $lang_server_error_up);
             }
         } else {
@@ -2931,9 +2924,9 @@ function downloadFile()
     ensureFtpConnActive();
     
     // Download the file
-    if (!ftp_get($conn_id, $fp1, $fp2, FTP_BINARY)) {
+    if (!@ftp_get($conn_id, $fp1, $fp2, FTP_BINARY)) {
         if (checkFirstCharTilde($fp2) == 1) {
-            if (!ftp_get($conn_id, $fp1, replaceTilde($fp2), FTP_BINARY)) {
+            if (!@ftp_get($conn_id, $fp1, replaceTilde($fp2), FTP_BINARY)) {
                 recordFileError("file", quotesEscape($file, "s"), $lang_server_error_down);
                 $isError = 1;
             }
@@ -3031,9 +3024,9 @@ function deleteFiles()
                 recordFileError("file", $file, $lang_file_doesnt_exist);
             } else {
                 
-                if (!ftp_delete($conn_id, $file_decoded)) {
+                if (!@ftp_delete($conn_id, $file_decoded)) {
                     if (checkFirstCharTilde($file_decoded) == 1) {
-                        if (!ftp_delete($conn_id, replaceTilde($file_decoded))) {
+                        if (!@ftp_delete($conn_id, replaceTilde($file_decoded))) {
                             $isError = 1;
                         }
                     } else {
@@ -3044,9 +3037,9 @@ function deleteFiles()
                 // If deleting decoded file fails, try original file name
                 if ($isError == 1) {
                     
-                    if (!ftp_delete($conn_id, "" . $file . "")) {
+                    if (!@ftp_delete($conn_id, "" . $file . "")) {
                         if (checkFirstCharTilde($file) == 1) {
-                            if (!ftp_delete($conn_id, "" . replaceTilde($file) . "")) {
+                            if (!@ftp_delete($conn_id, "" . replaceTilde($file) . "")) {
                                 recordFileError("file", getFileFromPath($file), $lang_cant_delete);
                             }
                         } else {
@@ -3147,9 +3140,9 @@ function deleteFolder($folder, $path)
                 } else {
                     // otherwise delete file
                     $file_path = $folder_path . "/" . $file;
-                    if (!ftp_delete($conn_id, "" . $file_path . "")) {
+                    if (!@ftp_delete($conn_id, "" . $file_path . "")) {
                         if (checkFirstCharTilde($file_path) == 1) {
-                            if (!ftp_delete($conn_id, "" . replaceTilde($file_path) . "")) {
+                            if (!@ftp_delete($conn_id, "" . replaceTilde($file_path) . "")) {
                                 recordFileError("file", replaceTilde($file_path), $lang_cant_delete);
                             }
                         } else {
@@ -3172,9 +3165,9 @@ function deleteFolder($folder, $path)
         ftp_cdup($conn_id);
         
         // Delete the empty folder
-        if (!ftp_rmdir($conn_id, "" . $folder_path . "")) {
+        if (!@ftp_rmdir($conn_id, "" . $folder_path . "")) {
             if (checkFirstCharTilde($folder_path) == 1) {
-                if (!ftp_rmdir($conn_id, "" . replaceTilde($folder_path) . "")) {
+                if (!@ftp_rmdir($conn_id, "" . replaceTilde($folder_path) . "")) {
                     recordFileError("folder", replaceTilde($folder_path), $lang_folder_cant_delete);
                     $isError = 1;
                 }
@@ -3291,9 +3284,9 @@ function newFile()
             
             
             // Upload the file
-            if (!ftp_put($conn_id, $fp2, $fp1, FTP_BINARY)) {
+            if (!@ftp_put($conn_id, $fp2, $fp1, FTP_BINARY)) {
                 if (checkFirstCharTilde($fp2) == 1) {
-                    if (!ftp_put($conn_id, replaceTilde($fp2), $fp1, FTP_BINARY)) {
+                    if (!@ftp_put($conn_id, replaceTilde($fp2), $fp1, FTP_BINARY)) {
                         recordFileError("file", $file_name, $lang_file_cant_make);
                         $isError = 1;
                     }
@@ -3439,7 +3432,7 @@ function newFolder()
             recordFileError("folder", $folder, $lang_folder_exists);
         } else {
             
-            if (!ftp_mkdir($conn_id, $folder))
+            if (!@ftp_mkdir($conn_id, $folder))
                 recordFileError("folder", $folder, $lang_folder_cant_make);
         }
     }
@@ -3515,10 +3508,9 @@ function uploadFile()
             
             ensureFtpConnActive();
             
-            if (!ftp_put($conn_id, $fp2, $fp1, FTP_BINARY)) {
-                error_log("failed: ftp_put($conn_id, $fp2, $fp1, FTP_BINARY)");
+            if (!@ftp_put($conn_id, $fp2, $fp1, FTP_BINARY)) {
                 if (checkFirstCharTilde($fp2) == 1) {
-                    if (!ftp_put($conn_id, replaceTilde($fp2), $fp1, FTP_BINARY)) {
+                    if (!@ftp_put($conn_id, replaceTilde($fp2), $fp1, FTP_BINARY)) {
                         recordFileError("file", $file_name, $lang_server_error_up);
                     }
                 } else {
@@ -3553,9 +3545,9 @@ function createFolderHeirarchy($path)
         else
             $folder = $folder . "/" . $folderAr[$i];
         
-        if (!ftp_mkdir($conn_id, $folder)) {
+        if (!@ftp_mkdir($conn_id, $folder)) {
             if (checkFirstCharTilde($folder) == 1)
-                ftp_mkdir($conn_id, replaceTilde($folder));
+                @ftp_mkdir($conn_id, replaceTilde($folder));
         }
     }
 }
@@ -3574,9 +3566,9 @@ function iframeUpload()
         
         ensureFtpConnActive();
         
-        if (!ftp_put($conn_id, $fp2, $fp1, FTP_BINARY)) {
+        if (!@ftp_put($conn_id, $fp2, $fp1, FTP_BINARY)) {
             if (checkFirstCharTilde($fp2) == 1) {
-                if (!ftp_put($conn_id, replaceTilde($fp2), $fp1, FTP_BINARY)) {
+                if (!@ftp_put($conn_id, replaceTilde($fp2), $fp1, FTP_BINARY)) {
                     recordFileError("file", $file_name, $lang_server_error_up);
                 }
             } else {
@@ -3684,8 +3676,8 @@ function displayPopupOpen($resize, $width, $height, $isError, $title)
             $height = 400;
     }
     
-    $windowWidth  = $_POST["windowWidth"];
-    $windowHeight = $_POST["windowHeight"];
+    $windowWidth  = empty($_POST["windowWidth"])?0:intval($_POST["windowWidth"]);
+    $windowHeight = empty($_POST["windowHeight"])?0:intval($_POST["windowHeight"]);
     
     // Center window
     if ($windowWidth > 0)
@@ -3828,13 +3820,9 @@ function getParentDir()
 {
     
     if ($_SESSION["dir_current"] == "/") {
-        
         $parent = "/";
-        
     } else {
-        
-        $path_parts = pathinfo($_SESSION["dir_current"]);
-        $parent     = $path_parts['dirname'];
+        $parent = pathinfo($_SESSION["dir_current"], PATHINFO_DIRNAME);
     }
     
     return $parent;
@@ -4124,11 +4112,11 @@ function setLangFile()
     $lang = "";
 
     // The order of these determines the proper display
-    if (isset($_POST["lang"]) && !empty($_POST["lang"]))
+    if (!empty($_POST["lang"]))
         $lang = $_POST["lang"];
-    elseif (isset($_SESSION["lang"]) && !empty($_SESSION["lang"]))
+    elseif (!empty($_SESSION["lang"]))
         $lang = $_SESSION["lang"];
-    elseif (isset($_COOKIE["lang"]) && $_COOKIE["lang"] != "")
+    elseif (!empty($_COOKIE["lang"]))
         $lang = $_COOKIE["lang"];
 
     if ($lang == "") {
@@ -4220,7 +4208,7 @@ function checkReferer()
     
     global $lang_session_expired;
     
-    if (!isset($_SERVER["HTTP_REFERER"]) || empty($_SERVER["HTTP_REFERER"]))
+    if (empty($_SERVER["HTTP_REFERER"]))
         return 0;
 
     $domain = $_SESSION["domain"];
@@ -4290,8 +4278,8 @@ function ensureFtpConnActive()
 {
 
     global $conn_id;
-    if (ftp_pwd($conn_id) === false) {
-        ftp_close($conn_id);
+    if (@ftp_pwd($conn_id) === false) {
+        @ftp_close($conn_id);
         connectFTP(0);
     }
 }

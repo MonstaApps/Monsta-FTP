@@ -15,6 +15,6 @@ $lockOutTime = 5;
 $versionCheck = 1;
 $sessionLockIP = 0;
 $restrictSaveCredentials = 0;
-$maxUploadSize = "2G";
+$maxUploadSize = "";
 $defaultSkin = "monsta";
 
