@@ -450,7 +450,7 @@ function displayLoginForm($posted)
     } else {
         
         // Set values from cookies
-        if (!$restrictSaveCredentials && !empty($_COOKIE["login_save"] && $_COOKIE["login_save"] == 1) {
+        if (!$restrictSaveCredentials && !empty($_COOKIE["login_save"]) && $_COOKIE["login_save"] == 1) {
             
             $ftp_ssl    = $_COOKIE["ftp_ssl"];
             $ftp_host   = $_COOKIE["ftp_host"];
