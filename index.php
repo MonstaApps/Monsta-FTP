@@ -8,7 +8,7 @@ file_put_contents("/tmp/monsta-REQUEST", print_r($_REQUEST, true));
 
 header("X-Frame-Options: SAMEORIGIN");
 
-//error_reporting(0);
+error_reporting(E_ALL);
 saveFtpDetailsCookie();
 startSession();
 
@@ -3266,7 +3266,8 @@ function newFile()
         if (checkFileExists("f", $file_name, $_SESSION["dir_current"]) == 1) {
             recordFileError("file", $file_name, $lang_file_exists);
         } else {
-            
+            $content = '';
+
             // Get template
             if ($_POST["template"] != $lang_no_template) {
                 
