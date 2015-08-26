@@ -123,8 +123,8 @@ $lang_title_new_folder = "Nouveau Dossier";
 $lang_new_folder_name = "Entrer le nom du nouveau dossier...";
 $lang_new_file_name = "Entrer le nom du nouveau fichier...";
 $lang_template = "Modèle";
-$lang_no_template = "Aucun Modèle";
 
+$lang_no_template = "Aucun Modèle";
 $lang_no_xmlhttp = "Votre navigateur ne supporte pas XMLHTTP!";
 $lang_support_drop = "Supporté";
 $lang_no_support_drop = "Non Supporté";
