@@ -143,5 +143,5 @@ $lang_context_paste = "Vložit";
 $lang_context_rename = "Prejmenovat";
 $lang_context_delete = "Smazat";
 $lang_context_chmod = "Práva";
-//
+
 ?>
