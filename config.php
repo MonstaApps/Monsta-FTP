@@ -2,19 +2,18 @@
 
 # Open README file for descriptions and help.
 
-$charSet = array("utf-8","windows-1251");
 $ftpHost = "";
 $ftpPort = "21";
 $ftpMode = "1";
 $ftpSSL  = "0";
 $ftpDir  = "";
-$editableExts = "asp,ashx,asmx,aspx,asx,axd,cfm,cgi,css,html,htm,jhtml,js,php,phtml,pl,txt,xhtml";
 $serverTmp = "/tmp";
+$editableExts = "asp,ashx,asmx,aspx,asx,axd,cfm,cgi,css,html,htm,jhtml,js,php,phtml,pl,txt,xhtml";
 $dateFormatUsa = 0;
 $lockOutTime = 5;
 $versionCheck = 1;
-$sessionLockIP = 0;
-$restrictSaveCredentials = 0;
-$maxUploadSize = "";
-$defaultSkin = "monsta";
+$showAdvOption = 1;
+$showLockSess = 1;
+$showHostInfo = 1;
 
+?>
