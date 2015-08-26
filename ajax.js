@@ -11,20 +11,6 @@ function ajaxStart() {
 }
 
 var globalBrowser;
-var globalLines = 0;
-
-function refreshLines(gLines) {
-    var lines = document.getElementById("divLines");
-    var txtArea = document.getElementById("editContent");
-    var nLines = txtArea.value.split("\n").length;
-    if (gLines <= nLines)
-    {
-        for (i=1+gLines; i<=nLines; i++) {
-            lines.innerHTML = lines.innerHTML + i + "\r\n";
-        }
-    }
-    return nLines;
-}
 
 function detectBrowser() {
 
@@ -474,13 +460,13 @@ function fileUploader(globalFiles, filePath, rowID, isFolder, isDrop) {
         };
 
         // Post form
-        xmlhttp.open("PUT", "?ftpAction=upload&filePath=" + filePath, true);
+        xmlhttp.open("POST", "?ftpAction=upload&filePath=" + filePath, true);
         xmlhttp.setRequestHeader("Cache-Control", "no-cache");
-        xmlhttp.setRequestHeader("X-Filename", file.name);
+        xmlhttp.setRequestHeader("X-Filename", encodeURIComponent(file.name));
         xmlhttp.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         xmlhttp.setRequestHeader("X-File-Size", file.size);
         xmlhttp.setRequestHeader("X-File-Type", file.type);
-        xmlhttp.setRequestHeader("Content-Type", "application/octet-stream");
+        //xmlhttp.setRequestHeader("Content-Type", "multipart/form-data");
         xmlhttp.send(file);
     }
 }
@@ -651,18 +637,12 @@ var globalEditorDefaultSize = 170;
 
 function setFileWindowSize(divID, height, dedn) {
 
-    if (document.getElementById(divID) == null)
-        return;
-
     if (dedn == 0)
         dedn = globalEditorDefaultSize;
 
     if (height == 0) {
         var screenHeight = window.innerHeight;
         var height = screenHeight - dedn;
-        if (document.getElementById("banner")!=null) {
-            height -= document.getElementById("banner").offsetHeight;
-        }
     }
 
     document.getElementById("ajaxContentWindow").style.height = height + 'px';
@@ -768,7 +748,7 @@ function activateActionButtons(active, paste) {
     // All other buttons
     if (active == 1) {
 
-        /* document.getElementById('actionButtonDl').disabled = false; // download */
+        document.getElementById('actionButtonDl').disabled = false; // download
         document.getElementById('actionButtonCut').disabled = false; // cut
         document.getElementById('actionButtonCopy').disabled = false; // copy
         document.getElementById('actionButtonRename').disabled = false; // rename
@@ -779,7 +759,7 @@ function activateActionButtons(active, paste) {
 
     } else {
 
-        /* document.getElementById('actionButtonDl').disabled = true; */
+        document.getElementById('actionButtonDl').disabled = true;
         document.getElementById('actionButtonCut').disabled = true;
         document.getElementById('actionButtonCopy').disabled = true;
         document.getElementById('actionButtonRename').disabled = true;
@@ -912,6 +892,16 @@ function actionFunctionEdit(file) {
 
     var vars = '&ftpAction=edit&file=' + file;
     processForm(vars);
+}
+
+function actionFunctionDl(file, folder) {
+
+    var vars = '&ftpAction=download_zip';
+
+    // Check if 1+ checkboxes selected
+    if (checkFilesSelected() == 1) {
+        processForm(vars);
+    }
 }
 
 function actionFunctionCut(file, folder) {
@@ -1057,12 +1047,12 @@ function positionDivToCursor(e, divId) {
     var innerHeight = window.innerHeight;
 
     // Adjust Y for IE
-    if (globalBrowser != "ie")
-        mousey = parseInt(mousey) + 15;
+    //if (globalBrowser != "ie")
+    //    mousey = parseInt(mousey) + 15;
 
     // Adjust height
     if ((parseInt(mousey) + globalContextHeight) > innerHeight)
-        mousey = mousey - globalContextHeight;
+        mousey = mousey - globalContextHeight + 15;
 
     // Set coordinates for context menu and display
     document.getElementById(divId).style.left = mousex + 'px';
@@ -1234,6 +1224,10 @@ function adjustButtonWidth(str) {
         return 'inputButtonNf';
     else
         return "inputButton";
+}
+
+function actionDownloadZip() {
+	submitToIframe("&ftpAction=download_zip");
 }
 
 detectBrowser();
