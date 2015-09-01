@@ -51,6 +51,7 @@ $lang_size_gb = "GB";
 $lang_size_tb = "TB";
 
 $lang_btn_refresh = "نو سازی";
+$lang_btn_dl = "دانلود";
 $lang_btn_cut = "برداشتن";
 $lang_btn_copy = "کپی";
 $lang_btn_paste = "چسباندن";
@@ -69,9 +70,9 @@ $lang_btn_upload_files = "آپلود فایل ها";
 $lang_btn_upload_repeat = "تکرار بارگذاری";
 $lang_btn_upload_folder = "آپلود پوشه";
 
-$lang_info_host = "هاست";
-$lang_info_user = "کاربر";
-$lang_info_upload_limit = "محدودیت آپلود";
+$lang_info_host = "host";
+$lang_info_user = "user";
+$lang_info_upload_limit = "upload_limit";
 $lang_info_drag_drop = "کشیدن و رها کردن";
 
 $lang_xfer_file = "فایل";
