@@ -1,6 +1,6 @@
 <?php
 
-$version = "1.6";
+$version = "1.6.2";
 
 require("config.php");
 
@@ -2564,7 +2564,7 @@ function renameFiles()
             
             $isError = 0;
             
-            $file_name  = trim($_POST["file" . $i]);
+            $file_name  = $_POST["file" . $i];
             $file_name  = quotesUnescape($file_name);
             $file       = quotesUnescape($file);
             $fileExists = 0;
@@ -3289,7 +3289,7 @@ function newFile()
     // Display templates
     $templates_dir = "templates";
     
-    $file_name = trim(quotesUnescape($_POST["newFile"]));
+    $file_name = quotesUnescape($_POST["newFile"]);
     
     if ($file_name == "") {
         
@@ -3455,7 +3455,7 @@ function newFolder()
     // Set vars
     $vars = "&ftpAction=newFolder";
     
-    $folder = trim(quotesUnescape($_POST["newFolder"]));
+    $folder = quotesUnescape($_POST["newFolder"]);
     
     if ($folder == "") {
         
