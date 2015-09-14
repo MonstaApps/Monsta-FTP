@@ -1,17 +1,17 @@
 <?php
 
 // Language: Português (BR)
-// Author: Candiba.net
-// Last Updated: 11/08/2013
+// Author: Guilherme HD (www.candiba.net)
+// Last Updated: 14/09/2015
 
-$file_lang_name = "Português (BR)";
+$file_lang_name = "Português Brasileiro";
 $file_lang_default = 0; // 1 for default, 0 for not
 
 $lang_title_ended = "Sessão Encerrada";
 $lang_title_errors = "Ocorreram Erros";
 
 $lang_session_expired = "Sua sessão expirou";
-$lang_ip_conflict = "Seu endereço de IP conflita com sessão IP";
+$lang_ip_conflict = "Seu endereço de IP conflita com IP de sessão";
 
 $lang_btn_login = "Login";
 $lang_ftp_host = "Servidor FTP";
@@ -66,13 +66,13 @@ $lang_btn_new_folder = "Nova Pasta";
 $lang_btn_new_file = "Novo Arquivo";
 $lang_btn_upload_file = "Enviar Arquivo";
 $lang_btn_upload_files = "Enviar Arquivos";
-$lang_btn_upload_repeat = "Repetir Upload";
+$lang_btn_upload_repeat = "Repetir Envio";
 $lang_btn_upload_folder = "Enviar Pasta";
 
 $lang_info_host = "Servidor";
 $lang_info_user = "Usuário";
 $lang_info_upload_limit = "Limite de Upload";
-$lang_info_drag_drop = "Drag & Drop";
+$lang_info_drag_drop = "Arrastar e Soltar";
 
 $lang_xfer_file = "Arquivo";
 $lang_xfer_size = "Tamanho";
@@ -105,7 +105,7 @@ $lang_file_size_error = "O tamanho do arquivo excede o limite permitido";
 $lang_file_size_copy_error = "O tamanho de [file] excede o limite permitido";
 
 $lang_folder_cant_chmod = "Não é possível executar chmod [perms] [folder]";
-$lang_file_cant_chmod = "Não é possível executar chmod [perms] [file}";
+$lang_file_cant_chmod = "Não é possível executar chmod [perms] [file]";
 $lang_chmod_max_777 = "O Chmod não pode ser maior que 777";
 $lang_chmod_owner = "Permissões do proprietário";
 $lang_chmod_group = "Permissões do grupo";
@@ -132,6 +132,7 @@ $lang_transfer_pending = "Pendente";
 $lang_transferring_to_ftp = "Transferindo para o servidor FTP...";
 $lang_no_file_selected = "Por favor, clique em PROCURAR e escolha um arquivo para enviar!";
 $lang_none_selected = "Por favor, selecione pelo menos um arquivo ou pasta!";
+
 $lang_context_open = "Abrir";
 $lang_context_download = "Download";
 $lang_context_edit = "Editar";
