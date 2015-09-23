@@ -4,6 +4,8 @@ $version = "1.6.2";
 
 require("config.php");
 
+header("X-Frame-Options: SAMEORIGIN");
+
 error_reporting(0);
 saveFtpDetailsCookie();
 startSession();
@@ -364,7 +366,6 @@ function displayHeader()
     echo sanitizeStr($skin);
 ?>.css" rel="stylesheet" type="text/css">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta http-equiv="X-Frame-Options" content="sameorigin">
 </head>
 <body <?php
     if ($_POST["login"] == 1) {
