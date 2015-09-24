@@ -1,7 +1,7 @@
 <?php
 
 $version = "1.6.2";
-
+clas
 require("config.php");
 
 header("X-Frame-Options: SAMEORIGIN");
@@ -1615,8 +1615,10 @@ if (class_exists('ZipArchive') == 1) {
     echo adjustButtonWidth($lang_btn_dl);
 ?>"> 
 <?php
-}
+} else {
 ?>
+    <input type="hidden" id="actionButtonDl"> 
+<?php } ?>
     <input type="button" id="actionButtonCut" value="<?php
     echo $lang_btn_cut;
 ?>" onClick="actionFunctionCut('','');" disabled class="<?php
