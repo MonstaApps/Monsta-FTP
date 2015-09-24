@@ -1,7 +1,7 @@
 <?php
 
 $version = "1.6.2";
-clas
+
 require("config.php");
 
 header("X-Frame-Options: SAMEORIGIN");
@@ -576,6 +576,9 @@ if ($versionCheck == 1 && ((intval(ini_get("allow_url_fopen")) == 1 && (function
 ?> tabindex="-1"> <?php
             echo $lang_passive_mode;
 ?>
+<?php
+            if (function_exists('ftp_ssl_connect')) {
+?>
 <p><input type="checkbox" name="ftp_ssl" value="1" <?php
             if ($ftp_ssl == 1)
                 echo "checked";
@@ -583,6 +586,7 @@ if ($versionCheck == 1 && ((intval(ini_get("allow_url_fopen")) == 1 && (function
             echo $lang_ftp_ssl;
 ?>
 <?php
+            }
         }
 ?>
 <?php
