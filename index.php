@@ -926,7 +926,9 @@ function createFileFolderArrayLin($ftp_rawlist, $type)
         $year = "";
         
         // Split up array into values
-        $ff = preg_split("/[\s]+/", $ff, 9);
+        //$ff = preg_split("/[\s]+/", $ff, 9);
+        preg_match('/'. str_repeat('([^\s]+)\s+',7) . '([^\s]+) (.+)/', $ff, $matches);
+        $ff = array_slice($matches, 1);
         
         $perms = $ff[0];
         $user  = $ff[2];
@@ -2024,7 +2026,9 @@ function downloadFolder($folder, $dir_source)
                 // Split up array into values (Lin)
                 if ($_SESSION["win_lin"] == "lin") {
                     
-                    $ff    = preg_split("/[\s]+/", $ff, 9);
+                    preg_match('/'. str_repeat('([^\s]+)\s+',7) . '([^\s]+) (.+)/', $ff, $matches);
+                    $ff = array_slice($matches, 1);
+                    //$ff    = preg_split("/[\s]+/", $ff, 9);
                     $perms = $ff[0];
                     $file  = $ff[8];
                     
@@ -2038,7 +2042,9 @@ function downloadFolder($folder, $dir_source)
                     if ($count == 1)
                         continue;
                     
-                    $ff    = preg_split("/[\s]+/", $ff, 9);
+                    preg_match('/'. str_repeat('([^\s]+)\s+',7) . '([^\s]+) (.+)/', $ff, $matches);
+                    $ff = array_slice($matches, 1);
+                    //$ff    = preg_split("/[\s]+/", $ff, 9);
                     $perms = $ff[0];
                     $file  = $ff[8];
                     
@@ -2334,7 +2340,9 @@ function getPerms($folder, $file_name)
         foreach ($ftp_rawlist AS $ff) {
             
             // Split up array into values
-            $ff = preg_split("/[\s]+/", $ff, 9);
+            preg_match('/'. str_repeat('([^\s]+)\s+',7) . '([^\s]+) (.+)/', $ff, $matches);
+            $ff = array_slice($matches, 1);
+            //$ff    = preg_split("/[\s]+/", $ff, 9);
             
             $perms = $ff[0];
             $file  = $ff[8];
@@ -2440,7 +2448,9 @@ function copyFolder($folder, $dir_destin, $dir_source)
                 // Split up array into values (Lin)
                 if ($_SESSION["win_lin"] == "lin") {
                     
-                    $ff    = preg_split("/[\s]+/", $ff, 9);
+                    preg_match('/'. str_repeat('([^\s]+)\s+',7) . '([^\s]+) (.+)/', $ff, $matches);
+                    $ff = array_slice($matches, 1);
+                    //$ff    = preg_split("/[\s]+/", $ff, 9);
                     $perms = $ff[0];
                     $file  = $ff[8];
                     
@@ -2454,7 +2464,9 @@ function copyFolder($folder, $dir_destin, $dir_source)
                     if ($count == 1)
                         continue;
                     
-                    $ff    = preg_split("/[\s]+/", $ff, 9);
+                    preg_match('/'. str_repeat('([^\s]+)\s+',7) . '([^\s]+) (.+)/', $ff, $matches);
+                    $ff = array_slice($matches, 1);
+                    //$ff    = preg_split("/[\s]+/", $ff, 9);
                     $perms = $ff[0];
                     $file  = $ff[8];
                     
@@ -2785,7 +2797,9 @@ function chmodFiles()
                 foreach ($ftp_rawlist AS $ff) {
                     
                     // Split up array into values
-                    $ff = preg_split("/[\s]+/", $ff, 9);
+                    preg_match('/'. str_repeat('([^\s]+)\s+',7) . '([^\s]+) (.+)/', $ff, $matches);
+                    $ff = array_slice($matches, 1);
+                    //$ff    = preg_split("/[\s]+/", $ff, 9);
                     
                     $perms = $ff[0];
                     $file  = $ff[8];
@@ -3242,7 +3256,9 @@ function deleteFolder($folder, $path)
             // Split up array into values (Lin)
             if ($_SESSION["win_lin"] == "lin") {
                 
-                $ff    = preg_split("/[\s]+/", $ff, 9);
+                preg_match('/'. str_repeat('([^\s]+)\s+',7) . '([^\s]+) (.+)/', $ff, $matches);
+                $ff = array_slice($matches, 1);
+                //$ff    = preg_split("/[\s]+/", $ff, 9);
                 $perms = $ff[0];
                 $file  = $ff[8];
                 
@@ -3258,7 +3274,9 @@ function deleteFolder($folder, $path)
                 if ($count == 1)
                     continue;
                 
-                $ff    = preg_split("/[\s]+/", $ff, 9);
+                preg_match('/'. str_repeat('([^\s]+)\s+',7) . '([^\s]+) (.+)/', $ff, $matches);
+                $ff = array_slice($matches, 1);
+                //$ff    = preg_split("/[\s]+/", $ff, 9);
                 $perms = $ff[0];
                 $file  = $ff[8];
                 
@@ -3465,7 +3483,9 @@ function checkFileExists($type, $file_name, $folder_path)
             if ($_SESSION["win_lin"] == "lin") {
                 
                 // Split up array into values
-                $ff = preg_split("/[\s]+/", $ff, 9);
+                preg_match('/'. str_repeat('([^\s]+)\s+',7) . '([^\s]+) (.+)/', $ff, $matches);
+                $ff = array_slice($matches, 1);
+                //$ff    = preg_split("/[\s]+/", $ff, 9);
                 
                 $perms = $ff[0];
                 $file  = $ff[8];
@@ -3487,7 +3507,9 @@ function checkFileExists($type, $file_name, $folder_path)
                     continue;
                 
                 // Split up array into values
-                $ff = preg_split("/[\s]+/", $ff, 9);
+                preg_match('/'. str_repeat('([^\s]+)\s+',7) . '([^\s]+) (.+)/', $ff, $matches);
+                $ff = array_slice($matches, 1);
+                //$ff    = preg_split("/[\s]+/", $ff, 9);
                 
                 $perms = $ff[0];
                 $file  = $ff[8];
