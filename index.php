@@ -361,7 +361,7 @@ function displayHeader()
 ?></title>
     <link href="style.css" rel="stylesheet" type="text/css">
     <link href="skins/<?php
-    echo sanitizeStr($skin);
+    echo sanitizeStrTrim($skin);
 ?>.css" rel="stylesheet" type="text/css">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta http-equiv="X-Frame-Options" content="sameorigin">
@@ -501,7 +501,7 @@ function displayLoginForm($posted)
             echo $lang_ftp_host;
 ?>:
 <br><input type="text" name="ftp_host" value="<?php
-            echo sanitizeStr($ftp_host);
+            echo sanitizeStrTrim($ftp_host);
 ?>" size="30" class="<?php
             if ($posted == 1 && $ftp_host == "")
                 echo "bgFormError";
@@ -509,7 +509,7 @@ function displayLoginForm($posted)
 <?php
             echo $lang_port;
 ?>: <input type="text" name="ftp_port" value="<?php
-            echo sanitizeStr($ftp_port);
+            echo sanitizeStrTrim($ftp_port);
 ?>" size="3" class="<?php
             if ($posted == 1 && $ftp_port == "")
                 echo "bgFormError";
@@ -523,7 +523,7 @@ function displayLoginForm($posted)
         echo $lang_username;
 ?>:
 <br><input type="text" name="ftp_user" value="<?php
-        echo sanitizeStr($ftp_user);
+        echo sanitizeStrTrim($ftp_user);
 ?>" size="30" class="<?php
         if ($posted == 1 && $ftp_user == "")
             echo "bgFormError";
@@ -533,7 +533,7 @@ function displayLoginForm($posted)
         echo $lang_password;
 ?>:
 <br><input type="password" name="ftp_pass" value="<?php
-        echo sanitizeStr($ftp_pass);
+        echo sanitizeStrTrim($ftp_pass);
 ?>" size="30" class="<?php
         if ($posted == 1 && $ftp_pass == "")
             echo "bgFormError";
@@ -3021,7 +3021,7 @@ function displayEditFileForm($file, $content)
     displayPopupOpen(0, $width, $height, 0, $title);
     
     echo "<input type=\"hidden\" name=\"file\" value=\"" . sanitizeStr($file) . "\">";
-    echo "<textarea name=\"editContent\" id=\"editContent\" style=\"height: " . $editorHeight . "px;\">" . sanitizeStr($content) . "</textarea>";
+    echo "<textarea name=\"editContent\" id=\"editContent\" style=\"height: " . $editorHeight . "px;\">" . sanitizeStrTrim($content) . "</textarea>";
     
     // Save button
     echo "<input type=\"button\" value=\"" . $lang_btn_save . "\" class=\"popUpBtn\" onClick=\"submitToIframe('&ftpAction=editProcess');\"> ";
@@ -4385,13 +4385,18 @@ function getFileArray($dir)
 function sanitizeStr($str)
 {
     
-    $str = trim($str);
     $str = str_replace("&", "&amp;", $str);
     $str = str_replace('"', '&quot;', $str);
     $str = str_replace("<", "&lt;", $str);
     $str = str_replace(">", "&gt;", $str);
     
     return $str;
+}
+
+function sanitizeStrTrim($str)
+{
+    
+    return sanitizeStr(trim($str));
 }
 
 function ensureFtpConnActive()
