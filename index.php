@@ -1914,8 +1914,9 @@ function downloadFiles()
     // Download and zip each file
     if (sizeof($downloadFileAr) > 1) {
         
-        $zip_file = $serverTmp."/"."monstaftp_zip_download.zip";
-        $zip = new ZipArchive();
+        $zip_file_name   = "monstaftp_".date("Y_m_d_H_i_s").".zip";
+        $zip_file        = tempnam($serverTmp, $zip_file_name);
+        $zip             = new ZipArchive();
         $zip->open($zip_file, ZipArchive::CREATE);
     
         foreach ($downloadFileAr as $file) {
@@ -1961,7 +1962,7 @@ function downloadFiles()
         } 
 
         header("Content-Type: application/octet-stream");
-        header("Content-Disposition: attachment; filename=\"monstaftp_zip_download.zip\"");
+        header("Content-Disposition: attachment; filename=\"".$zip_file_name."\"");
         header("Content-Transfer-Encoding: Binary"); 
         header("Content-Type: application/download");
         header("Content-Description: File Transfer");
