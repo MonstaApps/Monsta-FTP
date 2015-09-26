@@ -1,6 +1,6 @@
 <?php
 
-$version = "1.6.2";
+$version = "1.6.3";
 
 require("config.php");
 
