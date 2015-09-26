@@ -1304,15 +1304,15 @@ function getFileListHtml($array, $image)
         
         // Display Folders
         if ($action == "folderAction")
-            $html .= "<div class=\"width100pc\" onDragOver=\"dragFile(event); selectFile('folder" . $i . "',0);\" onDragLeave=\"unselectFolder('folder" . $i . "')\" onDrop=\"dropFile('" . rawurlencode($file_path) . "')\"><a href=\"#\" id=\"folder" . $i . "\" onClick=\"openThisFolder('" . rawurlencode($file_path) . "',1)\" onContextMenu=\"selectFile(this.id,1); displayContextMenu(event,'','" . rawurlencode($file_path) . "'," . assignWinLinNum() . ")\" draggable=\"true\" onDragStart=\"selectFile(this.id,1); setDragFile('','" . rawurlencode($file_path) . "')\">" . sanitizeStr($file) . "</a></div>";
+            $html .= "<div class=\"width100pc\" onDragOver=\"dragFile(event); selectFile('folder" . $i . "',0);\" onDragLeave=\"unselectFolder('folder" . $i . "')\" onDrop=\"dropFile('" . rawurlencode($file_path) . "')\"><a href=\"#\" id=\"folder" . $i . "\" onClick=\"openThisFolder('" . rawurlencode($file_path) . "',1)\" onContextMenu=\"selectFile(this.id,1); displayContextMenu(event,'','" . rawurlencode($file_path) . "'," . assignWinLinNum() . ")\" draggable=\"true\" onDragStart=\"selectFile(this.id,1); setDragFile('','" . rawurlencode($file_path) . "')\">" . str_replace(" ","&nbsp;",sanitizeStr($file)) . "</a></div>";
         
         // Display Links
         if ($action == "linkAction")
-            $html .= "<div class=\"width100pc\"><a href=\"#\" id=\"folder" . $i . "\" onClick=\"openThisFolder('" . rawurlencode($file_path) . "',1)\" onContextMenu=\"\" draggable=\"false\">" . sanitizeStr($file) . "</a></div>";
+            $html .= "<div class=\"width100pc\"><a href=\"#\" id=\"folder" . $i . "\" onClick=\"openThisFolder('" . rawurlencode($file_path) . "',1)\" onContextMenu=\"\" draggable=\"false\">" . str_replace(" ","&nbsp;",sanitizeStr($file)) . "</a></div>";
         
         // Display files
         if ($action == "fileAction")
-            $html .= "<a href=\"?dl=" . rawurlencode($file_path) . "\" id=\"file" . $i . "\" target=\"ajaxIframe\" onContextMenu=\"selectFile(this.id,1); displayContextMenu(event,'" . rawurlencode($file_path) . "',''," . assignWinLinNum() . ")\" draggable=\"true\" onDragStart=\"selectFile(this.id,1); setDragFile('" . rawurlencode($file_path) . "','')\">" . sanitizeStr($file) . "</a>";
+            $html .= "<a href=\"?dl=" . rawurlencode($file_path) . "\" id=\"file" . $i . "\" target=\"ajaxIframe\" onContextMenu=\"selectFile(this.id,1); displayContextMenu(event,'" . rawurlencode($file_path) . "',''," . assignWinLinNum() . ")\" draggable=\"true\" onDragStart=\"selectFile(this.id,1); setDragFile('" . rawurlencode($file_path) . "','')\">" . str_replace(" ","&nbsp;",sanitizeStr($file)) . "</a>";
         
         $html .= "</td>";
         $html .= "<td>" . formatFileSize($size) . "</td>";
