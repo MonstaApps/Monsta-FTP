@@ -1,6 +1,6 @@
 <?php
 
-$version = "1.6.3";
+$version = "1.6.4";
 
 require("config.php");
 
@@ -363,7 +363,7 @@ function displayHeader()
 ?></title>
     <link href="style.css" rel="stylesheet" type="text/css">
     <link href="skins/<?php
-    echo sanitizeStr($skin);
+    echo sanitizeStrTrim($skin);
 ?>.css" rel="stylesheet" type="text/css">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
@@ -502,7 +502,7 @@ function displayLoginForm($posted)
             echo $lang_ftp_host;
 ?>:
 <br><input type="text" name="ftp_host" value="<?php
-            echo sanitizeStr($ftp_host);
+            echo sanitizeStrTrim($ftp_host);
 ?>" size="30" class="<?php
             if ($posted == 1 && $ftp_host == "")
                 echo "bgFormError";
@@ -510,7 +510,7 @@ function displayLoginForm($posted)
 <?php
             echo $lang_port;
 ?>: <input type="text" name="ftp_port" value="<?php
-            echo sanitizeStr($ftp_port);
+            echo sanitizeStrTrim($ftp_port);
 ?>" size="3" class="<?php
             if ($posted == 1 && $ftp_port == "")
                 echo "bgFormError";
@@ -524,7 +524,7 @@ function displayLoginForm($posted)
         echo $lang_username;
 ?>:
 <br><input type="text" name="ftp_user" value="<?php
-        echo sanitizeStr($ftp_user);
+        echo sanitizeStrTrim($ftp_user);
 ?>" size="30" class="<?php
         if ($posted == 1 && $ftp_user == "")
             echo "bgFormError";
@@ -534,7 +534,7 @@ function displayLoginForm($posted)
         echo $lang_password;
 ?>:
 <br><input type="password" name="ftp_pass" value="<?php
-        echo sanitizeStr($ftp_pass);
+        echo sanitizeStrTrim($ftp_pass);
 ?>" size="30" class="<?php
         if ($posted == 1 && $ftp_pass == "")
             echo "bgFormError";
@@ -931,7 +931,9 @@ function createFileFolderArrayLin($ftp_rawlist, $type)
         $year = "";
         
         // Split up array into values
-        $ff = preg_split("/[\s]+/", $ff, 9);
+        //$ff = preg_split("/[\s]+/", $ff, 9);
+        preg_match('/'. str_repeat('([^\s]+)\s+',7) . '([^\s]+) (.+)/', $ff, $matches);
+        $ff = array_slice($matches, 1);
         
         $perms = $ff[0];
         $user  = $ff[2];
@@ -1307,16 +1309,16 @@ function getFileListHtml($array, $image)
         
         // Display Folders
         if ($action == "folderAction")
-            $html .= "<div class=\"width100pc\" onDragOver=\"dragFile(event); selectFile('folder" . $i . "',0);\" onDragLeave=\"unselectFolder('folder" . $i . "')\" onDrop=\"dropFile('" . rawurlencode($file_path) . "')\"><a href=\"#\" id=\"folder" . $i . "\" onClick=\"openThisFolder('" . rawurlencode($file_path) . "',1)\" onContextMenu=\"selectFile(this.id,1); displayContextMenu(event,'','" . rawurlencode($file_path) . "'," . assignWinLinNum() . ")\" draggable=\"true\" onDragStart=\"selectFile(this.id,1); setDragFile('','" . rawurlencode($file_path) . "')\">" . sanitizeStr($file) . "</a></div>";
-        
+            $html .= "<div class=\"width100pc\" onDragOver=\"dragFile(event); selectFile('folder" . $i . "',0);\" onDragLeave=\"unselectFolder('folder" . $i . "')\" onDrop=\"dropFile('" . rawurlencode($file_path) . "')\"><a href=\"#\" id=\"folder" . $i . "\" onClick=\"openThisFolder('" . rawurlencode($file_path) . "',1)\" onContextMenu=\"selectFile(this.id,1); displayContextMenu(event,'','" . rawurlencode($file_path) . "'," . assignWinLinNum() . ")\" draggable=\"true\" onDragStart=\"selectFile(this.id,1); setDragFile('','" . rawurlencode($file_path) . "')\">" . str_replace(" ","&nbsp;",sanitizeStr($file)) . "</a></div>";
+
         // Display Links
         if ($action == "linkAction")
-            $html .= "<div class=\"width100pc\"><a href=\"#\" id=\"folder" . $i . "\" onClick=\"openThisFolder('" . rawurlencode($file_path) . "',1)\" onContextMenu=\"\" draggable=\"false\">" . sanitizeStr($file) . "</a></div>";
+            $html .= "<div class=\"width100pc\"><a href=\"#\" id=\"folder" . $i . "\" onClick=\"openThisFolder('" . rawurlencode($file_path) . "',1)\" onContextMenu=\"\" draggable=\"false\">" . str_replace(" ","&nbsp;",sanitizeStr($file)) . "</a></div>";
         
         // Display files
         if ($action == "fileAction")
-            $html .= "<a href=\"?dl=" . rawurlencode($file_path) . "\" id=\"file" . $i . "\" target=\"ajaxIframe\" onContextMenu=\"selectFile(this.id,1); displayContextMenu(event,'" . rawurlencode($file_path) . "',''," . assignWinLinNum() . ")\" draggable=\"true\" onDragStart=\"selectFile(this.id,1); setDragFile('" . rawurlencode($file_path) . "','')\">" . sanitizeStr($file) . "</a>";
-        
+            $html .= "<a href=\"?dl=" . rawurlencode($file_path) . "\" id=\"file" . $i . "\" target=\"ajaxIframe\" onContextMenu=\"selectFile(this.id,1); displayContextMenu(event,'" . rawurlencode($file_path) . "',''," . assignWinLinNum() . ")\" draggable=\"true\" onDragStart=\"selectFile(this.id,1); setDragFile('" . rawurlencode($file_path) . "','')\">" . str_replace(" ","&nbsp;",sanitizeStr($file)) . "</a>";
+         
         $html .= "</td>";
         $html .= "<td>" . formatFileSize($size) . "</td>";
         $html .= "<td>" . $date . "</td>";
@@ -2032,7 +2034,9 @@ function downloadFolder($folder, $dir_source)
                 // Split up array into values (Lin)
                 if ($_SESSION["win_lin"] == "lin") {
                     
-                    $ff    = preg_split("/[\s]+/", $ff, 9);
+                    //$ff    = preg_split("/[\s]+/", $ff, 9);
+                    preg_match('/'. str_repeat('([^\s]+)\s+',7) . '([^\s]+) (.+)/', $ff, $matches);
+                    $ff = array_slice($matches, 1);
                     $perms = $ff[0];
                     $file  = $ff[8];
                     
@@ -2046,7 +2050,9 @@ function downloadFolder($folder, $dir_source)
                     if ($count == 1)
                         continue;
                     
-                    $ff    = preg_split("/[\s]+/", $ff, 9);
+                    //$ff    = preg_split("/[\s]+/", $ff, 9);
+                    preg_match('/'. str_repeat('([^\s]+)\s+',7) . '([^\s]+) (.+)/', $ff, $matches);
+                    $ff = array_slice($matches, 1);
                     $perms = $ff[0];
                     $file  = $ff[8];
                     
@@ -2342,7 +2348,9 @@ function getPerms($folder, $file_name)
         foreach ($ftp_rawlist AS $ff) {
             
             // Split up array into values
-            $ff = preg_split("/[\s]+/", $ff, 9);
+            // $ff = preg_split("/[\s]+/", $ff, 9);
+            preg_match('/'. str_repeat('([^\s]+)\s+',7) . '([^\s]+) (.+)/', $ff, $matches);
+            $ff = array_slice($matches, 1);
             
             $perms = $ff[0];
             $file  = $ff[8];
@@ -2448,7 +2456,9 @@ function copyFolder($folder, $dir_destin, $dir_source)
                 // Split up array into values (Lin)
                 if ($_SESSION["win_lin"] == "lin") {
                     
-                    $ff    = preg_split("/[\s]+/", $ff, 9);
+                    // $ff    = preg_split("/[\s]+/", $ff, 9);
+                    preg_match('/'. str_repeat('([^\s]+)\s+',7) . '([^\s]+) (.+)/', $ff, $matches);
+                    $ff = array_slice($matches, 1);
                     $perms = $ff[0];
                     $file  = $ff[8];
                     
@@ -2462,7 +2472,9 @@ function copyFolder($folder, $dir_destin, $dir_source)
                     if ($count == 1)
                         continue;
                     
-                    $ff    = preg_split("/[\s]+/", $ff, 9);
+                    // $ff    = preg_split("/[\s]+/", $ff, 9);
+                    preg_match('/'. str_repeat('([^\s]+)\s+',7) . '([^\s]+) (.+)/', $ff, $matches);
+                    $ff = array_slice($matches, 1);
                     $perms = $ff[0];
                     $file  = $ff[8];
                     
@@ -2793,7 +2805,9 @@ function chmodFiles()
                 foreach ($ftp_rawlist AS $ff) {
                     
                     // Split up array into values
-                    $ff = preg_split("/[\s]+/", $ff, 9);
+                    //$ff = preg_split("/[\s]+/", $ff, 9);
+                    preg_match('/'. str_repeat('([^\s]+)\s+',7) . '([^\s]+) (.+)/', $ff, $matches);
+                    $ff = array_slice($matches, 1);
                     
                     $perms = $ff[0];
                     $file  = $ff[8];
@@ -3015,7 +3029,7 @@ function displayEditFileForm($file, $content)
     displayPopupOpen(0, $width, $height, 0, $title);
     
     echo "<input type=\"hidden\" name=\"file\" value=\"" . sanitizeStr($file) . "\">";
-    echo "<textarea name=\"editContent\" id=\"editContent\" style=\"height: " . $editorHeight . "px;\">" . sanitizeStr($content) . "</textarea>";
+    echo "<textarea name=\"editContent\" id=\"editContent\" style=\"height: " . $editorHeight . "px;\">" . sanitizeStrTrim($content) . "</textarea>";
     
     // Save button
     echo "<input type=\"button\" value=\"" . $lang_btn_save . "\" class=\"popUpBtn\" onClick=\"submitToIframe('&ftpAction=editProcess');\"> ";
@@ -3250,7 +3264,9 @@ function deleteFolder($folder, $path)
             // Split up array into values (Lin)
             if ($_SESSION["win_lin"] == "lin") {
                 
-                $ff    = preg_split("/[\s]+/", $ff, 9);
+                // $ff    = preg_split("/[\s]+/", $ff, 9);
+                preg_match('/'. str_repeat('([^\s]+)\s+',7) . '([^\s]+) (.+)/', $ff, $matches);
+                $ff = array_slice($matches, 1);
                 $perms = $ff[0];
                 $file  = $ff[8];
                 
@@ -3266,7 +3282,9 @@ function deleteFolder($folder, $path)
                 if ($count == 1)
                     continue;
                 
-                $ff    = preg_split("/[\s]+/", $ff, 9);
+                //$ff    = preg_split("/[\s]+/", $ff, 9);
+                preg_match('/'. str_repeat('([^\s]+)\s+',7) . '([^\s]+) (.+)/', $ff, $matches);
+                $ff = array_slice($matches, 1);
                 $perms = $ff[0];
                 $file  = $ff[8];
                 
@@ -3473,7 +3491,9 @@ function checkFileExists($type, $file_name, $folder_path)
             if ($_SESSION["win_lin"] == "lin") {
                 
                 // Split up array into values
-                $ff = preg_split("/[\s]+/", $ff, 9);
+                //$ff = preg_split("/[\s]+/", $ff, 9);
+                preg_match('/'. str_repeat('([^\s]+)\s+',7) . '([^\s]+) (.+)/', $ff, $matches);
+                $ff = array_slice($matches, 1);
                 
                 $perms = $ff[0];
                 $file  = $ff[8];
@@ -3495,8 +3515,10 @@ function checkFileExists($type, $file_name, $folder_path)
                     continue;
                 
                 // Split up array into values
-                $ff = preg_split("/[\s]+/", $ff, 9);
-                
+                //$ff = preg_split("/[\s]+/", $ff, 9);
+                preg_match('/'. str_repeat('([^\s]+)\s+',7) . '([^\s]+) (.+)/', $ff, $matches);
+                $ff = array_slice($matches, 1);
+
                 $perms = $ff[0];
                 $file  = $ff[8];
                 
@@ -4373,13 +4395,18 @@ function getFileArray($dir)
 function sanitizeStr($str)
 {
     
-    $str = trim($str);
     $str = str_replace("&", "&amp;", $str);
     $str = str_replace('"', '&quot;', $str);
     $str = str_replace("<", "&lt;", $str);
     $str = str_replace(">", "&gt;", $str);
     
     return $str;
+}
+
+function sanitizeStrTrim($str)
+{
+    
+    return sanitizeStr(trim($str));
 }
 
 function ensureFtpConnActive()
