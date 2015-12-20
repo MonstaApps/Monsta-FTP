@@ -52,6 +52,7 @@ $lang_size_gb = "ГБ";
 $lang_size_tb = "ТБ";
 
 $lang_btn_refresh = "Обновить";
+$lang_btn_dl = "Загрузка с сервера";
 $lang_btn_cut = "Вырезать";
 $lang_btn_copy = "Копировать";
 $lang_btn_paste = "Вставить";
