@@ -51,6 +51,7 @@ $lang_size_gb = "GB";
 $lang_size_tb = "TB";
 
 $lang_btn_refresh = "Vernieuw";
+$lang_btn_dl = "Download";
 $lang_btn_cut = "Knip";
 $lang_btn_copy = "Kopieer";
 $lang_btn_paste = "Plak";
