@@ -33,10 +33,7 @@ $lang_skins_missing = "[skins] thư mục bị mất!";
 $lang_missing_fields = "Lỗi đăng nhập! Hãy điền đầy đủ giá trị cần thiết vào các mục cần thiết";
 $lang_max_logins = "Bạn đã vượt quá những lần đăng nhập cho phép và đã được khóa. Vui lòng thử lại trong [n] phút";
 $lang_cant_connect = "Lỗi đăng nhập! Không thể kết nối đến máy chủ FTP. Nhập lại địa chỉ IP hoặc tên website cho chính xác";
-$lang_cant_authenticate = "LỖI ĐĂNG NHẬP! <br>
-Bạn đã nhập sai IP hoặc tài khoản hay mật khẩu <br>
-Có thể thư mục của bạn đã bị lỡ tay xóa nhầm.<br>
-Liên hệ với quản trị để tạo lại thư mục cho bạn !";
+$lang_cant_authenticate = "Lỗi! Không thể xác thực đăng nhập của bạn";
 $lang_ip_conflict = "Một cuộc xung đột IP đã được phát hiện";
 
 $lang_table_name = "Tên";
@@ -54,6 +51,7 @@ $lang_size_gb = "Gb";
 $lang_size_tb = "Tb";
 
 $lang_btn_refresh = "LÀM TƯƠI";
+$lang_btn_dl = "Tải về";
 $lang_btn_cut = "Cắt";
 $lang_btn_copy = "Sao chép";
 $lang_btn_paste = "Dán";
