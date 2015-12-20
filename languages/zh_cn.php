@@ -51,6 +51,7 @@ $lang_size_gb = "GB";
 $lang_size_tb = "TB";
 
 $lang_btn_refresh = "刷新";
+$lang_btn_dl = "下载";
 $lang_btn_cut = "剪切";
 $lang_btn_copy = "复制";
 $lang_btn_paste = "粘贴";
