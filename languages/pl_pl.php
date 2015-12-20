@@ -51,6 +51,7 @@ $lang_size_gb = "GB";
 $lang_size_tb = "TB";
 
 $lang_btn_refresh = "Odśwież";
+$lang_btn_dl = "Pobierz";
 $lang_btn_cut = "Wytnij";
 $lang_btn_copy = "Kopiuj";
 $lang_btn_paste = "Wklej";
