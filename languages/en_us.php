@@ -1,8 +1,8 @@
 <?php
 
 // Language: English (US)
-// Author: Monsta Apps
-// Last Updated: 16/07/2013
+// Author: Monsta Apps (update haniokasai)
+// Last Updated: 16/12/2015
 
 $file_lang_name = "English (US)";
 $file_lang_default = 1; // 1 for default, 0 for not
@@ -51,6 +51,7 @@ $lang_size_gb = "GB";
 $lang_size_tb = "TB";
 
 $lang_btn_refresh = "Refresh";
+$lang_btn_dl ="Download";
 $lang_btn_cut = "Cut";
 $lang_btn_copy = "Copy";
 $lang_btn_paste = "Paste";
