@@ -51,6 +51,7 @@ $lang_size_gb = "GB";
 $lang_size_tb = "TB";
 
 $lang_btn_refresh = "새로고침";
+$lang_btn_dl = "다운로드";
 $lang_btn_cut = "잘라내기";
 $lang_btn_copy = "복사";
 $lang_btn_paste = "붙혀넣기";
