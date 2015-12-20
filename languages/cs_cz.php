@@ -50,8 +50,8 @@ $lang_size_mb = "MB";
 $lang_size_gb = "GB";
 $lang_size_tb = "TB";
 
-$lang_btn_sendlink = "Odeslat link";
 $lang_btn_refresh = "Obnovit";
+$lang_btn_dl = "Stáhnout";
 $lang_btn_cut = "Vyjmout";
 $lang_btn_copy = "Kopírovat";
 $lang_btn_paste = "Vložit";
