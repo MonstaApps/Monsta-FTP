@@ -5,7 +5,7 @@
 // Last Updated: 1/1/2016
 
 $file_lang_name = "日本語";
-$file_lang_default = 1; // 1 でデフォルト, 0で違う
+$file_lang_default = 0; // 1 でデフォルト, 0で違う
 
 $lang_title_ended = "セッションの終了";
 $lang_title_errors = "エラーが発生しました";
