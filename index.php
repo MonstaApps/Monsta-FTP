@@ -1,6 +1,6 @@
 <?php
 
-$version = "1.6.4";
+$version = "1.6.5";
 
 require("config.php");
 
@@ -756,7 +756,7 @@ function displayAjaxIframe()
 function loadAjax()
 {
 ?>
-<script type="text/javascript" src="ajax.js?a" charset="utf-8"></script>
+<script type="text/javascript" src="ajax.js?0" charset="utf-8"></script>
 <?php
 }
 
@@ -784,7 +784,7 @@ function getFtpRawList($folder_path)
     }
     
     if ($isError == 0)
-        return ftp_rawlist($conn_id, ".");
+        return ftp_rawlist($conn_id, "-a ".".");
 }
 
 function displayFiles()
@@ -835,7 +835,7 @@ function displayFiles()
             echo "<td colspan=\"4\">";
         
         // Get the parent directory
-        $parent = getParentDir();
+        $parent = getParentDir($_SESSION["dir_current"]);
         
         echo "<div class=\"width100pc\" onDragOver=\"dragFile(event); selectFile('folder0',0);\" onDragLeave=\"unselectFolder('folder0')\" onDrop=\"dropFile('" . rawurlencode($parent) . "')\"><a href=\"#\" id=\"folder0\" draggable=\"false\" onClick=\"openThisFolder('" . rawurlencode($parent) . "',1)\">...</a></div>";
         
@@ -868,55 +868,19 @@ function displayFiles()
 
 function getPlatform()
 {
-    
-    global $conn_id;
-    global $platformTestCount;
-    
-    if ($_SESSION["win_lin"] == "") {
+	
+	global $conn_id;
+	
+	if ($_SESSION["win_lin"] == "") {
+		
+	    $type = ftp_systype($conn_id);
+	
+        if (preg_match("/unix/i", $type, $matches))
+            $win_lin = "lin";
+        if (preg_match("/windows/i", $type, $matches))
+            $win_lin = "win";
         
-        $ftp_rawlist = ftp_rawlist($conn_id, ".");
-        
-        // Check for content in array
-        if (sizeof($ftp_rawlist) == 0) {
-            
-            $platformTestCount++;
-            
-            // Create a test folder
-            if (@ftp_mkdir($conn_id, "test")) {
-                
-                if ($platformTestCount < 2) {
-                    getPlatform();
-                    @ftp_rmdir($conn_id, "test");
-                }
-            }
-            
-        } else {
-            
-            // Get first item in array
-            $ff = $ftp_rawlist[0];
-            
-            // Split up array into values
-            $ff = preg_split("/[\s]+/", $ff, 9);
-            
-            // First item in Linux rawlist is permissions. In Windows it's date.
-            // If length of first item in array line is 8 chars, without a-z, it's a date.
-            if (strlen($ff[0]) == 8 && !preg_match("/[a-z]/i", $ff[0], $matches))
-                $win_lin = "win";
-            
-            if (strlen($ff[0]) == 10 && !preg_match("/[0-9]/i", $ff[0], $matches))
-                $win_lin = "lin";
-            
-            if ($ff[0] == "total") {
-                
-                $ff = $ftp_rawlist[1];
-                $ff = preg_split("/[\s]+/", $ff, 9);
-                if (strlen($ff[0]) == 10 && !preg_match("/[0-9]/i", $ff[0], $matches))
-                    $win_lin = "mac";
-                
-            }
-            
-            $_SESSION["win_lin"] = $win_lin;
-        }
+        $_SESSION["win_lin"] = $win_lin;
     }
 }
 
@@ -1139,7 +1103,7 @@ function createFileFolderArrayWin($ftp_rawlist, $type)
         // Format date
         $day   = substr($date, 3, 2);
         $month = substr($date, 0, 2);
-        $year  = substr($date, 6, 2);
+        $year  = substr($date, 6, 4);
         $date  = formatFtpDate($day, $month, $year);
         
         // Format time
@@ -1357,9 +1321,7 @@ function getPathFromLink($file)
         
         // Get the real parent
         for ($j = 0; $j < $i; $j++) {
-            
-            $path_parts  = pathinfo($dir_current);
-            $dir_current = $path_parts['dirname'];
+            $dir_current = getParentDir($dir_current);
         }
         
         // Set the path
@@ -1465,7 +1427,7 @@ function openFolder()
             $dir = quotesUnescape($_POST["openFolder"]);
         
         // Check dir is set
-        if ($dir == "") {
+        if ($dir == "" || $dir == "\\") {
             
             // No folder set (must be first login), so set home dir
             if ($_SESSION["win_lin"] == "lin" || $_SESSION["win_lin"] == "mac")
@@ -1509,7 +1471,7 @@ function openFolder()
             
             // Change to previous directory (if folder to open is currently open)
             if ($_POST["openFolder"] == $_SESSION["dir_current"] || $_POST["openFolder"] == "")
-                $_SESSION["dir_current"] = getParentDir();
+                $_SESSION["dir_current"] = getParentDir($_SESSION["dir_current"]);
             
             return 0;
         }
@@ -1901,9 +1863,7 @@ function downloadFiles()
         
         $folder = urldecode($folder);
         $folder_name = getFileFromPath($folder);
-        
-        $path_parts = pathinfo($folder);
-        $dir_source = $path_parts['dirname'];
+        $dir_source = getParentDir($folder);
         
         downloadFolder($folder_name, $dir_source);
     }
@@ -2003,6 +1963,10 @@ function downloadFolder($folder, $dir_source)
 
     $isError = 0;
     
+    // Check for back-slash home folder (Windows)
+    if ($dir_source == "\\")
+        $dir_source = "";
+    
     // Check source folder exists
     if (!@ftp_chdir($conn_id, $dir_source . "/" . $folder)) {
         if (checkFirstCharTilde($dir_source) == 1) {
@@ -2074,7 +2038,7 @@ function downloadFolder($folder, $dir_source)
                 if ($file != "." && $file != "..") {
                     
                     // Check for sub folders and then perform this function
-                    if (getFileType($perms) == "d") {
+                    if ($isDir == 1) {
                         downloadFolder($file, $dir_source . "/" . $folder);
                     } else {
                         $downloadFileAr[] = $dir_source . "/" . $folder . "/" . $file;
@@ -2273,9 +2237,7 @@ function copyFiles()
     foreach ($_SESSION["clipboard_folders"] as $folder) {
         
         $folder_name = getFileFromPath($folder);
-        
-        $path_parts = pathinfo($folder);
-        $dir_source = $path_parts['dirname'];
+        $dir_source = getParentDir($folder);
         
         // Check if folder exists
         if (checkFileExists("f", $folder_name, $folderMoveTo) == 1) {
@@ -2496,7 +2458,7 @@ function copyFolder($folder, $dir_destin, $dir_source)
                 if ($file != "." && $file != "..") {
                     
                     // Check for sub folders and then perform this function
-                    if (getFileType($perms) == "d") {
+                    if ($isDir == 1) {
                         copyFolder($file, $dir_destin . "/" . $folder, $dir_source . "/" . $folder);
                     } else {
                         
@@ -3630,6 +3592,7 @@ function uploadFile()
                 $fp2 = $_SESSION["dir_current"] . "/" . $file_name;
         }
         
+        /*
         ensureFtpConnActive();
         
         // Check if file reached server
@@ -3650,6 +3613,37 @@ function uploadFile()
         
         // Delete tmp file
         unlink($fp1);
+        */
+        
+        /* */
+        $inputHandler = fopen('php://input', "r");
+        $fileHandler = fopen($fp1, "w+");
+
+        while (FALSE !== ($buffer = fgets($inputHandler, 65536))) {
+            fwrite($fileHandler, $buffer);
+        }
+        
+        fclose($inputHandler);
+        fclose($fileHandler);
+
+        // Check if file reached server
+        if (file_exists($fp1)) {
+
+            ensureFtpConnActive();
+
+            if (!@ftp_put($conn_id, $fp2, $fp1, FTP_BINARY)) {
+                if (checkFirstCharTilde($fp2) == 1) {
+                    if (!@ftp_put($conn_id, replaceTilde($fp2), $fp1, FTP_BINARY)) {
+                        recordFileError("file", $file_name, $lang_server_error_up);
+                    }
+                } else {
+                    recordFileError("file", $file_name, $lang_server_error_up);
+                }
+            }
+        } else {
+            recordFileError("file", $file_name, $lang_browser_error_up);
+        }
+        /* */
     }
 }
 
@@ -3944,20 +3938,22 @@ function assignWinLinNum()
         return 0;
 }
 
-function getParentDir()
+function getParentDir($folder)
 {
     
-    if ($_SESSION["dir_current"] == "/") {
+    // Check for Windows backslash
+    if ($folder == "\\")
+        $folder = "/";
+    
+    if ($folder == "/") {
         
-        $parent = "/";
+        return "/";
         
     } else {
         
-        $path_parts = pathinfo($_SESSION["dir_current"]);
-        $parent     = $path_parts['dirname'];
+        $path_parts = pathinfo($folder);
+        return $path_parts['dirname'];
     }
-    
-    return $parent;
 }
 
 function displaySkinSelect($skin)
@@ -4298,7 +4294,7 @@ function setUploadLimit()
         //if (preg_match('/msie [1-8]/i',$_SERVER['HTTP_USER_AGENT']))
         //    $upload_limit = ini_get('upload_max_filesize');
         //else
-        $upload_limit = ini_get('memory_limit');
+        $upload_limit = ini_get('post_max_size');
         
         $ll = substr($upload_limit, strlen($upload_limit) - 1, 1);
         
