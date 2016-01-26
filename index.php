@@ -1648,7 +1648,7 @@ function displayUploadProgress()
 <div id="uploadProgressDiv" style="visibility:hidden; display:none">
 <table id="uploadProgressTable" style="width: 100%; border-collapse: collapse; border-spacing: 0">
 <tr>
-    <td class="ftpTableHeadingNf" style="width: 35%; padding: 7px"></td>
+    <td class="ftpTableHeadingNf" style="width: 1%; padding: 7px"></td>
     <td class="ftpTableHeading" style="width: 35%; padding: 7px"><?php
     echo $lang_xfer_file;
 ?></td>
