@@ -66,8 +66,8 @@ $showAdvOption
 $showLockSess
 1 to show option to lock session to IP, 0 to hide
 
-$showHostInfo
-1 to show host address in info box, 0 to hide
+$showAddons
+1 to show unlicensed addons, 0 to hide
 
 ###################################
 LINKS
