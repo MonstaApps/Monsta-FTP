@@ -199,6 +199,11 @@ padding-left:20px;
 padding-right:20px;
 }
 
+.popUpBtnNoMargin {
+padding-left:20px;
+padding-right:20px;
+}
+
 #popupFrame {
 position:absolute;
 border-style:solid;
@@ -282,4 +287,8 @@ border-top-width:8px;
 border-top-style:solid;
 font-weight:700;
 padding:15px;
+}
+
+.inputFetch {
+width:400px;
 }
