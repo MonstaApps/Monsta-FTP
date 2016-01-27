@@ -10,6 +10,10 @@ function ajaxStart() {
     return xmlhttp;
 }
 
+function ajaxAbort() {
+    var xmlhttp = new XMLHttpRequest();
+}
+
 var globalBrowser;
 
 function detectBrowser() {
@@ -344,13 +348,65 @@ function fileUploader(globalFiles, filePath, rowID, isFolder, isDrop) {
     } else {
 
         // File size accepted
-
         var xmlhttp = ajaxStart();
 
         // Set action for change of state (listener)
-        //xmlhttp.onreadystatechange = function stateChanged() {
-        // moved to xmlhttp.upload.onprogress
-        //}
+        xmlhttp.onreadystatechange = function stateChanged() {
+
+            // Check if upload has completed
+            if (xmlhttp.readyState == 4) {
+
+                // Set the values of the progress fields to max (finished)
+                document.getElementById('progress' + rowID).value = 100; // progress bar
+                document.getElementById('percent' + rowID).innerHTML = '100%'; // percent
+                document.getElementById('timeR' + rowID).innerHTML = formatSecondsToTime(0); // time remaining
+                document.getElementById('progressParent' + rowID).innerHTML = '<span class="transferringSpan">' + lang_transferring_to_ftp + '</span>' // status
+                document.getElementById('percent' + rowID).innerHTML = ""; // percent
+                document.getElementById('timeE' + rowID).innerHTML = ""; // time elapsed
+                //document.getElementById('uploaded'+rowID).innerHTML = formatFileSize(file.size); (commented out because by the time the function returns, the value has already been cleared)
+                document.getElementById('uploaded' + rowID).innerHTML = ""; // uploaded
+                document.getElementById('rate' + rowID).innerHTML = ""; // transfer rate
+                document.getElementById('timeR' + rowID).innerHTML = ""; // time remaining
+
+                // Refresh open folder (delay half second to complete progress display)
+                setTimeout(function() {
+                    openThisFolder(globalOpenFolder, 0)
+                }, 500)
+
+                // Delete the progress row from table (delay half second to complete progress display)
+                setTimeout(function() {
+                    deleteProgressRow(rowID)
+                }, 500)
+
+                // Start next transfer
+                globalFileUploadCount++;
+
+                // Check if another file needs uploading
+                if (globalFileUploadCount < globalFileUploadTotal || globalFileUploadCount < globalFileUploadPreCount) {
+
+                    // Set path (if exists)
+                    if (globalPaths[globalFileUploadCount] != undefined)
+                        filePath = globalPaths[globalFileUploadCount]
+
+                    fileUploader(globalFiles, filePath, globalFileUploadCount, isFolder, isDrop);
+
+                } else {
+
+                    // Reset arrays
+                    globalFiles = [];
+                    globalPaths = [];
+
+                    // Display repeat button
+                    if (isDrop == 0 && isFolder == 0)
+                        showRepeatButton();
+
+                    // Reset form for Chrome
+                    if (isFolder == 1) {
+                        resetForm();
+                    }
+                }
+            }
+        }
 
         // Create the progress bar
         document.getElementById('progressParent' + rowID).innerHTML = '<progress id="progress' + rowID + '"min="0" max="100" value="0"></progress>';
@@ -403,58 +459,6 @@ function fileUploader(globalFiles, filePath, rowID, isFolder, isDrop) {
                 // Display %age complete
                 document.getElementById('percent' + rowID).innerHTML = Math.round(progressBar.value) + '%';
                 
-                if (progressBar.value == 100) {
-
-                    // Set the values of the progress fields to max (finished)
-                    document.getElementById('progress' + rowID).value = 100; // progress bar
-                    document.getElementById('percent' + rowID).innerHTML = '100%'; // percent
-                    document.getElementById('timeR' + rowID).innerHTML = formatSecondsToTime(0); // time remaining
-                    document.getElementById('progressParent' + rowID).innerHTML = '<span class="transferringSpan">' + lang_transferring_to_ftp + '</span>' // status
-                    document.getElementById('percent' + rowID).innerHTML = ""; // percent
-                    document.getElementById('timeE' + rowID).innerHTML = ""; // time elapsed
-                    //document.getElementById('uploaded'+rowID).innerHTML = formatFileSize(file.size); (commented out because by the time the function returns, the value has already been cleared)
-                    document.getElementById('uploaded' + rowID).innerHTML = ""; // uploaded
-                    document.getElementById('rate' + rowID).innerHTML = ""; // transfer rate
-                    document.getElementById('timeR' + rowID).innerHTML = ""; // time remaining
-
-                    // Refresh open folder (delay half second to complete progress display)
-                    setTimeout(function() {
-                        openThisFolder(globalOpenFolder, 0)
-                    }, 500)
-
-                    // Delete the progress row from table (delay half second to complete progress display)
-                    setTimeout(function() {
-                        deleteProgressRow(rowID)
-                    }, 500)
-
-                    // Start next transfer
-                    globalFileUploadCount++;
-
-                    // Check if another file needs uploading
-                    if (globalFileUploadCount < globalFileUploadTotal || globalFileUploadCount < globalFileUploadPreCount) {
-
-                        // Set path (if exists)
-                        if (globalPaths[globalFileUploadCount] != undefined)
-                            filePath = globalPaths[globalFileUploadCount]
-
-                        fileUploader(globalFiles, filePath, globalFileUploadCount, isFolder, isDrop);
-
-                    } else {
-
-                        // Reset arrays
-                        globalFiles = [];
-                        globalPaths = [];
-
-                        // Display repeat button
-                        if (isDrop == 0 && isFolder == 0)
-                            showRepeatButton();
-
-                        // Reset form for Chrome
-                        if (isFolder == 1) {
-                            resetForm();
-                        }
-                    }
-                }
             }
         };
 
@@ -1227,6 +1231,10 @@ function adjustButtonWidth(str) {
 
 function actionDownloadZip() {
 	submitToIframe("&ftpAction=download_zip");
+}
+
+function displayWaiting(fieldId) {
+	document.getElementById(fieldId).innerHTML = '<img src="images/indicator.gif" width="32" height="32" border="0">';
 }
 
 detectBrowser();
