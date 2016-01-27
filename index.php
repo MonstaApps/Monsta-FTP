@@ -803,20 +803,20 @@ function displayFiles()
     
     # TABLE HEADER
     
-    echo "<table id=\"ftpTable\" style=\"width: 100%;border-collapse: collapse; border-spacing: 0\">";
+    echo "<table width=\"100%\" cellpadding=\"7\" cellspacing=\"0\" id=\"ftpTable\">";
     echo "<tr>";
-    echo "<td class=\"ftpTableHeadingNf\" style=\"width: 16px; padding: 7px\"><input type=\"checkbox\" id=\"checkboxSelector\" onClick=\"checkboxSelectAll()\"></td>";
-    echo "<td class=\"ftpTableHeadingNf\" style=\"width: 16px; padding: 7px\"></td>";
+    echo "<td width=\"16\" class=\"ftpTableHeadingNf\"><input type=\"checkbox\" id=\"checkboxSelector\" onClick=\"checkboxSelectAll()\"></td>";
+    echo "<td width=\"16\" class=\"ftpTableHeadingNf\"></td>";
     echo "<td class=\"ftpTableHeading\">" . getFtpColumnSpan("n", $lang_table_name) . "</td>";
-    echo "<td class=\"ftpTableHeading\" style=\"width: 10%; padding: 7px\">" . getFtpColumnSpan("s", $lang_table_size) . "</td>";
-    echo "<td class=\"ftpTableHeading\" style=\"width: 10%; padding: 7px\">" . getFtpColumnSpan("d", $lang_table_date) . "</td>";
-    echo "<td class=\"ftpTableHeading\" style=\"width: 10%; padding: 7px\">" . getFtpColumnSpan("t", $lang_table_time) . "</td>";
+    echo "<td width=\"10%\" class=\"ftpTableHeading\">" . getFtpColumnSpan("s", $lang_table_size) . "</td>";
+    echo "<td width=\"10%\" class=\"ftpTableHeading\">" . getFtpColumnSpan("d", $lang_table_date) . "</td>";
+    echo "<td width=\"10%\" class=\"ftpTableHeading\">" . getFtpColumnSpan("t", $lang_table_time) . "</td>";
     
     // Only display permissions/user/group for Linux advanced
     if ($_SESSION["interface"] == "adv" && $_SESSION["win_lin"] != "win") {
-        echo "<td class=\"ftpTableHeading\" style=\"width: 10%; padding: 7px\">" . $lang_table_user . "</td>";
-        echo "<td class=\"ftpTableHeading\" style=\"width: 10%; padding: 7px\">" . $lang_table_group . "</td>";
-        echo "<td class=\"ftpTableHeading\" style=\"width: 10%; padding: 7px\">" . $lang_table_perms . "</td>";
+        echo "<td width=\"10%\" class=\"ftpTableHeading\">" . $lang_table_user . "</td>";
+        echo "<td width=\"10%\" class=\"ftpTableHeading\">" . $lang_table_group . "</td>";
+        echo "<td width=\"10%\" class=\"ftpTableHeading\">" . $lang_table_perms . "</td>";
     }
     
     echo "</tr>";
@@ -826,8 +826,8 @@ function displayFiles()
     if ($_SESSION["dir_current"] != "/" && $_SESSION["dir_current"] != "~") {
         
         echo "<tr>";
-        echo "<td style=\"width: 16px; padding: 7px\"></td>";
-        echo "<td style=\"width: 16px; padding: 7px\"><img src=\"images/icon_16_folder.gif\" width=\"16\" height=\"16\" alt=\"\"></td>";
+        echo "<td width=\"16\"></td>";
+        echo "<td width=\"16\"><img src=\"images/icon_16_folder.gif\" width=\"16\" height=\"16\" alt=\"\"></td>";
         
         if ($_SESSION["interface"] == "adv")
             echo "<td colspan=\"7\">";
@@ -1268,7 +1268,7 @@ function getFileListHtml($array, $image)
         $html .= "<td>";
         $html .= "<input type=\"checkbox\" name=\"" . $action . "[]\" value=\"" . rawurlencode($file_path) . "\" onclick=\"checkFileChecked()\" " . $checked . ">";
         $html .= "</td>";
-        $html .= "<td><img src=\"images/" . $image . "\" width=\"16\" height=\"16\" alt=\"\"></td>";
+        $html .= "<td><img src=\"images/" . $image . "\" width=\"16\" height=\"16\"></td>";
         $html .= "<td>";
         
         // Display Folders
@@ -1507,6 +1507,21 @@ function dwplc($addon) {
     }
 }
 
+function displayAddonCheck($addon)
+{
+
+    global $showAddons;
+    
+    if ($showAddons == 1) {
+        return 1;
+    } else {
+        if (dwplc($addon) == 1)
+            return 1;
+        else
+            return 0;    
+    }
+}
+
 function checkLogOut()
 {
     
@@ -1675,31 +1690,31 @@ function displayUploadProgress()
     global $lang_xfer_remain;
 ?>
 <div id="uploadProgressDiv" style="visibility:hidden; display:none">
-<table id="uploadProgressTable" style="width: 100%; border-collapse: collapse; border-spacing: 0">
+<table width="100%" cellpadding="7" cellspacing="0" id="uploadProgressTable">
 <tr>
-    <td class="ftpTableHeadingNf" style="width: 1%; padding: 7px"></td>
-    <td class="ftpTableHeading" style="width: 35%; padding: 7px"><?php
+    <td class="ftpTableHeadingNf" width="1%"></td>
+    <td class="ftpTableHeading" size="35%"><?php
     echo $lang_xfer_file;
 ?></td>
-    <td class="ftpTableHeading" style="width: 7%; padding: 7px"><?php
+    <td class="ftpTableHeading" width="7%"><?php
     echo $lang_xfer_size;
 ?></td>
-    <td class="ftpTableHeading" style="width: 21%; padding: 7px"><?php
+    <td class="ftpTableHeading" width="21%"><?php
     echo $lang_xfer_progress;
 ?></td>
-    <td class="ftpTableHeading" style="width: 9%; padding: 7px"><?php
+    <td class="ftpTableHeading" width="9%"><?php
     echo $lang_xfer_elapsed;
 ?></td>
-    <td class="ftpTableHeading" style="width: 7%; padding: 7px"><?php
+    <td class="ftpTableHeading" width="7%"><?php
     echo $lang_xfer_uploaded;
 ?></td>
-    <td class="ftpTableHeading" style="width: 9%; padding: 7px"><?php
+    <td class="ftpTableHeading" width="9%"><?php
     echo $lang_xfer_rate;
 ?></td>
-    <td class="ftpTableHeading" style="width: 10%; padding: 7px"><?php
+    <td class="ftpTableHeading" width="10%"><?php
     echo $lang_xfer_remain;
 ?></td>
-    <td class="ftpTableHeading" style="width: 1%; padding: 7px"></td>
+    <td class="ftpTableHeading" width="1%"></td>
 </tr>
 </table>
 </div>
@@ -1763,9 +1778,9 @@ function displayAjaxFooter()
 ?>">
     </div>
     
-<?php
-if (dwplc("fetch_file") == 1) {
-?>
+    <?php
+    if (displayAddonCheck("fetch_file") == 1) {
+    ?>
     <div class="floatLeft10">
         <input type="button" value="<?php
     echo $lang_btn_fetch_file;
@@ -1773,10 +1788,11 @@ if (dwplc("fetch_file") == 1) {
     echo adjustButtonWidth($lang_btn_fetch_file);
 ?>">
     </div>
-<?php
-}
-?>    
-    <div id="uploadButtonsDiv"><div>
+   <?php
+   }
+   ?>
+   
+   <div id="uploadButtonsDiv"><div>
     
 </div>
 <?php
@@ -2730,7 +2746,7 @@ function renameFiles()
             
             $file = getFileFromPath($file);
             
-            echo "<img src=\"images/icon_16_file.gif\" width=\"16\" height=\"16\"> ";
+            echo "<img src=\"images/icon_16_file.gif\" width=\"16\" height=\"16\" alt=\"\"> ";
             echo "<input type=\"text\" name=\"file" . $i . "\" class=\"inputRename\" value=\"" . quotesReplace($file, "d") . "\" " . $onKeyPress . "><br>";
             $_SESSION["clipboard_rename"][] = $file;
             $i++;
@@ -3825,6 +3841,10 @@ function displayErrors()
         $errors = array_reverse($_SESSION["errors"]);
         
         foreach ($errors AS $error) {
+        
+            $error = str_replace("[a]","<a href='https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=K7PX3FMNE3XQ6' target='paypal'>",$error);
+            $error = str_replace("[/a]","</a>",$error);
+            
             echo $error . "<br>";
         }
         
@@ -4469,6 +4489,7 @@ function ensureFtpConnActive()
     }
 }
 
+
 function fetchFile()
 {
     
@@ -4492,59 +4513,66 @@ function fetchFile()
 
         // Check for processing of form
         if ($_POST["processAction"] == 1) {
-    
-            $fetch_url = trim($_POST["fetch_url"]);
-    
-            // Check remote file exists
-            $headers = get_headers($fetch_url);
-    
-            if (!preg_match("/\./", basename($fetch_url))) {
+        
+            if (dwplc("fetch_file") != 1) {
             
-                recordFileError("", "", $lang_fetch_no_file);
-                
+                recordFileError("", "", "You'll need to [a]upgrade[/a] to use this addon.");
+            
             } else {
     
-                if (!preg_match("/200 OK/", $headers[0])) {
-        
-                    recordFileError("", "", $lang_fetch_not_found);
+                $fetch_url = trim($_POST["fetch_url"]);
     
-                } else {
+                // Check remote file exists
+                $headers = get_headers($fetch_url);
+    
+                if (!preg_match("/\./", basename($fetch_url))) {
+            
+                    recordFileError("", "", $lang_fetch_no_file);
                 
-                    // Set file paths
-                    $file_name = basename($fetch_url);
-                    
-                    $fp1 = tempnam($serverTmp , $file_name);
-                    
-                    if ($_SESSION["dir_current"] == "/")
-                        $fp2 = "/" . $file_name;
-                    else
-                        $fp2 = $_SESSION["dir_current"] . "/" . $file_name;
-                    
-                    // Fetch the file
-                    $inputHandler = fopen($fetch_url, "r");
-                    $fileHandler = fopen($fp1, "w+");
-
-                    while (FALSE !== ($buffer = fgets($inputHandler, 65536))) {
-                        fwrite($fileHandler, $buffer);
-                    }
+                } else {
+    
+                    if (!preg_match("/200 OK/", $headers[0])) {
         
-                    fclose($inputHandler);
-                    fclose($fileHandler);
-        
-                    ensureFtpConnActive();
+                        recordFileError("", "", $lang_fetch_not_found);
+    
+                    } else {
+                
+                        // Set file paths
+                        $file_name = basename($fetch_url);
+                    
+                        $fp1 = tempnam($serverTmp , $file_name);
+                    
+                        if ($_SESSION["dir_current"] == "/")
+                            $fp2 = "/" . $file_name;
+                        else
+                            $fp2 = $_SESSION["dir_current"] . "/" . $file_name;
+                    
+                        // Fetch the file
+                        $inputHandler = fopen($fetch_url, "r");
+                        $fileHandler = fopen($fp1, "w+");
 
-                    if (!@ftp_put($conn_id, $fp2, $fp1, FTP_BINARY)) {
-                           if (checkFirstCharTilde($fp2) == 1) {
-                            if (!@ftp_put($conn_id, replaceTilde($fp2), $fp1, FTP_BINARY)) {
+                        while (FALSE !== ($buffer = fgets($inputHandler, 65536))) {
+                            fwrite($fileHandler, $buffer);
+                        }
+        
+                        fclose($inputHandler);
+                        fclose($fileHandler);
+        
+                        ensureFtpConnActive();
+
+                        if (!@ftp_put($conn_id, $fp2, $fp1, FTP_BINARY)) {
+                               if (checkFirstCharTilde($fp2) == 1) {
+                                if (!@ftp_put($conn_id, replaceTilde($fp2), $fp1, FTP_BINARY)) {
+                                    recordFileError("file", $file_name, $lang_server_error_up);
+                                }
+                            } else {
                                 recordFileError("file", $file_name, $lang_server_error_up);
                             }
-                        } else {
-                            recordFileError("file", $file_name, $lang_server_error_up);
                         }
-                    }
                     
-                    // Delete tmp file
-                    unlink($fp1);
+                        // Delete tmp file
+                        unlink($fp1);
+                    }
                 }
             }
         
@@ -4556,7 +4584,7 @@ function fetchFile()
             displayPopupOpen(1, $width, $height, 0, $title);
 
             echo "<div class=\"floatLeft10\">";
-            echo "<input type=\"text\" name=\"fetch_url\" class=\"inputFetch\" value=\"" . quotesReplace($folder, "d") . "\" " . $onKeyPress . " placeholder=\"http://...\"> ";
+            echo "<input type=\"text\" name=\"fetch_url\" class=\"inputFetch\" value=\"" . quotesReplace($folder, "d") . "\" " . $onKeyPress . " placeholder=\"e.g. http://www.website.com/file.exe\"> ";
             echo "</div>";
             echo "<div id=\"ajaxWaiting\" class=\"floatLeft10\">";
             echo "<input type=\"button\" class=\"popUpBtnNoMargin\" value=\"" . $lang_btn_fetch . "\" onClick=\"displayWaiting('ajaxWaiting'); processForm('" . $vars . "');\" class=\"";
