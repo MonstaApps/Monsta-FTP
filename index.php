@@ -355,7 +355,7 @@ function displayHeader()
         $skin = "monsta";
     
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html>
 <head>
     <title>Monsta FTP v<?php
@@ -551,7 +551,7 @@ if ($versionCheck == 1 && ((intval(ini_get("allow_url_fopen")) == 1 && (function
 ?>
 <iframe src="https://www.monstaftp.com/vc.php?v=<?php
     echo $version;
-?>" width="200" height="20" scrolling="no" frameborder="0"></iframe>
+?>" width="200" height="20" scrolling="no" style="border: 0"></iframe>
 <?php
 } else {
 ?>
@@ -728,7 +728,7 @@ function writeHiddenDivs()
 {
 ?>
 <div id="contextMenu" style="visibility: hidden; display: none;"></div>
-<div id="indicatorDiv" style="z-index: 1; visibility: hidden; display: none"><img src="images/indicator.gif" width="32" height="32" border="0"></div>
+<div id="indicatorDiv" style="z-index: 1; visibility: hidden; display: none"><img src="images/indicator.gif" width="32" height="32" alt="" style="border: 0"></div>
 <?php
 }
 
@@ -749,7 +749,7 @@ function displayFormEnd()
 function displayAjaxIframe()
 {
 ?>
-<iframe name="ajaxIframe" id="ajaxIframe" width="0" height="0" frameborder="0" style="display:none;visibility:hidden;"></iframe>
+<iframe name="ajaxIframe" id="ajaxIframe" width="0" height="0" style="display:none;visibility:hidden;border:0;"></iframe>
 <?php
 }
 
@@ -803,20 +803,20 @@ function displayFiles()
     
     # TABLE HEADER
     
-    echo "<table width=\"100%\" cellpadding=\"7\" cellspacing=\"0\" id=\"ftpTable\">";
+    echo "<table id=\"ftpTable\" style=\"width: 100%;border-collapse: collapse; border-spacing: 0\">";
     echo "<tr>";
-    echo "<td width=\"16\" class=\"ftpTableHeadingNf\"><input type=\"checkbox\" id=\"checkboxSelector\" onClick=\"checkboxSelectAll()\"></td>";
-    echo "<td width=\"16\" class=\"ftpTableHeadingNf\"></td>";
+    echo "<td class=\"ftpTableHeadingNf\" style=\"width: 16px; padding: 7px\"><input type=\"checkbox\" id=\"checkboxSelector\" onClick=\"checkboxSelectAll()\"></td>";
+    echo "<td class=\"ftpTableHeadingNf\" style=\"width: 16px; padding: 7px\"></td>";
     echo "<td class=\"ftpTableHeading\">" . getFtpColumnSpan("n", $lang_table_name) . "</td>";
-    echo "<td width=\"10%\" class=\"ftpTableHeading\">" . getFtpColumnSpan("s", $lang_table_size) . "</td>";
-    echo "<td width=\"10%\" class=\"ftpTableHeading\">" . getFtpColumnSpan("d", $lang_table_date) . "</td>";
-    echo "<td width=\"10%\" class=\"ftpTableHeading\">" . getFtpColumnSpan("t", $lang_table_time) . "</td>";
+    echo "<td class=\"ftpTableHeading\" style=\"width: 10%; padding: 7px\">" . getFtpColumnSpan("s", $lang_table_size) . "</td>";
+    echo "<td class=\"ftpTableHeading\" style=\"width: 10%; padding: 7px\">" . getFtpColumnSpan("d", $lang_table_date) . "</td>";
+    echo "<td class=\"ftpTableHeading\" style=\"width: 10%; padding: 7px\">" . getFtpColumnSpan("t", $lang_table_time) . "</td>";
     
     // Only display permissions/user/group for Linux advanced
     if ($_SESSION["interface"] == "adv" && $_SESSION["win_lin"] != "win") {
-        echo "<td width=\"10%\" class=\"ftpTableHeading\">" . $lang_table_user . "</td>";
-        echo "<td width=\"10%\" class=\"ftpTableHeading\">" . $lang_table_group . "</td>";
-        echo "<td width=\"10%\" class=\"ftpTableHeading\">" . $lang_table_perms . "</td>";
+        echo "<td class=\"ftpTableHeading\" style=\"width: 10%; padding: 7px\">" . $lang_table_user . "</td>";
+        echo "<td class=\"ftpTableHeading\" style=\"width: 10%; padding: 7px\">" . $lang_table_group . "</td>";
+        echo "<td class=\"ftpTableHeading\" style=\"width: 10%; padding: 7px\">" . $lang_table_perms . "</td>";
     }
     
     echo "</tr>";
@@ -826,8 +826,8 @@ function displayFiles()
     if ($_SESSION["dir_current"] != "/" && $_SESSION["dir_current"] != "~") {
         
         echo "<tr>";
-        echo "<td width=\"16\"></td>";
-        echo "<td width=\"16\"><img src=\"images/icon_16_folder.gif\" width=\"16\" height=\"16\"></td>";
+        echo "<td style=\"width: 16px; padding: 7px\"></td>";
+        echo "<td style=\"width: 16px; padding: 7px\"><img src=\"images/icon_16_folder.gif\" width=\"16\" height=\"16\" alt=\"\"></td>";
         
         if ($_SESSION["interface"] == "adv")
             echo "<td colspan=\"7\">";
@@ -1268,7 +1268,7 @@ function getFileListHtml($array, $image)
         $html .= "<td>";
         $html .= "<input type=\"checkbox\" name=\"" . $action . "[]\" value=\"" . rawurlencode($file_path) . "\" onclick=\"checkFileChecked()\" " . $checked . ">";
         $html .= "</td>";
-        $html .= "<td><img src=\"images/" . $image . "\" width=\"16\" height=\"16\"></td>";
+        $html .= "<td><img src=\"images/" . $image . "\" width=\"16\" height=\"16\" alt=\"\"></td>";
         $html .= "<td>";
         
         // Display Folders
@@ -1646,31 +1646,31 @@ function displayUploadProgress()
     global $lang_xfer_remain;
 ?>
 <div id="uploadProgressDiv" style="visibility:hidden; display:none">
-<table width="100%" cellpadding="7" cellspacing="0" id="uploadProgressTable">
+<table id="uploadProgressTable" style="width: 100%; border-collapse: collapse; border-spacing: 0">
 <tr>
-    <td class="ftpTableHeadingNf" width="1%"></td>
-    <td class="ftpTableHeading" size="35%"><?php
+    <td class="ftpTableHeadingNf" style="width: 35%; padding: 7px"></td>
+    <td class="ftpTableHeading" style="width: 35%; padding: 7px"><?php
     echo $lang_xfer_file;
 ?></td>
-    <td class="ftpTableHeading" width="7%"><?php
+    <td class="ftpTableHeading" style="width: 7%; padding: 7px"><?php
     echo $lang_xfer_size;
 ?></td>
-    <td class="ftpTableHeading" width="21%"><?php
+    <td class="ftpTableHeading" style="width: 21%; padding: 7px"><?php
     echo $lang_xfer_progress;
 ?></td>
-    <td class="ftpTableHeading" width="9%"><?php
+    <td class="ftpTableHeading" style="width: 9%; padding: 7px"><?php
     echo $lang_xfer_elapsed;
 ?></td>
-    <td class="ftpTableHeading" width="7%"><?php
+    <td class="ftpTableHeading" style="width: 7%; padding: 7px"><?php
     echo $lang_xfer_uploaded;
 ?></td>
-    <td class="ftpTableHeading" width="9%"><?php
+    <td class="ftpTableHeading" style="width: 9%; padding: 7px"><?php
     echo $lang_xfer_rate;
 ?></td>
-    <td class="ftpTableHeading" width="10%"><?php
+    <td class="ftpTableHeading" style="width: 10%; padding: 7px"><?php
     echo $lang_xfer_remain;
 ?></td>
-    <td class="ftpTableHeading" width="1%"></td>
+    <td class="ftpTableHeading" style="width: 1%; padding: 7px"></td>
 </tr>
 </table>
 </div>
@@ -2672,7 +2672,7 @@ function renameFiles()
             
             $folder = getFileFromPath($folder);
             
-            echo "<img src=\"images/icon_16_folder.gif\" width=\"16\" height=\"16\"> ";
+            echo "<img src=\"images/icon_16_folder.gif\" width=\"16\" height=\"16\" alt=\"\"> ";
             echo "<input type=\"text\" name=\"file" . $i . "\" class=\"inputRename\" value=\"" . quotesReplace($folder, "d") . "\" " . $onKeyPress . "><br>";
             $_SESSION["clipboard_rename"][] = $folder;
             $i++;
@@ -2683,7 +2683,7 @@ function renameFiles()
             
             $file = getFileFromPath($file);
             
-            echo "<img src=\"images/icon_16_file.gif\" width=\"16\" height=\"16\"> ";
+            echo "<img src=\"images/icon_16_file.gif\" width=\"16\" height=\"16\" alt=\"\"> ";
             echo "<input type=\"text\" name=\"file" . $i . "\" class=\"inputRename\" value=\"" . quotesReplace($file, "d") . "\" " . $onKeyPress . "><br>";
             $_SESSION["clipboard_rename"][] = $file;
             $i++;
