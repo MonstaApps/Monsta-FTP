@@ -16,6 +16,6 @@ $versionCheck = 1;
 $showAdvOption = 1;
 $showLockSess = 1;
 $showHostInfo = 1;
-$hideAddons = 0;
+$showAddons = 1;
 
 ?>
