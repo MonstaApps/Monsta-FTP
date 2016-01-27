@@ -2,7 +2,7 @@
 
 // Language: English (US)
 // Author: Monsta Apps
-// Last Updated: 16/07/2013
+// Last Updated: 21 Jan, 2016
 
 $file_lang_name = "English (US)";
 $file_lang_default = 1; // 1 for default, 0 for not
@@ -143,5 +143,11 @@ $lang_context_paste = "Paste";
 $lang_context_rename = "Rename";
 $lang_context_delete = "Delete";
 $lang_context_chmod = "Chmod";
+
+$lang_title_fetch_file = "Fetch File";
+$lang_fetch_no_file = "The URL does not contain a file name.";
+$lang_fetch_not_found = "No file could be found at this address.";
+$lang_btn_fetch = "Fetch";
+$lang_btn_fetch_file = "Fetch File";
 
 ?>
