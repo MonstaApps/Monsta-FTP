@@ -1,6 +1,6 @@
 <?php
 
-$version = "1.7";
+$version = "1.7.1";
 
 require("config.php");
 
@@ -3958,7 +3958,7 @@ function getFileFromPath($str)
 function parentOpenFolder()
 {
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -4513,66 +4513,59 @@ function fetchFile()
 
         // Check for processing of form
         if ($_POST["processAction"] == 1) {
-        
-            if (dwplc("fetch_file") != 1) {
+    
+            $fetch_url = trim($_POST["fetch_url"]);
+    
+            // Check remote file exists
+            $headers = get_headers($fetch_url);
+    
+            if (!preg_match("/\./", basename($fetch_url))) {
             
-                recordFileError("", "", "You'll need to [a]upgrade[/a] to use this addon.");
-            
+                recordFileError("", "", $lang_fetch_no_file);
+                
             } else {
     
-                $fetch_url = trim($_POST["fetch_url"]);
+                if (!preg_match("/200 OK/", $headers[0])) {
+        
+                    recordFileError("", "", $lang_fetch_not_found);
     
-                // Check remote file exists
-                $headers = get_headers($fetch_url);
-    
-                if (!preg_match("/\./", basename($fetch_url))) {
-            
-                    recordFileError("", "", $lang_fetch_no_file);
-                
                 } else {
-    
-                    if (!preg_match("/200 OK/", $headers[0])) {
-        
-                        recordFileError("", "", $lang_fetch_not_found);
-    
-                    } else {
                 
-                        // Set file paths
-                        $file_name = basename($fetch_url);
+                    // Set file paths
+                    $file_name = basename($fetch_url);
                     
-                        $fp1 = tempnam($serverTmp , $file_name);
+                    $fp1 = tempnam($serverTmp , $file_name);
                     
-                        if ($_SESSION["dir_current"] == "/")
-                            $fp2 = "/" . $file_name;
-                        else
-                            $fp2 = $_SESSION["dir_current"] . "/" . $file_name;
+                    if ($_SESSION["dir_current"] == "/")
+                        $fp2 = "/" . $file_name;
+                    else
+                        $fp2 = $_SESSION["dir_current"] . "/" . $file_name;
                     
-                        // Fetch the file
-                        $inputHandler = fopen($fetch_url, "r");
-                        $fileHandler = fopen($fp1, "w+");
+                    // Fetch the file
+                    $inputHandler = fopen($fetch_url, "r");
+                    $fileHandler = fopen($fp1, "w+");
 
-                        while (FALSE !== ($buffer = fgets($inputHandler, 65536))) {
-                            fwrite($fileHandler, $buffer);
-                        }
+                    while (FALSE !== ($buffer = fgets($inputHandler, 65536))) {
+                        fwrite($fileHandler, $buffer);
+                    }
         
-                        fclose($inputHandler);
-                        fclose($fileHandler);
+                    fclose($inputHandler);
+                    fclose($fileHandler);
         
-                        ensureFtpConnActive();
+                    ensureFtpConnActive();
 
-                        if (!@ftp_put($conn_id, $fp2, $fp1, FTP_BINARY)) {
-                               if (checkFirstCharTilde($fp2) == 1) {
-                                if (!@ftp_put($conn_id, replaceTilde($fp2), $fp1, FTP_BINARY)) {
-                                    recordFileError("file", $file_name, $lang_server_error_up);
-                                }
-                            } else {
+                    if (!@ftp_put($conn_id, $fp2, $fp1, FTP_BINARY)) {
+                           if (checkFirstCharTilde($fp2) == 1) {
+                            if (!@ftp_put($conn_id, replaceTilde($fp2), $fp1, FTP_BINARY)) {
                                 recordFileError("file", $file_name, $lang_server_error_up);
                             }
+                        } else {
+                            recordFileError("file", $file_name, $lang_server_error_up);
                         }
-                    
-                        // Delete tmp file
-                        unlink($fp1);
                     }
+                    
+                    // Delete tmp file
+                    unlink($fp1);
                 }
             }
         
@@ -4584,10 +4577,10 @@ function fetchFile()
             displayPopupOpen(1, $width, $height, 0, $title);
 
             echo "<div class=\"floatLeft10\">";
-            echo "<input type=\"text\" name=\"fetch_url\" class=\"inputFetch\" value=\"" . quotesReplace($folder, "d") . "\" " . $onKeyPress . " placeholder=\"e.g. http://www.website.com/file.exe\"> ";
+            echo "<input type=\"text\" name=\"fetch_url\" class=\"inputFetch\" value=\"" . quotesReplace($folder, "d") . "\" " . $onKeyPress . " placeholder=\"http://...\"> ";
             echo "</div>";
             echo "<div id=\"ajaxWaiting\" class=\"floatLeft10\">";
-            echo "<input type=\"button\" class=\"popUpBtnNoMargin\" value=\"" . $lang_btn_fetch . "\" onClick=\"displayWaiting('ajaxWaiting'); processForm('" . $vars . "');\" class=\"";
+            echo "<input type=\"button\" class=\"popUpBtnNoMargin\" value=\"" . $lang_btn_fetch . "\" onClick=\"processForm('" . $vars . "');\" class=\"";
             echo adjustButtonWidth($lang_btn_fetch);
             echo "\"> ";
             echo "</div>";
