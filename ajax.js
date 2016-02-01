@@ -498,6 +498,8 @@ function processForm(vars) {
     xmlhttp.onreadystatechange = function stateChanged() {
         if (xmlhttp.readyState == 4) {
             document.getElementById("ajaxContentWindow").innerHTML = xmlhttp.responseText;
+            // Hide indicator icon
+            hidePopUp('indicatorDiv');
         }
     }
 
@@ -508,8 +510,6 @@ function processForm(vars) {
     //xmlhttp.setRequestHeader("Connection", "close"); // Commented out as not neccessary
     xmlhttp.send(vars);
 
-    // Hide indicator icon
-    hidePopUp('indicatorDiv');
 }
 
 function generateVars() {
