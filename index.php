@@ -1778,9 +1778,6 @@ function displayAjaxFooter()
 ?>">
     </div>
     
-    <?php
-    if (displayAddonCheck("fetch_file") == 1) {
-    ?>
     <div class="floatLeft10">
         <input type="button" value="<?php
     echo $lang_btn_fetch_file;
@@ -1788,9 +1785,6 @@ function displayAjaxFooter()
     echo adjustButtonWidth($lang_btn_fetch_file);
 ?>">
     </div>
-   <?php
-   }
-   ?>
    
    <div id="uploadButtonsDiv"><div>
     
