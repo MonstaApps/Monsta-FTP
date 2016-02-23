@@ -1,6 +1,6 @@
 <?php
 
-$version = "1.7.1";
+$version = "1.8";
 
 require("config.php");
 
@@ -358,7 +358,7 @@ function displayHeader()
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Monsta FTP v<?php
+    <title>MONSTA Box v<?php
     echo $version;
 ?></title>
     <link href="style.css?<?php echo date("U"); ?>" rel="stylesheet" type="text/css">
@@ -475,7 +475,7 @@ function displayLoginForm($posted)
 
 <div align="center">
     <div id="loginForm" align="left">
-        <div id="loginFormTitle">Monsta FTP</div>
+        <div id="loginFormTitle">MONSTA Box</div>
             <div id="loginFormContent">
 
 <?php
@@ -549,13 +549,13 @@ function displayLoginForm($posted)
 <?php
 if ($versionCheck == 1 && ((intval(ini_get("allow_url_fopen")) == 1 && (function_exists("file_get_contents") || (function_exists("fopen") && function_exists("stream_get_contents")))) || (function_exists("curl_init") && function_exists("curl_exec")))) {
 ?>
-<iframe src="https://www.monstaftp.com/vc.php?v=<?php
+<iframe src="https://www.monstacdn.com/version/?a=box&v=<?php
     echo $version;
 ?>" width="200" height="20" scrolling="no" style="border:0"></iframe>
 <?php
 } else {
 ?>
-<a href="http://www.monstaftp.com">version <?php
+<a href="http://www.monstahq.com/apps/box/splash/">version <?php
     echo $version;
 ?></a>
 <?php
@@ -1933,7 +1933,7 @@ function downloadFiles()
     // Download and zip each file
     if (sizeof($downloadFileAr) > 1) {
         
-        $zip_file_name   = "monstaftp_".date("Y_m_d_H_i_s").".zip";
+        $zip_file_name   = "monstabox_".date("Y_m_d_H_i_s").".zip";
         $zip_file        = tempnam($serverTmp, $zip_file_name);
         $zip             = new ZipArchive();
         $zip->open($zip_file, ZipArchive::CREATE);
