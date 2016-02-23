@@ -6,13 +6,20 @@ The server running this script must allow external FTP connections
 if you intend to allow connection to external servers.
 
 ###################################
+SUPPORT
+###################################
+
+Knowledgebase: http://support.monstahq.com/support/solutions
+Community forum: http://support.monstahq.com/support/discussions
+Contact us: http://support.monstahq.com/support/tickets/new
+
+###################################
 INSTALL
 ###################################
 
-Unzip the contents of the Monsta FTP install zip file to a folder on your 
-computer. Then Create a new folder in your web space, such as "ftp," and 
-upload all the files and folders you unzipped. You'll then access Monsta 
-FTP in your browser from the URL www.yourdomain.com/ftp 
+Unzip the contents of the MONSTA Box install zip to your desktop.
+Then upload the "mbox" folder (and its contents) to your web space.
+You'll then access MONSTA Box in your browser from the URL www.yourdomain.com/mbox 
 
 ###################################
 UPLOAD LIMITS
@@ -66,18 +73,8 @@ $showAdvOption
 $showLockSess
 1 to show option to lock session to IP, 0 to hide
 
+$showHostInfo
+1 to show host address in info box, 0 to hide
+
 $showAddons
 1 to show unlicensed addons, 0 to hide
-
-###################################
-LINKS
-###################################
-
-FAQ, support requests, bug reports:
-http://www.monstaftp.com/support/
-
-Please consider a donation:
-http://www.monstaftp.com/donations/
-
-Help spread the word (links, logos):
-http://www.monstaftp.com/promote/
