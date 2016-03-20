@@ -69,11 +69,9 @@ if ($ftpAction == "download" || $ftpAction == "download_zip" || $ftpAction == "i
 
             if ($ftpAction == "download") {
                 downloadFile();
-                parentOpenFolder();
             }
             if ($ftpAction == "download_zip") {
                 downloadFiles();
-                parentOpenFolder();
             }
             if ($ftpAction == "iframe_upload") {
                 iframeUpload();
