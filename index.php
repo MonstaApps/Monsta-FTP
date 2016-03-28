@@ -1979,9 +1979,6 @@ function downloadFiles()
 
         header("Content-Type: application/octet-stream");
         header("Content-Disposition: attachment; filename=\"".$zip_file_name."\"");
-        header("Content-Transfer-Encoding: Binary"); 
-        header("Content-Type: application/download");
-        header("Content-Description: File Transfer");
         header("Content-Length: " . filesize($zip_file));
 
         flush();
@@ -3129,8 +3126,6 @@ function downloadFile()
         
         header("Content-Type: application/octet-stream");
         header("Content-Disposition: attachment; filename=\"" . quotesEscape($file_name, "d") . "\""); // quotes required for spacing in filename
-        header("Content-Description: File Transfer");
-        header("Content-Transfer-Encoding: Binary"); 
         header("Content-Length: " . filesize($fp1));
         
         flush();
