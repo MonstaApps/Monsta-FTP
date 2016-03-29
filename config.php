@@ -10,6 +10,7 @@ $ftpDir  = "";
 $serverTmp = "/tmp"; // Linux
 // $serverTmp = "C:\\WINDOWS\\Temp\\"; // Windows
 $editableExts = "asp,ashx,asmx,aspx,asx,axd,cfm,cgi,css,html,htm,jhtml,js,php,phtml,pl,txt,xhtml";
+$sessionName = "";
 $dateFormatUsa = 0;
 $lockOutTime = 5;
 $versionCheck = 1;

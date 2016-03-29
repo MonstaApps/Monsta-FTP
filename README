@@ -58,6 +58,12 @@ backslash)
 $editableExts
 A list of file types that can be edited in the text editor
 
+$sessionName
+Set the session name, to isolate MONSTA Box from other PHP web apps that
+may also use the same/default session name.
+Must be alphanumeric, and must contain at least one alpha character.
+A blank or invalid setting for $sessionName sets the session name to MONSTABox
+
 $dateFormatUsa
 USA date format - 1 for mm/dd/yy, 0 for dd/mm/yy
 
