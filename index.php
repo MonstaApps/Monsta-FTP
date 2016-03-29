@@ -1,6 +1,6 @@
 <?php
 
-$version = "1.8.1";
+$version = "1.8.2";
 
 require("config.php");
 
@@ -69,12 +69,15 @@ if ($ftpAction == "download" || $ftpAction == "download_zip" || $ftpAction == "i
 
             if ($ftpAction == "download") {
                 downloadFile();
+                //parentOpenFolder();
             }
             if ($ftpAction == "download_zip") {
                 downloadFiles();
+               // parentOpenFolder();
             }
             if ($ftpAction == "iframe_upload") {
                 iframeUpload();
+               // parentOpenFolder();
             }
             if ($ftpAction == "editProcess") {
                 editProcess();
@@ -150,13 +153,13 @@ if ($ftpAction == "download" || $ftpAction == "download_zip" || $ftpAction == "i
 
 function startSession()
 {
-    
-    global $sessionName;
-    
-    // only change session name if session.auto_start is not 1, and session name is valid ('The session name can't consist of digits only, at least one letter must be present.')
-    if (!ini_get("session.auto_start") || ini_get("session.auto_start") == "0")
-        session_name(preg_match('/^[0-9]*[A-Za-z][A-Za-z0-9]*$/', $sessionName) ? $sessionName : "MONSTABox");
 
+    global $sessionName;
+
+    // Only change session name if session.auto_start is not 1, and session name is valid
+    if (!ini_get("session.auto_start") || ini_get("session.auto_start") == "0")
+        session_name(preg_match('/^[0-9]*[A-Za-z][A-Za-z0-9]*$/', $sessionName) ? $sessionName : "monstabox");
+    
     @session_start();
     
     $session_keys = array("user_ip", "loggedin",
@@ -171,43 +174,7 @@ function startSession()
         if (!isset($_SESSION[$session_key]))
             $_SESSION[$session_key] = ''; // avoid a lot of "undefined index"
     }    
-    
-    /*
-    $sessionAr[] = "user_ip";
-    $sessionAr[] = "loggedin";
-    $sessionAr[] = "skin";
-    $sessionAr[] = "lang";
-    $sessionAr[] = "win_lin";
-    $sessionAr[] = "ip_check";
-    $sessionAr[] = "login_error";
-    $sessionAr[] = "login_fails";
-    $sessionAr[] = "login_lockout";
-    $sessionAr[] = "ftp_ssl";
-    $sessionAr[] = "ftp_host";
-    $sessionAr[] = "ftp_user";
-    $sessionAr[] = "ftp_pass";
-    $sessionAr[] = "ftp_port";
-    $sessionAr[] = "ftp_pasv";
-    $sessionAr[] = "interface";
-    $sessionAr[] = "dir_current";
-    $sessionAr[] = "dir_history";
-    $sessionAr[] = "clipboard_chmod";
-    $sessionAr[] = "clipboard_files";
-    $sessionAr[] = "clipboard_folders";
-    $sessionAr[] = "clipboard_rename";
-    $sessionAr[] = "copy";
-    $sessionAr[] = "errors";
-    $sessionAr[] = "upload_limit";
-    $sessionAr[] = "domain";
-    
-    // Register each variable in the array
-    $n = sizeof($sessionAr);
-    for ($i = 0; $i < $n; $i++) {
-        
-        if (!isset($sessionAr[$i]))
-            session_register($sessionAr[$i]);
-    }
-    */
+
 }
 
 function saveFtpDetailsCookie()
@@ -1917,6 +1884,7 @@ function downloadFiles()
     clipboard_files();
     
     $downloadFileAr = array();
+    $unlinkFileAr = array();
   
     // Folders
     foreach ($_SESSION["clipboard_folders"] as $folder) {
@@ -1936,16 +1904,18 @@ function downloadFiles()
     // Download and zip each file
     if (sizeof($downloadFileAr) > 1) {
         
-        $zip_file_name   = "monstabox_".date("Y_m_d_H_i_s").".zip";
-        $zip_file        = tempnam($serverTmp, $zip_file_name);
+        $zip_file_name   = "monstaftp_".date("Y_m_d_H_i_s").".zip";
+        $zip_file        = createTempFileName($zip_file_name);
         $zip             = new ZipArchive();
         $zip->open($zip_file, ZipArchive::CREATE);
     
         foreach ($downloadFileAr as $file) {
     
             $file_name = getFileFromPath($file);
-            $fp1       = tempnam($serverTmp , $file_name);
+            $fp1       = createTempFileName($file_name);
             $fp2       = $file;
+            
+            $unlinkFileAr[] = $fp1;
             
             $isError = 0;
             
@@ -1970,17 +1940,15 @@ function downloadFiles()
                 $file_path = str_replace($_SESSION["dir_current"]."/","",$fp2);
             
                 // Add file to zip
-                $zip->addFile($fp1,$file_path);    
+                $zip->addFile($fp1,$file_path);
             }
         }
         
         $zip->close();
          
         // Unlink tmp files
-        foreach ($downloadFileAr as $file) {
-            $file_name = getFileFromPath($file);
-            $fp1       = tempnam($serverTmp , $file_name);
-            unlink($fp1);
+        foreach ($unlinkFileAr as $file) {
+            unlink($file);
         } 
 
         header("Content-Type: application/octet-stream");
@@ -2278,7 +2246,6 @@ function copyFiles()
     // need to be downloaded to the client server and then uploaded to the copy location.
     
     global $conn_id;
-    global $serverTmp;
     global $lang_folder_exists;
     global $lang_file_exists;
     global $lang_server_error_down;
@@ -2310,7 +2277,7 @@ function copyFiles()
         $isError = 0;
         
         $file_name = getFileFromPath($file);
-        $fp1       = tempnam($serverTmp , $file_name);
+        $fp1       = createTempFileName($file_name);
         $fp2       = $file;
         $fp3       = $folderMoveTo . "/" . $file_name;
         
@@ -2387,7 +2354,6 @@ function copyFolder($folder, $dir_destin, $dir_source)
 {
     
     global $conn_id;
-    global $serverTmp;
     global $lang_folder_cant_access;
     global $lang_folder_exists;
     global $lang_folder_cant_chmod;
@@ -2519,7 +2485,7 @@ function copyFolder($folder, $dir_destin, $dir_source)
                         copyFolder($file_name, $dir_destin . "/" . $folder, $dir_source . "/" . $folder);
                     } else {
                         
-                        $fp1 = tempnam($serverTmp , $file_name);
+                        $fp1 = createTempFileName($file_name);
                         $fp2 = $dir_source . "/" . $folder . "/" . $file_name;
                         $fp3 = $dir_destin . "/" . $folder . "/" . $file_name;
                         
@@ -2986,14 +2952,13 @@ function editFile()
 {
     
     global $conn_id;
-    global $serverTmp;
     global $lang_server_error_down;
     
     $isError = 0;
     
     $file      = quotesUnescape($_POST["file"]);
     $file_name = getFileFromPath($file);
-    $fp1       = tempnam($serverTmp , $file_name);
+    $fp1       = createTempFileName($file_name);
     $fp2       = $file;
     
     ensureFtpConnActive();
@@ -3065,7 +3030,6 @@ function editProcess()
     // Saving the file to the iframe preserves the cursor position in the edit div.
     
     global $conn_id;
-    global $serverTmp;
     global $lang_server_error_up;
     
     $isError = 0;
@@ -3073,7 +3037,7 @@ function editProcess()
     // Get file contents
     $file      = quotesUnescape($_POST["file"]);
     $file_name = getFileFromPath($file);
-    $fp1       = tempnam($serverTmp , $file_name);
+    $fp1       = createTempFileName($file_name);
     $fp2       = $file;
     
     $editContent = $_POST["editContent"];
@@ -3103,14 +3067,13 @@ function downloadFile()
 {
     
     global $conn_id;
-    global $serverTmp;
     global $lang_server_error_down;
     
     $isError = 0;
     
     $file      = quotesUnescape($_GET["dl"]);
     $file_name = getFileFromPath($file);
-    $fp1       = tempnam($serverTmp , $file_name);
+    $fp1       = createTempFileName($file_name);
     $fp2       = $file;
     
     ensureFtpConnActive();
@@ -3379,7 +3342,6 @@ function newFile()
 {
     
     global $conn_id;
-    global $serverTmp;
     global $lang_title_new_file;
     global $lang_new_file_name;
     global $lang_template;
@@ -3437,7 +3399,7 @@ function newFile()
         
     } else {
         
-        $fp1 = tempnam($serverTmp , $file_name);
+        $fp1 = createTempFileName($file_name);
         
         if ($_SESSION["dir_current"] == "/")
             $fp2 = "/" . $file_name;
@@ -3621,7 +3583,6 @@ function uploadFile()
 {
     
     global $conn_id;
-    global $serverTmp;
     global $lang_server_error_up;
     global $lang_browser_error_up;
     
@@ -3630,7 +3591,7 @@ function uploadFile()
     
     if ($file_name) {
         
-        $fp1 = tempnam($serverTmp , $file_name);
+        $fp1 = createTempFileName($file_name);
         
         // Check if a folder is being uploaded
         if ($path != "") {
@@ -4486,7 +4447,6 @@ function fetchFile()
 {
     
     global $conn_id;
-    global $serverTmp;
     global $lang_server_error_up;
     global $lang_title_fetch_file;
     global $lang_fetch_no_file;
@@ -4526,7 +4486,7 @@ function fetchFile()
                     // Set file paths
                     $file_name = basename($fetch_url);
                     
-                    $fp1 = tempnam($serverTmp , $file_name);
+                    $fp1 = createTempFileName($file_name);
                     
                     if ($_SESSION["dir_current"] == "/")
                         $fp2 = "/" . $file_name;
@@ -4580,6 +4540,13 @@ function fetchFile()
             displayPopupClose(0, "", 1);
         }
     }
+}
+
+function createTempFileName($file_name)
+{
+    global $serverTmp;
+    
+    return $serverTmp . "/" . $file_name . "." . uniqid("mbox.", true);
 }
 
 ?>
