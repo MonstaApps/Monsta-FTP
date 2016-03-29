@@ -151,6 +151,12 @@ if ($ftpAction == "download" || $ftpAction == "download_zip" || $ftpAction == "i
 function startSession()
 {
     
+    global $sessionName;
+    
+    // only change session name if session.auto_start is not 1, and session name is valid ('The session name can't consist of digits only, at least one letter must be present.')
+    if (!ini_get("session.auto_start") || ini_get("session.auto_start") == "0")
+        session_name(preg_match('/^[0-9]*[A-Za-z][A-Za-z0-9]*$/', $sessionName) ? $sessionName : "MONSTABox");
+
     @session_start();
     
     $session_keys = array("user_ip", "loggedin",
