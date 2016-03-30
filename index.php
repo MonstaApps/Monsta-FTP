@@ -1,6 +1,6 @@
 <?php
 
-$version = "1.8.2";
+$version = "1.8.3";
 
 require("config.php");
 
@@ -10,17 +10,22 @@ error_reporting(0);
 saveFtpDetailsCookie();
 startSession();
 
+# SET FOLDERS
+
+$templates_dir = "templates";
+$languages_dir = "languages";
+
 # INCLUDE LANGUAGE FILE
 
 if ($_SESSION["lang"] == "" || isset($_POST["lang"]))
     setLangFile();
 
-$langFileArray = getFileArray("languages");
+//$langFileArray = getFileArray("languages");
 
-include("languages/en_us.php");
+include($languages_dir . "/en_us.php");
 
-if (in_array($_SESSION["lang"], $langFileArray))
-    include("languages/" . $_SESSION["lang"] . ".php");
+//if (in_array($_SESSION["lang"], $langFileArray))
+include($languages_dir . "/" . $_SESSION["lang"]);
 
 # SET VARS
 
@@ -163,7 +168,7 @@ function startSession()
     @session_start();
     
     $session_keys = array("user_ip", "loggedin",
-        "skin", "lang", "win_lin", "ip_check", "login_error", "login_fails", "login_lockout",
+        "lang", "win_lin", "ip_check", "login_error", "login_fails", "login_lockout",
         "ftp_ssl", "ftp_host", "ftp_user", "ftp_pass", "ftp_port", "ftp_pasv",
         "interface", "dir_current", "dir_history", "clipboard_chmod", "clipboard_files",
         "clipboard_folders", "clipboard_rename", "copy",
@@ -193,7 +198,6 @@ function saveFtpDetailsCookie()
             setcookie("ftp_pasv", $_POST["ftp_pasv"], time() + $s, '/', null, null, true);
             setcookie("interface", $_POST["interface"], time() + $s, '/', null, null, true);
             setcookie("login_save", $_POST["login_save"], time() + $s, '/', null, null, true);
-            setcookie("skin", $_POST["skin"], time() + $s, '/', null, null, true);
             setcookie("lang", $_POST["lang"], time() + $s, '/', null, null, true);
             setcookie("ip_check", $_POST["ip_check"], time() + $s, '/', null, null, true);
             
@@ -207,7 +211,6 @@ function saveFtpDetailsCookie()
             setcookie("ftp_pasv", "", time() - 3600);
             setcookie("interface", "", time() - 3600);
             setcookie("login_save", "", time() - 3600);
-            setcookie("skin", "", time() - 3600);
             setcookie("lang", "", time() - 3600);
             setcookie("ip_check", "", time() - 3600);
         }
@@ -274,7 +277,6 @@ function attemptLogin()
                 $_SESSION["ftp_user"]  = trim($_POST["ftp_user"]);
                 $_SESSION["ftp_pass"]  = trim($_POST["ftp_pass"]);
                 $_SESSION["interface"] = empty($_POST["interface"])?"":"adv";
-                $_SESSION["skin"]      = empty($_POST["skin"])?"":$_POST["skin"];
                 $_SESSION["lang"]      = $_POST["lang"];
                 $_SESSION["ip_check"]  = $_POST["ip_check"];
                 
@@ -313,17 +315,6 @@ function displayHeader()
 {
     
     global $version;
-    
-    // The order of these determines the proper display
-    if ($_COOKIE["skin"] != "")
-        $skin = $_COOKIE["skin"];
-    if ($_SESSION["skin"] != "")
-        $skin = $_SESSION["skin"];
-    if (isset($_POST["skin"]))
-        $skin = $_POST["skin"];
-    if ($skin == "")
-        $skin = "monsta";
-    
 ?>
 <!DOCTYPE html>
 <html>
@@ -331,10 +322,8 @@ function displayHeader()
     <title>MONSTA Box v<?php
     echo $version;
 ?></title>
-    <link href="style.css?<?php echo date("U"); ?>" rel="stylesheet" type="text/css">
-    <link href="skins/<?php
-    echo sanitizeStrTrim($skin);
-?>.css" rel="stylesheet" type="text/css">
+    <link href="css/style.css?<?php echo date("U"); ?>" rel="stylesheet" type="text/css">
+    <link href="css/colors.css?<?php echo date("U"); ?>" rel="stylesheet" type="text/css">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 <body <?php
@@ -396,7 +385,6 @@ function displayLoginForm($posted)
         $ftp_pasv   = $_POST["ftp_pasv"];
         $interface  = $_POST["interface"];
         $lang       = $_POST["lang"];
-        $skin       = $_POST["skin"];
         $login_save = $_POST["login_save"];
         $ip_check   = $_POST["ip_check"];
         
@@ -415,7 +403,6 @@ function displayLoginForm($posted)
             $ftp_pasv   = $_COOKIE["ftp_pasv"];
             $interface  = $_COOKIE["interface"];
             $lang       = $_COOKIE["lang"];
-            $skin       = $_COOKIE["skin"];
             $login_save = $_COOKIE["login_save"];
             $ip_check   = $_COOKIE["ip_check"];
             
@@ -598,9 +585,6 @@ if ($versionCheck == 1 && ((intval(ini_get("allow_url_fopen")) == 1 && (function
 
 <?php
         echo displayLangSelect($_SESSION["lang"]);
-?>
-<?php
-        echo displaySkinSelect($skin);
 ?>
         </div>
     </div>
@@ -3348,14 +3332,12 @@ function newFile()
     global $lang_no_template;
     global $lang_file_exists;
     global $lang_file_cant_make;
+    global $templates_dir;
     
     $isError = 0;
     
     // Set vars
     $vars = "&ftpAction=newFile";
-    
-    // Display templates
-    $templates_dir = "templates";
     
     $file_name = quotesUnescape($_POST["newFile"]);
     
@@ -3410,14 +3392,17 @@ function newFile()
         if (checkFileExists("f", $file_name, $_SESSION["dir_current"]) == 1) {
             recordFileError("file", $file_name, $lang_file_exists);
         } else {
-            
+
             // Get template
             if ($_POST["template"] != $lang_no_template) {
+            
+            	if (checkFileInclude($_POST["template"],$templates_dir) == 1) {
                 
-                $file_name = $templates_dir . "/" . $_POST["template"];
-                $fd        = @fopen($file_name, "r");
-                $content   = @fread($fd, filesize($file_name));
-                @fclose($fd);
+                    $file_name = $templates_dir . "/" . $_POST["template"];
+                    $fd        = @fopen($file_name, "r");
+                    $content   = @fread($fd, filesize($file_name));
+                    @fclose($fd);
+                }
             }
             
             // Write file to server
@@ -3982,119 +3967,35 @@ function getParentDir($folder)
     }
 }
 
-function displaySkinSelect($skin)
-{
-    
-    global $lang_skin;
-    global $lang_skins_empty;
-    global $lang_skins_locked;
-    global $lang_skins_missing;
-    
-    $dir        = "skins";
-    $skin_found = 0;
-    
-    if ($skin == "")
-        $skin = "monsta.css";
-    
-    if (is_dir($dir)) {
-        
-        if ($dh = opendir($dir)) {
-            
-            $i = 0;
-            while (($file = readdir($dh)) !== false) {
-                
-                if (substr($file,-1) != "." && pathinfo($file, PATHINFO_EXTENSION) == "css") {
-                    
-                    $i++;
-                    
-                    $file_name = $file;
-                    
-                    $skin_found = 1;
-                    
-                    // Strip extension
-                    $file_name = preg_replace("/\..*$/", "", $file_name);
-                    
-                    $skins = "<option value=\"" . $file_name . "\"";
-                    
-                    if ($file_name == $skin)
-                        $skins .= " selected";
-                    
-                    $skins .= ">";
-                    
-                    $skins .= preg_replace("/\..*$/", "", $file_name);
-                    
-                    $skins .= "</option>";
-                    
-                    $skinsAr[] = $skins;
-                }
-            }
-            closedir($dh);
-            
-            if ($skin_found == 0) {
-                
-                echo "<p>" . $lang_skin . ": ";
-                echo str_replace("[skins]", "<strong>skins</strong>", $lang_skins_empty);
-                
-            } else {
-                
-                if ($i > 1) {
-                    
-                    sort($skinsAr);
-                    
-                    echo "<p>" . $lang_skin . ": ";
-                    echo "<select name=\"skin\" tabindex=\"-1\">";
-                    
-                    foreach ($skinsAr AS $skin) {
-                        echo $skin;
-                    }
-                    
-                    echo "</select>";
-                    
-                } else {
-                    echo "<input type=\"hidden\" name=\"skin\" value=\"" . $file_name . "\">";
-                }
-            }
-            
-        } else {
-            
-            echo "<p>" . $lang_skin . ": ";
-            echo str_replace("[skins]", "<strong>skins</strong>", $lang_skins_locked);
-        }
-        
-    } else {
-        echo "<p>" . $lang_skin . ": ";
-        echo str_replace("[skins]", "<strong>skins</strong>", $lang_skins_missing);
-    }
-}
-
 function displayLangSelect($lang)
 {
     
     global $lang_language;
+    global $languages_dir;
     
     $dir        = "languages";
     $lang_found = 0;
     
-    if (is_dir($dir)) {
+    if (is_dir($languages_dir)) {
         
-        if ($dh = opendir($dir)) {
+        if ($dh = opendir($languages_dir)) {
             
             $i = 0;
             while (($file = readdir($dh)) !== false) {
                 
-                if ($file != "" && $file != "." && $file != ".." && $file != "index.html") {
+                if (substr($file,-1) != "." && pathinfo($file, PATHINFO_EXTENSION) == "php") {
                     
                     $i++;
                     
                     $file_name = $file;
                     
                     // Open file to get language name
-                    include($dir . "/" . $file_name);
+                    include($languages_dir . "/" . $file_name);
                     
                     $lang_found = 1;
                     
                     // Strip extension
-                    $file_name = preg_replace("/\..*$/", "", $file_name);
+                    //$file_name = preg_replace("/\..*$/", "", $file_name);
                     
                     $langs = "<option value=\"" . $file_name . "\"";
                     
@@ -4110,7 +4011,7 @@ function displayLangSelect($lang)
                     $langsAr[] = $langs;
                     
                     // Restore session language file
-                    include($dir . "/" . $lang . ".php");
+                    include($languages_dir . "/" . $lang);
                 }
             }
             closedir($dh);
@@ -4162,14 +4063,15 @@ function tidyFolderPath($str1, $str2)
 
 function loadJsLangVars()
 {
+    global $languages_dir;
     
     // Include language file again to save listing globals
-    $langFileArray = getFileArray("languages");
+    //$langFileArray = getFileArray("languages");
     
-    include("languages/en_us.php");
+    include($languages_dir . "/en_us.php");
     
-    if (in_array($_SESSION["lang"], $langFileArray))
-        include("languages/" . $_SESSION["lang"] . ".php");
+    //if (in_array($_SESSION["lang"], $langFileArray))
+    include($languages_dir . "/" . $_SESSION["lang"]);
 
 ?>
 <script type="text/javascript">
@@ -4259,6 +4161,8 @@ var upload_limit = '<?php
 function setLangFile()
 {
     
+    global $languages_dir;
+    
     // The order of these determines the proper display
     if ($_COOKIE["lang"] != "")
         $lang = $_COOKIE["lang"];
@@ -4269,22 +4173,24 @@ function setLangFile()
     
     if ($lang == "") {
         
-        $dir = "languages";
-        
-        if (is_dir($dir)) {
-            if ($dh = opendir($dir)) {
+        if (is_dir($languages_dir)) {
+            if ($dh = opendir($languages_dir)) {
                 while (($file = readdir($dh)) !== false) {
-                    if ($file != "." && $file != ".." && $file != "index.html") {
+                    if ($file != "." && $file != ".." && pathinfo($file, PATHINFO_EXTENSION) == "php") {
                         
-                        include("languages/" . $file);
+                        include($languages_dir . "/" . $file);
                         
                         if ($file_lang_default == 1)
-                            $lang = str_replace(".php", "", $file);
+                            $lang = $file;
                     }
                 }
                 closedir($dh);
             }
         }
+    } else {
+    
+        if (checkFileInclude($lang,$languages_dir) != 1)
+            $lang = "en_us.php";
     }
     
     $_SESSION["lang"] = $lang;
@@ -4391,6 +4297,7 @@ function recordFileError($str, $file_name, $error)
     $_SESSION["errors"][] = str_replace("[" . $str . "]", "<strong>" . sanitizeStr($file_name) . "</strong>", $error);
 }
 
+/*
 function getFileArray($dir)
 {
     
@@ -4414,6 +4321,7 @@ function getFileArray($dir)
     
     return $langFileArray;
 }
+*/
 
 function sanitizeStr($str)
 {
@@ -4547,6 +4455,29 @@ function createTempFileName($file_name)
     global $serverTmp;
     
     return $serverTmp . "/" . $file_name . "." . uniqid("mbox.", true);
+}
+
+function checkFileInclude($file_check,$dir)
+{
+    $file_found = 0;
+
+    if (is_dir($dir)) {
+        
+        if ($dh = opendir($dir)) {
+            
+            while (($file = readdir($dh)) !== false && $file_found == 0) {
+                
+                if ($file != "." && $file != "..") {
+                
+                    if ($file == $file_check)
+                        $file_found = 1;
+                }
+            }
+            closedir($dh);
+        }
+    }
+    
+    return $file_found;        
 }
 
 ?>
