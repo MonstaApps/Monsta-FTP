@@ -59,21 +59,17 @@ $ftpDir
 Enter an FTP server path for the default login (or leave blank for home)
 
 $serverTmp
-This is a folder on the client server for uploading files to.
-By default it's /tmp (Linux), which is the server's folder for temporary 
-files, however you can set any folder, provided it has 777 chmod 
-permissions, so it can be written to from the web. Windows temp folder is 
-typically "C:\WINDOWS\Temp\" (backslashes must be escaped with another 
-backslash)
+If left blank, this will be the server’s TMP folder (e.g. /tmp). If setting 
+your own, make sure to CHMOD 777 the folder.
 
 $editableExts
 A list of file types that can be edited in the text editor
 
 $sessionName
 Set the session name, to isolate MONSTA Box from other PHP web apps that
-may also use the same/default session name.
-Must be alphanumeric, and must contain at least one alpha character.
-A blank or invalid setting for $sessionName sets the session name to MONSTABox
+may also use the same/default session name. Must be alphanumeric, and must 
+contain at least one alpha character. A blank or invalid setting for 
+$sessionName sets the session name to “monstabox”.
 
 $dateFormatUsa
 USA date format - 1 for mm/dd/yy, 0 for dd/mm/yy
