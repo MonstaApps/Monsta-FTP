@@ -95,3 +95,6 @@ $showHostInfo
 
 $showAddons
 1 to show unlicensed addons, 0 to hide
+
+$showDotFiles
+1 to show files starting with a dot (system files), 0 to hide
