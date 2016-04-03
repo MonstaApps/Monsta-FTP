@@ -1,6 +1,6 @@
 <?php
 
-$version = "1.8.3";
+$version = "1.8.4";
 
 require("config.php");
 
@@ -736,9 +736,9 @@ function getFtpRawList($folder_path)
             $isError = 1;
         }
     }
-    
+
     if ($isError == 0)
-        return ftp_rawlist($conn_id, "-a ".".");
+        return ftp_rawlist($conn_id, ".");
 }
 
 function displayFiles()
@@ -840,6 +840,7 @@ function getPlatform()
 
 function createFileFolderArrayLin($ftp_rawlist, $type)
 {
+    global $showDotFiles;
     
     // Go through array of files/folders
     foreach ($ftp_rawlist AS $ff) {
@@ -863,8 +864,10 @@ function createFileFolderArrayLin($ftp_rawlist, $type)
         
         // Check if file starts with a dot
         $dot_prefix = 0;
-        if (preg_match("/^\.+/", $file) && $_SESSION["interface"] == "bas")
-            $dot_prefix = 1;
+        if ($showDotFiles == 0) {
+            if (preg_match("/^\.+/", $file))
+                $dot_prefix = 1;
+        }
         
         if ($file != "." && $file != ".." && $dot_prefix == 0) {
             
@@ -1888,7 +1891,7 @@ function downloadFiles()
     // Download and zip each file
     if (sizeof($downloadFileAr) > 1) {
         
-        $zip_file_name   = "monstaftp_".date("Y_m_d_H_i_s").".zip";
+        $zip_file_name   = "monsta_box_".date("Y_m_d_H_i_s").".zip";
         $zip_file        = createTempFileName($zip_file_name);
         $zip             = new ZipArchive();
         $zip->open($zip_file, ZipArchive::CREATE);
@@ -1969,6 +1972,7 @@ function downloadFolder($folder, $dir_source)
     global $conn_id;
     global $lang_folder_cant_access;
     global $downloadFileAr;
+    global $showDotFiles;
 
     $isError = 0;
     
@@ -2044,7 +2048,13 @@ function downloadFolder($folder, $dir_source)
                         $isDir = 1;
                 }
                 
-                if ($file != "." && $file != "..") {
+                $dot_prefix = 0;
+                if ($showDotFiles == 0) {
+                    if (preg_match("/^\.+/", $file))
+                        $dot_prefix = 1;
+                }
+                
+                if ($file != "." && $file != ".." && $dot_prefix == 0) {
                     
                     // Check for sub folders and then perform this function
                     if ($isDir == 1) {
@@ -4454,7 +4464,9 @@ function createTempFileName($file_name)
 {
     global $serverTmp;
     
-    return $serverTmp . "/" . $file_name . "." . uniqid("mbox.", true);
+    //return $serverTmp . "/" . $file_name . "." . uniqid("mbox.", true);
+    
+    return tempnam($serverTmp, $file_name);
 }
 
 function checkFileInclude($file_check,$dir)
