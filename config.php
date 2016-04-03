@@ -7,8 +7,7 @@ $ftpPort = "21";
 $ftpMode = "1";
 $ftpSSL  = "0";
 $ftpDir  = "";
-$serverTmp = "/tmp"; // Linux
-// $serverTmp = "C:\\WINDOWS\\Temp\\"; // Windows
+$serverTmp = "";
 $editableExts = "asp,ashx,asmx,aspx,asx,axd,cfm,cgi,css,html,htm,jhtml,js,php,phtml,pl,txt,xhtml";
 $sessionName = "";
 $dateFormatUsa = 0;
@@ -18,5 +17,6 @@ $showAdvOption = 1;
 $showLockSess = 1;
 $showHostInfo = 1;
 $showAddons = 1;
+$showDotFiles = 1;
 
 ?>
