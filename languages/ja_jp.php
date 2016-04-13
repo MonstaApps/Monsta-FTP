@@ -4,7 +4,7 @@
 // Author: haniokasai(twitter @haniokasai)
 // Last Updated: 1/1/2016
 
-$file_lang_name = "日本語";
+$file_lang_name = "日本語 (JP)";
 $file_lang_default = 0; // 1 でデフォルト, 0で違う
 
 $lang_title_ended = "セッションの終了";
@@ -144,5 +144,13 @@ $lang_context_paste = "貼り付け";
 $lang_context_rename = "名前の変更";
 $lang_context_delete = "削除";
 $lang_context_chmod = "権限";
+
+// Translation required (start)
+$lang_title_fetch_file = "Fetch File";
+$lang_fetch_no_file = "The URL does not contain a file name.";
+$lang_fetch_not_found = "No file could be found at this address.";
+$lang_btn_fetch = "Fetch";
+$lang_btn_fetch_file = "Fetch File";
+// Translation required (end)
 
 ?>
