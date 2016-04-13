@@ -4,7 +4,7 @@
 // Author: Ahmet Gök
 // Last Updated: 21 Jan, 2016
 
-$file_lang_name = "Türkçe (Tr)";
+$file_lang_name = "Türkçe (TR)";
 $file_lang_default = 0; // 1 for default, 0 for not
 
 $lang_title_ended = "Oturum Kapatıldı";
