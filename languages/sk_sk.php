@@ -51,6 +51,7 @@ $lang_size_gb = "GB";
 $lang_size_tb = "TB";
 
 $lang_btn_sendlink = "Odoslať odkaz";
+$lang_btn_dl = "Stiahnuť";
 $lang_btn_refresh = "Obnoviť";
 $lang_btn_cut = "Vystrihnúť";
 $lang_btn_copy = "Kopírovať";
@@ -143,5 +144,13 @@ $lang_context_paste = "Prilepiť";
 $lang_context_rename = "Premenovať";
 $lang_context_delete = "Odstrániť";
 $lang_context_chmod = "Oprávnenia";
+
+// Translation required (start)
+$lang_title_fetch_file = "Fetch File";
+$lang_fetch_no_file = "The URL does not contain a file name.";
+$lang_fetch_not_found = "No file could be found at this address.";
+$lang_btn_fetch = "Fetch";
+$lang_btn_fetch_file = "Fetch File";
+// Translation required (end)
 
 ?>
