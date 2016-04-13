@@ -115,7 +115,6 @@ $lang_chmod_manual = "Manual";
 $lang_chmod_read = "Read";
 $lang_chmod_write = "Write";
 $lang_chmod_exe = "Execute";
-$lang_chmod_no_support = "Your PHP server does not support ftp_chmod";
 
 $lang_title_rename = "Rename Files";
 $lang_title_chmod = "Change File Attributes";
