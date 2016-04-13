@@ -144,4 +144,12 @@ $lang_context_rename = "Перйменувати";
 $lang_context_delete = "Видалити";
 $lang_context_chmod = "Права доступу";
 
+// Translation required (start)
+$lang_title_fetch_file = "Fetch File";
+$lang_fetch_no_file = "The URL does not contain a file name.";
+$lang_fetch_not_found = "No file could be found at this address.";
+$lang_btn_fetch = "Fetch";
+$lang_btn_fetch_file = "Fetch File";
+// Translation required (end)
+
 ?>
