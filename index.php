@@ -1,6 +1,6 @@
 <?php
 
-$version = "1.8.4";
+$version = "1.8.5";
 
 require("config.php");
 
@@ -163,7 +163,7 @@ function startSession()
 
     // Only change session name if session.auto_start is not 1, and session name is valid
     if (!ini_get("session.auto_start") || ini_get("session.auto_start") == "0")
-        session_name(preg_match('/^[0-9]*[A-Za-z][A-Za-z0-9]*$/', $sessionName) ? $sessionName : "monstabox");
+        session_name(preg_match('/^[0-9]*[A-Za-z][A-Za-z0-9]*$/', $sessionName) ? $sessionName : "monstaftp");
     
     @session_start();
     
@@ -319,7 +319,7 @@ function displayHeader()
 <!DOCTYPE html>
 <html>
 <head>
-    <title>MONSTA Box v<?php
+    <title>Monsta FTP v<?php
     echo $version;
 ?></title>
     <link href="css/style.css?<?php echo date("U"); ?>" rel="stylesheet" type="text/css">
@@ -432,7 +432,7 @@ function displayLoginForm($posted)
 
 <div align="center">
     <div id="loginForm" align="left">
-        <div id="loginFormTitle">MONSTA Box</div>
+        <div id="loginFormTitle">Monsta FTP</div>
             <div id="loginFormContent">
 
 <?php
@@ -506,15 +506,15 @@ function displayLoginForm($posted)
 <?php
 if ($versionCheck == 1 && ((intval(ini_get("allow_url_fopen")) == 1 && (function_exists("file_get_contents") || (function_exists("fopen") && function_exists("stream_get_contents")))) || (function_exists("curl_init") && function_exists("curl_exec")))) {
 ?>
-<iframe src="https://www.monstacdn.com/version/?a=box&v=<?php
+<iframe src="https://www.monstacdn.com/version/?a=ftp&v=<?php
     echo $version;
 ?>" width="200" height="20" scrolling="no" style="border:0"></iframe>
 <?php
 } else {
 ?>
-<a href="http://www.monstahq.com/apps/box/splash/">version <?php
+version <?php
     echo $version;
-?></a>
+?>
 <?php
 }
 ?>
@@ -1614,7 +1614,7 @@ if (class_exists('ZipArchive') == 1) {
     echo adjustButtonWidth($lang_btn_delete);
 ?>">
 <?php
-    if ($_SESSION["interface"] == "adv" && ($_SESSION["win_lin"] == "lin" || $_SESSION["win_lin"] == "mac")) {
+    if (function_exists('ftp_chmod') && $_SESSION["interface"] == "adv" && ($_SESSION["win_lin"] == "lin" || $_SESSION["win_lin"] == "mac")) {
 ?>
     <input type="button" id="actionButtonChmod" value="<?php
         echo $lang_btn_chmod;
@@ -1891,7 +1891,7 @@ function downloadFiles()
     // Download and zip each file
     if (sizeof($downloadFileAr) > 1) {
         
-        $zip_file_name   = "monsta_box_".date("Y_m_d_H_i_s").".zip";
+        $zip_file_name   = "monsta_ftp_".date("Y_m_d_H_i_s").".zip";
         $zip_file        = createTempFileName($zip_file_name);
         $zip             = new ZipArchive();
         $zip->open($zip_file, ZipArchive::CREATE);
@@ -2354,14 +2354,8 @@ function copyFolder($folder, $dir_destin, $dir_source)
     global $lang_folder_cant_make;
     global $lang_server_error_down;
     global $lang_file_cant_chmod;
-    global $lang_chmod_no_support;
     
     $isError = 0;
-    
-    // Check if ftp_chmod() exists
-    if (!function_exists('ftp_chmod')) {
-        $_SESSION["errors"][] = $lang_chmod_no_support;
-    }
     
     // Check source folder exists
     if (!@ftp_chdir($conn_id, $dir_source . "/" . $folder)) {
@@ -4464,7 +4458,7 @@ function createTempFileName($file_name)
 {
     global $serverTmp;
     
-    //return $serverTmp . "/" . $file_name . "." . uniqid("mbox.", true);
+    //return $serverTmp . "/" . $file_name . "." . uniqid("mftp.", true);
     
     return tempnam($serverTmp, $file_name);
 }
