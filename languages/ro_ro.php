@@ -5,7 +5,7 @@
 // Last Updated: 29 Apr, 2016
 
 $file_lang_name = "Romana (RO)";
-$file_lang_default = 1; // 1 pentru implicit, 0 pentru nu
+$file_lang_default = 0; // 1 pentru implicit, 0 pentru nu
 
 $lang_title_ended = "Sesiune terminata";
 $lang_title_errors = "A aparut o eroare!";
