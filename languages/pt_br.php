@@ -2,7 +2,7 @@
 
 // Language: Português (BR)
 // Author: Candiba.net
-// Last Updated: 11/08/2013
+// Last Updated: 07/06/2016
 
 $file_lang_name = "Português (BR)";
 $file_lang_default = 0; // 1 for default, 0 for not
@@ -143,12 +143,10 @@ $lang_context_rename = "Renomear";
 $lang_context_delete = "Deletar";
 $lang_context_chmod = "Chmod";
 
-// Translation required (start)
-$lang_title_fetch_file = "Fetch File";
-$lang_fetch_no_file = "The URL does not contain a file name.";
-$lang_fetch_not_found = "No file could be found at this address.";
-$lang_btn_fetch = "Fetch";
-$lang_btn_fetch_file = "Fetch File";
-// Translation required (end)
+$lang_title_fetch_file = "Buscar Arquivo";
+$lang_fetch_no_file = "O URL não contém um nome de arquivo.";
+$lang_fetch_not_found = "Nenhum arquivo pode ser encontrado neste endereço.";
+$lang_btn_fetch = "Buscar";
+$lang_btn_fetch_file = "Busca Arquivo";
 
 ?>
