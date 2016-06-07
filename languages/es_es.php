@@ -1,14 +1,14 @@
 <?php
 
 // Language: Spanish (ES)
-// Author: Francisco J. Calzado
-// Last Updated: 15/08/2013
+// Author: Ivan Melchor Santiago
+// Last Updated: 30/05/2016
 
 $file_lang_name = "Español (ES)";
 $file_lang_default = 0; // 1 for default, 0 for not
 
-$lang_title_ended = "Sesión Finalizada";
-$lang_title_errors = "Errores Detectados";
+$lang_title_ended = "Sesión finalizada";
+$lang_title_errors = "Errores detectados";
 
 $lang_session_expired = "Su sesión ha expirado";
 $lang_ip_conflict = "Su dirección IP está en conflicto con la IP de su sesión";
@@ -143,12 +143,10 @@ $lang_context_rename = "Renombrar";
 $lang_context_delete = "Borrar";
 $lang_context_chmod = "Permisos";
 
-// Translation required (start)
-$lang_title_fetch_file = "Fetch File";
-$lang_fetch_no_file = "The URL does not contain a file name.";
-$lang_fetch_not_found = "No file could be found at this address.";
-$lang_btn_fetch = "Fetch";
-$lang_btn_fetch_file = "Fetch File";
-// Translation required (end)
+$lang_title_fetch_file = "Atraer archivo";
+$lang_fetch_no_file = "La URL no contiene un nombre de archivo.";
+$lang_fetch_not_found = "Ningún archivo puede encontrarse en esta dirección.";
+$lang_btn_fetch = "Atraer";
+$lang_btn_fetch_file = "Atraer archivo";
 
 ?>
