@@ -2,7 +2,7 @@
 
 // Language: Persian (IR)
 // Author: mostafa98 (http://mostafa98.ir)
-// Last Updated: 1393/09/19
+// Last Updated: 8 June, 2016
 
 $file_lang_name = "Persian (IR)";
 $file_lang_default = 0; // 1 for default, 0 for not
@@ -12,6 +12,9 @@ $lang_title_errors = "خطاهایی رخ داده";
 
 $lang_session_expired = "جلسه شما منقضی شده است";
 $lang_ip_conflict = "آدرس آی پی شما با آی پی جلسه متضاد است";
+// Translation required (start)
+$lang_token_conflict = "Possible CSRF detected";
+// Translation required (end)
 
 $lang_btn_login = "ورود";
 $lang_ftp_host = "اف تی پی هاست";
@@ -70,6 +73,9 @@ $lang_btn_upload_files = "آپلود فایل ها";
 $lang_btn_upload_repeat = "تکرار بارگذاری";
 $lang_btn_upload_folder = "آپلود پوشه";
 
+// Translation required (start)
+$lang_info_version = "Version";
+// Translation required (end)
 $lang_info_host = "host";
 $lang_info_user = "user";
 $lang_info_upload_limit = "upload_limit";
