@@ -2,7 +2,7 @@
 
 // Language: Japanese
 // Author: haniokasai(twitter @haniokasai)
-// Last Updated: 1/1/2016
+// Last Updated: 8 June, 2016
 
 $file_lang_name = "日本語 (JP)";
 $file_lang_default = 0; // 1 でデフォルト, 0で違う
@@ -12,6 +12,9 @@ $lang_title_errors = "エラーが発生しました";
 
 $lang_session_expired = "セッションの有効期限が切れています";
 $lang_ip_conflict = "あなたのIPアドレスはセッションのIPと矛盾しているらしいです";
+// Translation required (start)
+$lang_token_conflict = "Possible CSRF detected";
+// Translation required (end)
 
 $lang_btn_login = "ログイン";
 $lang_ftp_host = "FTPホスト";
@@ -70,6 +73,9 @@ $lang_btn_upload_files = "複数のファイルのアップロード";
 $lang_btn_upload_repeat = "再アップロード";
 $lang_btn_upload_folder = "フォルダのアップロード";
 
+// Translation required (start)
+$lang_info_version = "Version";
+// Translation required (end)
 $lang_info_host = "ホスト";
 $lang_info_user = "ユーザー名";
 $lang_info_upload_limit = "アップロードの最大容量";
