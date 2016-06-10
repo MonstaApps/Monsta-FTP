@@ -2,7 +2,7 @@
 
 // Language: French (FR)
 // Author: Cyril MAGUIRE
-// Last Updated: 08/08/2013
+// Last Updated: 8 June, 2016
 
 $file_lang_name = "Français (FR)";
 $file_lang_default = 0; // 1 for default, 0 for not
@@ -12,6 +12,9 @@ $lang_title_errors = "Des Erreurs Sont Survenues";
 
 $lang_session_expired = "Votre session a expiré";
 $lang_ip_conflict = "Votre adresse IP est en conflit avec l'IP de session";
+// Translation required (start)
+$lang_token_conflict = "Possible CSRF detected";
+// Translation required (end)
 
 $lang_btn_login = "Identifiant";
 $lang_ftp_host = "Serveur FTP";
@@ -70,6 +73,9 @@ $lang_btn_upload_files = "Téléversé des Fichiers";
 $lang_btn_upload_repeat = "Répéter le téléversement";
 $lang_btn_upload_folder = "Téléverser le Dossier";
 
+// Translation required (start)
+$lang_info_version = "Version";
+// Translation required (end)
 $lang_info_host = "Serveur";
 $lang_info_user = "Utilisateur";
 $lang_info_upload_limit = "Limite de téléversement";
