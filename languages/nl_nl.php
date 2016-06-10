@@ -2,7 +2,7 @@
 
 // Language: Dutch~Nederlands (NL)
 // Author: Ben (De Vries ICT)
-// Last Updated: 15/12/2013
+// Last Updated: 8 June, 2016
 
 $file_lang_name = "Nederlands (NL)";
 $file_lang_default = 0; // 1 for default, 0 for not
@@ -12,6 +12,9 @@ $lang_title_errors = "Er zijn fouten opgetreden";
 
 $lang_session_expired = "Uw sessie is vervallen";
 $lang_ip_conflict = "Uw IP-adres geeft een conflict met de sessie IP";
+// Translation required (start)
+$lang_token_conflict = "Possible CSRF detected";
+// Translation required (end)
 
 $lang_btn_login = "Login";
 $lang_ftp_host = "FTP Host";
@@ -70,6 +73,9 @@ $lang_btn_upload_files = "Upload bestanden";
 $lang_btn_upload_repeat = "Herhaal Upload";
 $lang_btn_upload_folder = "Upload map";
 
+// Translation required (start)
+$lang_info_version = "Version";
+// Translation required (end)
 $lang_info_host = "Host";
 $lang_info_user = "Gebruiker";
 $lang_info_upload_limit = "Upload Limiet";
