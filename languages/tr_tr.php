@@ -2,7 +2,7 @@
 
 // Language: Türkçe (TR)
 // Author: Ahmet Gök
-// Last Updated: 21 Jan, 2016
+// Last Updated: 8 June, 2016
 
 $file_lang_name = "Türkçe (TR)";
 $file_lang_default = 0; // 1 for default, 0 for not
@@ -12,6 +12,9 @@ $lang_title_errors = "hatalar oldu";
 
 $lang_session_expired = "Oturum Süresi Doldu";
 $lang_ip_conflict = "Oturum açtiğiniz İp Adresiniz ile Çakişma var";
+// Translation required (start)
+$lang_token_conflict = "Possible CSRF detected";
+// Translation required (end)
 
 $lang_btn_login = "Giriş";
 $lang_ftp_host = "FTP Host Adresi";
@@ -70,6 +73,9 @@ $lang_btn_upload_files = "Dosyalar Yükle";
 $lang_btn_upload_repeat = "Tekrar Yükle";
 $lang_btn_upload_folder = "Klasör Yükle";
 
+// Translation required (start)
+$lang_info_version = "Version";
+// Translation required (end)
 $lang_info_host = "Sunucu";
 $lang_info_user = "Kullanıcı";
 $lang_info_upload_limit = "Yükleme Limiti";
@@ -143,5 +149,13 @@ $lang_context_paste = "Yapiştir";
 $lang_context_rename = "Adlandir";
 $lang_context_delete = "Sil";
 $lang_context_chmod = "İzinler";
+
+// Translation required (start)
+$lang_title_fetch_file = "Fetch File";
+$lang_fetch_no_file = "The URL does not contain a file name.";
+$lang_fetch_not_found = "No file could be found at this address.";
+$lang_btn_fetch = "Fetch";
+$lang_btn_fetch_file = "Fetch File";
+// Translation required (end)
 
 ?>
