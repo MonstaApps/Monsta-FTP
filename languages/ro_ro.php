@@ -1,8 +1,8 @@
-<?php
+ <?php
 
 // Language: Romanian (RO)
 // Author: Grifasi Montana
-// Last Updated: 29 Apr, 2016
+// Last Updated: 8 June, 2016
 
 $file_lang_name = "Romana (RO)";
 $file_lang_default = 0; // 1 pentru implicit, 0 pentru nu
@@ -12,6 +12,9 @@ $lang_title_errors = "A aparut o eroare!";
 
 $lang_session_expired = "Sesiunea a expirat";
 $lang_ip_conflict = "IP-ul tau intra in conflict cu IP-ul sesiunii";
+// Translation required (start)
+$lang_token_conflict = "Possible CSRF detected";
+// Translation required (end)
 
 $lang_btn_login = "Autentificare";
 $lang_ftp_host = "Gazda FTP";
@@ -70,6 +73,9 @@ $lang_btn_upload_files = "Incarca fisiere";
 $lang_btn_upload_repeat = "Repeta incarcare";
 $lang_btn_upload_folder = "Incarca dosar";
 
+// Translation required (start)
+$lang_info_version = "Version";
+// Translation required (end)
 $lang_info_host = "Gazda";
 $lang_info_user = "Utilizator";
 $lang_info_upload_limit = "Limita incarcare";
