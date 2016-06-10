@@ -2,7 +2,7 @@
 
 // Language: Simplified Chinese (CN)
 // Author: Monsta Apps (Lola & Jason)
-// Last Updated: 12/08/2013
+// Last Updated: 8 June, 2016
 
 $file_lang_name = "简体中文 (CN)";
 $file_lang_default = 0; // 1 for default, 0 for not
@@ -12,6 +12,9 @@ $lang_title_errors = "出错";
 
 $lang_session_expired = "您的会话已经到期";
 $lang_ip_conflict = "您的IP地址和会话的IP地址有冲突";
+// Translation required (start)
+$lang_token_conflict = "Possible CSRF detected";
+// Translation required (end)
 
 $lang_btn_login = "登录";
 $lang_ftp_host = "FTP 服务器";
@@ -70,6 +73,9 @@ $lang_btn_upload_files = "上传多个文件";
 $lang_btn_upload_repeat = "重新上传";
 $lang_btn_upload_folder = "上传文件夹";
 
+// Translation required (start)
+$lang_info_version = "Version";
+// Translation required (end)
 $lang_info_host = "服务器";
 $lang_info_user = "用户";
 $lang_info_upload_limit = "上传限制";
