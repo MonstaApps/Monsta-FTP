@@ -2,7 +2,7 @@
 
 // Language: Korean (KO)
 // Author: Monsta Apps (June)
-// Last Updated: 12/08/2013
+// Last Updated: 8 June, 2016
 
 $file_lang_name = "한국어 (KO)";
 $file_lang_default = 0; // 1 for default, 0 for not
@@ -12,6 +12,9 @@ $lang_title_errors = "오류가 발생하였습니다";
 
 $lang_session_expired = "세션이 만료되었습니다";
 $lang_ip_conflict = "현재 사용중인 IP 주소가 중복입니다";
+// Translation required (start)
+$lang_token_conflict = "Possible CSRF detected";
+// Translation required (end)
 
 $lang_btn_login = "로그인";
 $lang_ftp_host = "FTP 주소";
@@ -70,6 +73,9 @@ $lang_btn_upload_files = "파일 업로드";
 $lang_btn_upload_repeat = "업로드 반복하기";
 $lang_btn_upload_folder = "폴더 업로드";
 
+// Translation required (start)
+$lang_info_version = "Version";
+// Translation required (end)
 $lang_info_host = "호스트";
 $lang_info_user = "사용자";
 $lang_info_upload_limit = "업로드 한도";
