@@ -2,7 +2,7 @@
 
 // Language: Finnish (FI)
 // Author: Tomas Nybondas
-// Last Updated: 04/01/2016
+// Last Updated: 8 June, 2016
 
 $file_lang_name = "Finnish (FI)";
 $file_lang_default = 0; // 1 for default, 0 for not
@@ -12,6 +12,9 @@ $lang_title_errors = "Virheit&auml; havaittu";
 
 $lang_session_expired = "Istunto on p&auml;&auml;ttynyt";
 $lang_ip_conflict = "IP-osoitteesi ei ole sama kuin istunnon IP-osoite";
+// Translation required (start)
+$lang_token_conflict = "Possible CSRF detected";
+// Translation required (end)
 
 $lang_btn_login = "Kirjaudu";
 $lang_ftp_host = "FTP-palvelin";
@@ -70,6 +73,9 @@ $lang_btn_upload_files = "Siirr&auml; tiedostoja";
 $lang_btn_upload_repeat = "Toista siirto";
 $lang_btn_upload_folder = "Siirr&auml; kansio";
 
+// Translation required (start)
+$lang_info_version = "Version";
+// Translation required (end)
 $lang_info_host = "Palvelin";
 $lang_info_user = "K&auml;ytt&auml;j&auml;";
 $lang_info_upload_limit = "Siirtorajoitus";
