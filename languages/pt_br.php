@@ -2,7 +2,7 @@
 
 // Language: Português (BR)
 // Author: Candiba.net
-// Last Updated: 07/06/2016
+// Last Updated: 8 June, 2016
 
 $file_lang_name = "Português (BR)";
 $file_lang_default = 0; // 1 for default, 0 for not
@@ -12,6 +12,9 @@ $lang_title_errors = "Ocorreram Erros";
 
 $lang_session_expired = "Sua sessão expirou";
 $lang_ip_conflict = "Seu endereço de IP conflita com sessão IP";
+// Translation required (start)
+$lang_token_conflict = "Possible CSRF detected";
+// Translation required (end)
 
 $lang_btn_login = "Login";
 $lang_ftp_host = "Servidor FTP";
@@ -70,6 +73,9 @@ $lang_btn_upload_files = "Enviar Arquivos";
 $lang_btn_upload_repeat = "Repetir Upload";
 $lang_btn_upload_folder = "Enviar Pasta";
 
+// Translation required (start)
+$lang_info_version = "Version";
+// Translation required (end)
 $lang_info_host = "Servidor";
 $lang_info_user = "Usuário";
 $lang_info_upload_limit = "Limite de Upload";
