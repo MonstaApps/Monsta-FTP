@@ -1,9 +1,8 @@
 <?php
 
 // Language: German (DE)
-// Author: Monsta Apps 
-// Translation: Gerald
-// Last Updated: 09/12/2013
+// Author: Monsta Apps (Gerald)
+// Last Updated: 8 June, 2016
 
 $file_lang_name = "Deutsch (DE)";
 $file_lang_default = 0; // 1 for default, 0 for not
@@ -13,6 +12,9 @@ $lang_title_errors = "Fehler aufgetreten";
 
 $lang_session_expired = "Ihre Session ist abgelaufen";
 $lang_ip_conflict = "Ihre IP Adresse passt nicht zu dieser Session";
+// Translation required (start)
+$lang_token_conflict = "Possible CSRF detected";
+// Translation required (end)
 
 $lang_btn_login = "Login";
 $lang_ftp_host = "FTP Host";
@@ -71,6 +73,9 @@ $lang_btn_upload_files = "Dateien hochladen";
 $lang_btn_upload_repeat = "Erneut hochladen";
 $lang_btn_upload_folder = "Ordner hochladen";
 
+// Translation required (start)
+$lang_info_version = "Version";
+// Translation required (end)
 $lang_info_host = "FTP-Server";
 $lang_info_user = "Benutzer";
 $lang_info_upload_limit = "Maximale Dateigr&ouml;&szlig;e";
