@@ -2,7 +2,7 @@
 
 // Language: Russian (RU)
 // Author: Monsta Apps (Alexey)
-// Last Updated: 12/08/2013
+// Last Updated: 8 June, 2016
 
 $file_lang_name = "Русский (RU)";// 
 $file_lang_default = 0; // 1 for default, 0 for not
@@ -12,6 +12,9 @@ $lang_title_errors = "Ошибка";
 
 $lang_session_expired = "Срок действия сессии закончен";
 $lang_ip_conflict = "Конфликт вашего IP с IP вашей сессии";
+// Translation required (start)
+$lang_token_conflict = "Possible CSRF detected";
+// Translation required (end)
 
 $lang_btn_login = "Логин";
 $lang_ftp_host = "FTP сервер";
@@ -71,6 +74,9 @@ $lang_btn_upload_files = "Загрузить файлы на сервер";
 $lang_btn_upload_repeat = "Повторить загрузку на сервер";
 $lang_btn_upload_folder = "Загрузить папку на сервер";
 
+// Translation required (start)
+$lang_info_version = "Version";
+// Translation required (end)
 $lang_info_host = "Сервер";
 $lang_info_user = "Пользователь";
 $lang_info_upload_limit = "Лимит загрузок на сервер";
