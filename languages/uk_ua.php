@@ -2,7 +2,7 @@
 
 // Language: Ukrainian (RU)
 // Author: Crazistor
-// Last Updated: 03/05/2015
+// Last Updated: 8 June, 2016
 
 $file_lang_name = "Українська (UK)";// 
 $file_lang_default = 0; // 1 for default, 0 for not
@@ -12,6 +12,9 @@ $lang_title_errors = "Помилка";
 
 $lang_session_expired = "Термін дії сесії вичерпано";
 $lang_ip_conflict = "Конфлікт вашої IP з IP вашої сесії";
+// Translation required (start)
+$lang_token_conflict = "Possible CSRF detected";
+// Translation required (end)
 
 $lang_btn_login = "Логін";
 $lang_ftp_host = "FTP сервер";
@@ -71,6 +74,9 @@ $lang_btn_upload_files = "Завантажити файли на сервер";
 $lang_btn_upload_repeat = "Повторити завантаження на сервер";
 $lang_btn_upload_folder = "Завантажити теку на сервер";
 
+// Translation required (start)
+$lang_info_version = "Version";
+// Translation required (end)
 $lang_info_host = "Сервер";
 $lang_info_user = "Користувач";
 $lang_info_upload_limit = "Лиміт завантажень на сервер";
