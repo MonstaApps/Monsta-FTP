@@ -1,6 +1,8 @@
 <?php
 
-$version = "1.8.5";
+ini_set('max_execution_time', 600);
+
+$version = "1.8.7";
 
 require("config.php");
 
@@ -230,8 +232,8 @@ function attemptLogin()
     global $lang_ip_conflict;
     
     if (connectFTP(0) == 1 && $_POST["login"] != 1) {
-        
-        // Check for hijacked session
+
+        // Check for hijacked session with IP check
         if ($_SESSION["ip_check"] == 1) {
             
             if ($_SERVER['REMOTE_ADDR'] == $_SESSION["user_ip"]) {
@@ -245,7 +247,7 @@ function attemptLogin()
         } else {
             $_SESSION["loggedin"] = 1;
         }
-        
+
     } else {
         
         if ($_POST["login"] == 1) {
@@ -313,15 +315,11 @@ function attemptLogin()
 
 function displayHeader()
 {
-    
-    global $version;
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Monsta FTP v<?php
-    echo $version;
-?></title>
+    <title>Monsta FTP</title>
     <link href="css/style.css?<?php echo date("U"); ?>" rel="stylesheet" type="text/css">
     <link href="css/colors.css?<?php echo date("U"); ?>" rel="stylesheet" type="text/css">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -345,7 +343,6 @@ function displayFooter()
 function displayLoginForm($posted)
 {
     
-    global $version;
     global $ftpHost;
     global $ajaxRequest;
     global $lang_max_logins;
@@ -360,7 +357,6 @@ function displayLoginForm($posted)
     global $lang_save_login;
     global $lang_ip_check;
     global $lang_session_expired;
-    global $versionCheck;
     global $showAdvOption;
     global $showLockSess;
     
@@ -497,28 +493,9 @@ function displayLoginForm($posted)
             echo "bgFormError";
 ?>" autocomplete="off">
 
-<div class="floatLeft">
-    <input type="submit" value="<?php
+<p><input type="submit" value="<?php
         echo $lang_btn_login;
 ?>" id="btnLogin">
-</div>
-<div class="floatRight">
-<?php
-if ($versionCheck == 1 && ((intval(ini_get("allow_url_fopen")) == 1 && (function_exists("file_get_contents") || (function_exists("fopen") && function_exists("stream_get_contents")))) || (function_exists("curl_init") && function_exists("curl_exec")))) {
-?>
-<iframe src="https://www.monstacdn.com/version/?a=ftp&v=<?php
-    echo $version;
-?>" width="200" height="20" scrolling="no" style="border:0"></iframe>
-<?php
-} else {
-?>
-version <?php
-    echo $version;
-?>
-<?php
-}
-?>
-</div>
 
 <br><br>
 
@@ -1568,6 +1545,8 @@ function displayFtpActions()
     global $lang_btn_delete;
     global $lang_btn_chmod;
     global $lang_btn_logout;
+    global $versionCheck;
+    global $version;
 ?>
 <div id="ftpActionButtonsDiv">
     <input type="button" value="<?php
@@ -1631,6 +1610,25 @@ if (class_exists('ZipArchive') == 1) {
     echo adjustButtonWidth($lang_btn_logout);
 ?>">
 </div>
+
+<div class="floatRight">
+<?php
+if ($versionCheck == 1 && ((intval(ini_get("allow_url_fopen")) == 1 && (function_exists("file_get_contents") || (function_exists("fopen") && function_exists("stream_get_contents")))) || (function_exists("curl_init") && function_exists("curl_exec")))) {
+?>
+<iframe src="https://www.monstacdn.com/version/?a=ftp&v=<?php
+    echo $version;
+?>" width="115" height="20" scrolling="no" style="border:0;margin-right:20px;"></iframe>
+<?php
+} else {
+?>
+<?php
+    echo $version;
+?>
+<?php
+}
+?>
+</div>
+
 </div>
 <?php
 }
@@ -1683,16 +1681,18 @@ function displayAjaxFooter()
     
     global $lang_btn_new_folder;
     global $lang_btn_new_file;
+    global $lang_info_version;
     global $lang_info_host;
     global $lang_info_user;
     global $lang_info_upload_limit;
     global $lang_info_drag_drop;
     global $lang_btn_fetch_file;
     global $showHostInfo;
-    
+  
 ?>
 <div id="footerDiv">
     <div id="hostInfoDiv">
+
 <?php
     if ($showHostInfo == 1) {
 ?>
@@ -3400,7 +3400,7 @@ function newFile()
             // Get template
             if ($_POST["template"] != $lang_no_template) {
             
-            	if (checkFileInclude($_POST["template"],$templates_dir) == 1) {
+                if (checkFileInclude($_POST["template"],$templates_dir) == 1) {
                 
                     $file_name = $templates_dir . "/" . $_POST["template"];
                     $fd        = @fopen($file_name, "r");
@@ -4460,6 +4460,10 @@ function createTempFileName($file_name)
     
     //return $serverTmp . "/" . $file_name . "." . uniqid("mftp.", true);
     
+    // Attempt to get a $serverTmp var if not set by user
+    if ($serverTmp == "")
+        $serverTmp = ini_get('upload_tmp_dir') ? ini_get('upload_tmp_dir') : sys_get_temp_dir();
+    
     return tempnam($serverTmp, $file_name);
 }
 
@@ -4484,6 +4488,21 @@ function checkFileInclude($file_check,$dir)
     }
     
     return $file_found;        
+}
+
+function getRandId($len)
+{
+    mt_srand((double)microtime()*1000000);
+   
+    while(strlen($id)<$len){
+        switch(mt_rand(1,3)){
+            case 1: $id.=chr(mt_rand(48,57)); break;  // 0-9
+            case 2: $id.=chr(mt_rand(65,90)); break;  // A-Z
+            case 3: $id.=chr(mt_rand(97,122)); break; // a-z
+        }
+    }
+   
+    return $id;
 }
 
 ?>
