@@ -2,7 +2,7 @@
 
 // Language: Slovak (SK)
 // Author: Branislav Pírek, www.piri.sk
-// Last Updated: 01/09/2014
+// Last Updated: 8 June, 2016
 
 $file_lang_name = "Slovak (SK)";
 $file_lang_default = 0; // 1 for default, 0 for not
@@ -12,6 +12,9 @@ $lang_title_errors = "Došlo k chybe";
 
 $lang_session_expired = "Vaše spojenie vypršalo";
 $lang_ip_conflict = "Vaša IP adresa je v rozpore s inou pripojenou IP adresou";
+// Translation required (start)
+$lang_token_conflict = "Possible CSRF detected";
+// Translation required (end)
 
 $lang_btn_login = "Prihlásiť";
 $lang_ftp_host = "FTP Hostiteľ";
@@ -71,6 +74,9 @@ $lang_btn_upload_files = "Nahrať súbory";
 $lang_btn_upload_repeat = "Opakovať nahrávanie";
 $lang_btn_upload_folder = "Nahrať priečinok";
 
+// Translation required (start)
+$lang_info_version = "Version";
+// Translation required (end)
 $lang_info_host = "Hostiteľ";
 $lang_info_user = "Užívateľ";
 $lang_info_upload_limit = "Maximálna veľkosť";
