@@ -2,7 +2,7 @@
 
 // Language: Spanish (ES)
 // Author: Ivan Melchor Santiago
-// Last Updated: 30/05/2016
+// Last Updated: 8 June, 2016
 
 $file_lang_name = "Español (ES)";
 $file_lang_default = 0; // 1 for default, 0 for not
@@ -12,6 +12,9 @@ $lang_title_errors = "Errores detectados";
 
 $lang_session_expired = "Su sesión ha expirado";
 $lang_ip_conflict = "Su dirección IP está en conflicto con la IP de su sesión";
+// Translation required (start)
+$lang_token_conflict = "Possible CSRF detected";
+// Translation required (end)
 
 $lang_btn_login = "Conectar";
 $lang_ftp_host = "Servidor FTP";
@@ -70,6 +73,9 @@ $lang_btn_upload_files = "Subir Archivos";
 $lang_btn_upload_repeat = "Repetir Subida";
 $lang_btn_upload_folder = "Subir Carpeta";
 
+// Translation required (start)
+$lang_info_version = "Version";
+// Translation required (end)
 $lang_info_host = "Servidor";
 $lang_info_user = "Usuario";
 $lang_info_upload_limit = "Límite de Subidas";
