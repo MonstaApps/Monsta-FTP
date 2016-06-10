@@ -2,7 +2,7 @@
 
 // Language: Viet Nam(VI)
 // Author: Đại Phúc Minh
-// Last Updated: 16/07/2013
+// Last Updated: 8 June, 2016
 
 $file_lang_name = "Tiếng Việt (VI)";
 $file_lang_default = 0; // 1 for default, 0 for not
@@ -12,6 +12,9 @@ $lang_title_errors = "Lỗi xuất hiện";
 
 $lang_session_expired = "Quá trình làm việc đã bị tạm ngưng. Yêu Đăng nhập lại";
 $lang_ip_conflict = "Xung đột địa chỉ IP của bạn với phiên IP";
+// Translation required (start)
+$lang_token_conflict = "Possible CSRF detected";
+// Translation required (end)
 
 $lang_btn_login = "ĐĂNG NHẬP";
 $lang_ftp_host = "IP Máy chủ hoặc tên website ";
@@ -70,6 +73,9 @@ $lang_btn_upload_files = "TẢI FILE LÊN";
 $lang_btn_upload_repeat = "TẢI LẠI";
 $lang_btn_upload_folder = "TẢI THƯ MỤC LÊN";
 
+// Translation required (start)
+$lang_info_version = "Version";
+// Translation required (end)
 $lang_info_host = "Máy chủ";
 $lang_info_user = "Tài khoản";
 $lang_info_upload_limit = "Giới hạn tải lên mỗi file";
