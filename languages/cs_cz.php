@@ -2,7 +2,7 @@
 
 // Language: Czech(CZ)
 // Author: Michal Viklický
-// Last Updated: 10/01/2014
+// Last Updated: 8 June, 2016
 
 $file_lang_name = "Cestina (CZ)";
 $file_lang_default = 0; // 1 for default, 0 for not
@@ -12,6 +12,9 @@ $lang_title_errors = "Nastala chyba";
 
 $lang_session_expired = "Spojení vypršelo";
 $lang_ip_conflict = "Tvá adresa IP je v konfliktu s jiným spojením adresy IP";
+// Translation required (start)
+$lang_token_conflict = "Possible CSRF detected";
+// Translation required (end)
 
 $lang_btn_login = "Prihlásit";
 $lang_ftp_host = "FTP Host";
@@ -70,6 +73,9 @@ $lang_btn_upload_files = "Nahrát soubor";
 $lang_btn_upload_repeat = "Opakovat nahrání";
 $lang_btn_upload_folder = "Nahrát složku";
 
+// Translation required (start)
+$lang_info_version = "Version";
+// Translation required (end)
 $lang_info_host = "Úložište";
 $lang_info_user = "Uživatel";
 $lang_info_upload_limit = "Max.velikost";
