@@ -1,22 +1,28 @@
 ###################################
-MONSTA FTP
+IMPORTANT
 ###################################
-
-Monsta FTP is a lightweight open-source PHP/AJAX file manager you can install on 
-your server to manage your files through any browser, and free yourself from 
-desktop software, forever!
-
-www.monstaftp.com
-
-###################################
-REQUIREMENTS
-###################################
-
-- Linux, Windows, or Mac server with support for PHP 5+.
-- Browser with HTML5 support.
 
 The server running this script must allow external FTP connections
 if you intend to allow connection to external servers.
+
+###################################
+SUPPORT
+###################################
+
+Support Portal:
+http://www.monstaftp.com/support
+
+FAQ:
+http://www.monstaftp.com/support/faq
+
+How To:
+http://www.monstaftp.com/support/howto
+
+Troubleshooting:
+http://www.monstaftp.com/support/troubleshooting
+
+Contact us:
+http://www.monstaftp.com/support/contact
 
 ###################################
 INSTALL
@@ -85,21 +91,12 @@ $showAddons
 $showDotFiles
 1 to show files starting with a dot (system files), 0 to hide
 
-###################################
-SUPPORT
-###################################
+$maxExecTime
+The number of seconds to allow files to upload for.
+(web hosts may implement a maximum limit users can increase this to, in 
+which case it will revert to their limit.)
 
-Support Portal:
-http://www.monstaftp.com/support
-
-FAQ:
-http://www.monstaftp.com/support/faq
-
-How To:
-http://www.monstaftp.com/support/howto
-
-Troubleshooting:
-http://www.monstaftp.com/support/troubleshooting
-
-Contact us:
-http://www.monstaftp.com/support/contact
+$maxFileSize
+The maximum size of files that can be uploaded. Measured in megabytes (M).
+(web hosts may implement a maximum limit users can increase this to, in 
+which case it will revert to their limit.)
