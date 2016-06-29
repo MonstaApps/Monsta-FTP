@@ -1,10 +1,11 @@
 <?php
 
-ini_set('max_execution_time', 600);
-
-$version = "1.8.7";
+$version = "1.8.8";
 
 require("config.php");
+
+ini_set('max_execution_time', $maxExecTime);
+ini_set('memory_limit', $maxFileSize);
 
 header("X-Frame-Options: SAMEORIGIN");
 
