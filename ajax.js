@@ -77,7 +77,7 @@ function listenDropFiles() {
 
 function listenContextMenu() {
 
-    if (globalBrowser == "ie")
+    if (globalBrowser == "ie10+" || globalBrowser == "ie9-")
         document.attachEvent("onclick", hideFileContextMenu);
     else
         document.addEventListener("click", hideFileContextMenu, true);
@@ -989,7 +989,7 @@ function actionFunctionLogout() {
 
 function selectFile(theId, checkIE) {
 
-    if (checkIE == 0 || (checkIE == 1 && globalBrowser != "ie")) {
+    if (checkIE == 0 || (checkIE == 1 && globalBrowser != "ie10+" && globalBrowser != "ie9-")) {
 
         // Remove any existing borders
         unselectFiles();
