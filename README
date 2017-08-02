@@ -1,28 +1,18 @@
 ###################################
+!!! THIS SCRIPT IS NOW ARCHIVED !!!
+###################################
+
+THIS VERSION IS NO LONGER SUPPORTED AS VERSION 2 IS NOW THE STABLE RELEASE
+
+Please visit www.monstaftp.com to download the latest version of Monsta FTP,
+which is now proprietary software (i.e. it is no longer open source.)
+
+###################################
 IMPORTANT
 ###################################
 
 The server running this script must allow external FTP connections
 if you intend to allow connection to external servers.
-
-###################################
-SUPPORT
-###################################
-
-Support Portal:
-http://www.monstaftp.com/support
-
-FAQ:
-http://www.monstaftp.com/support/faq
-
-How To:
-http://www.monstaftp.com/support/howto
-
-Troubleshooting:
-http://www.monstaftp.com/support/troubleshooting
-
-Contact us:
-http://www.monstaftp.com/support/contact
 
 ###################################
 INSTALL
